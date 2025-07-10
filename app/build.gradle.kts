@@ -36,9 +36,7 @@ android {
 }
 
 dependencies {
-    // presentation
+    // module
     implementation(project(":presentation"))
-
-    // data
     implementation(project(":data"))
 }

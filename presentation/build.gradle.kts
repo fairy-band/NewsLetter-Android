@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    // data
+    // module
     implementation(project(":data"))
 
     // androidx
