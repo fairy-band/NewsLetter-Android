@@ -38,4 +38,7 @@ android {
 dependencies {
     // presentation
     implementation(project(":presentation"))
+
+    // data
+    implementation(project(":data"))
 }
