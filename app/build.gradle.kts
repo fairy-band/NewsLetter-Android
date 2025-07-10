@@ -36,5 +36,6 @@ android {
 }
 
 dependencies {
-   //implementation(projects.presentation)
+    // presentation
+    implementation(project(":presentation"))
 }
