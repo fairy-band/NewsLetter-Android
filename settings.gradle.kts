@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Known Knowns"
 include(":app")
- 
+include(":presentation")
