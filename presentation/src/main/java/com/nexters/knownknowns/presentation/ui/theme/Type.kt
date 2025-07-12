@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.ui.theme
+package com.nexters.knownknowns.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,20 +1,17 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.nexters.knownknowns"
+    namespace = "com.nexters.knownknowns.data"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.nexters.knownknowns"
         minSdk = 28
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -36,7 +33,5 @@ android {
 }
 
 dependencies {
-    // module
-    implementation(project(":presentation"))
-    implementation(project(":data"))
+
 }
