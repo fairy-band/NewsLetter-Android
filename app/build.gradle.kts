@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.service)
 }
 
 android {
@@ -39,4 +40,8 @@ dependencies {
     // module
     implementation(project(":presentation"))
     implementation(project(":data"))
+
+    // third party
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 }
