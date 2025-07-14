@@ -45,7 +45,7 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
 
-    // third party
+    // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
 }
