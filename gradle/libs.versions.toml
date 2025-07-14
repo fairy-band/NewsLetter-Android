@@ -20,6 +20,11 @@ composeSavable = "1.8.3"
 google-services = "4.4.3"
 firebaseBom = "33.16.0"
 
+# network
+retrofit = "3.0.0"
+retrofitJsonConverter = "1.0.0"
+okhttp = "5.1.0"
+
 [libraries]
 # android
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +44,26 @@ androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "li
 # firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+
+# retrofit
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-kotlin-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitJsonConverter" }
+
+# okhttp
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+[bundles]
+retrofit = [
+    "retrofit-core",
+    "retrofit-kotlin-serialization",
+    "retrofit2-kotlinx-serialization-converter"
+]
+okhttp = [
+    "okhttp",
+    "okhttp-logging"
+]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
