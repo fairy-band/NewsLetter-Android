@@ -33,5 +33,7 @@ android {
 }
 
 dependencies {
-
+    // network
+    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.okhttp)
 }
