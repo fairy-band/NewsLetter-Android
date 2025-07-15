@@ -61,7 +61,6 @@ koin-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-an
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitJsonConverter" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 # serialization
@@ -87,10 +86,6 @@ retrofit = [
     "retrofit-core",
     "retrofit-kotlin-serialization",
     "retrofit2-kotlinx-serialization-converter"
-]
-okhttp = [
-    "okhttp",
-    "okhttp-logging"
 ]
 
 [plugins]

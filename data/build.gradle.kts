@@ -36,7 +36,7 @@ android {
 dependencies {
     // network
     implementation(libs.bundles.retrofit)
-    implementation(libs.bundles.okhttp)
+    implementation(libs.okhttp.logging)
 
     // di
     implementation(libs.koin.annotations)
