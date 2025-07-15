@@ -38,7 +38,7 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.okhttp)
 
-    // koin
+    // di
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp)
 }
