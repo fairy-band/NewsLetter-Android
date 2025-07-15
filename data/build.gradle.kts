@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -36,4 +37,8 @@ dependencies {
     // network
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.okhttp)
+
+    // koin
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp)
 }
