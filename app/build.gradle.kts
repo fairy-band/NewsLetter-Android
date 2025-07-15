@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.service)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -40,12 +41,20 @@ android {
     }
 }
 
+ksp {
+    arg("KOIN_CONFIG_CHECK","true")
+}
+
 dependencies {
     // module
     implementation(project(":presentation"))
     implementation(project(":data"))
 
-    // third party
+    // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+
+    // di
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp)
 }
