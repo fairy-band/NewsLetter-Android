@@ -1,9 +1,9 @@
 [versions]
 agp = "8.11.0"
-kotlin = "2.0.21"
+kotlin = "2.1.21"
 coreKtx = "1.16.0"
 lifecycleRuntimeKtx = "2.9.1"
-ksp = "2.0.21-1.0.28"
+ksp = "2.1.21-2.0.1"
 
 # compose
 composeBom = "2024.09.00"
@@ -25,8 +25,7 @@ retrofitJsonConverter = "1.0.0"
 okhttp = "5.1.0"
 
 # serialization
-kotlinSerialization = "2.1.21"
-kotlinxSerializationCore = "1.8.1"
+kotlinxSerializationCore = "1.6.2"
 
 # firebase
 google-services = "4.4.3"
@@ -101,4 +100,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 android-library = { id = "com.android.library", version.ref = "agp" }
 google-service = { id = "com.google.gms.google-services", version.ref = "google-services" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

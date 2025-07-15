@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -41,7 +41,7 @@ android {
 dependencies {
     // module
     implementation(project(":data"))
-    
+
     // core
     implementation(libs.androidx.core.ktx)
 
