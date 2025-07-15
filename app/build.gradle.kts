@@ -54,7 +54,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
 
-    // koin
+    // di
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp)
 }
