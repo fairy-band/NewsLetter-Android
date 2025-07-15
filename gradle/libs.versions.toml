@@ -25,6 +25,12 @@ retrofit = "3.0.0"
 retrofitJsonConverter = "1.0.0"
 okhttp = "5.1.0"
 
+# ksp
+ksp = "2.0.21-1.0.28"
+
+# koin
+koin-annotations = "2.0.0"
+
 [libraries]
 # android
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +60,10 @@ retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
+# koin
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
+koin-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
+
 [bundles]
 retrofit = [
     "retrofit-core",
@@ -71,3 +81,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 google-service = { id = "com.google.gms.google-services", version.ref = "google-services" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
