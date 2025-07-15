@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -52,4 +53,8 @@ dependencies {
     implementation(libs.androidx.compose.saveable)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
+
+    // koin
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp)
 }
