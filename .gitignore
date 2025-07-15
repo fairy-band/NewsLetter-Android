@@ -1,13 +1,21 @@
 *.iml
 .gradle
-/local.properties
 .idea/
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
+
+# 환경 변수
 local.properties
+/local.properties
+keystore.properties
+/keystore.properties
 
 # Google Services
 google-services.json
+
+# Keystore files
+*.jks
+*.keystore
