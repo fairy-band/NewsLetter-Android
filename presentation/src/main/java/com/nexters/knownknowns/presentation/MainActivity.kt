@@ -34,7 +34,9 @@ class MainActivity : ComponentActivity() {
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
-        modifier = modifier
+        modifier = modifier,
+        style = KnownKnownsTheme.typography.body13Bold,
+        color = KnownKnownsTheme.colors.fillWhite
     )
 }
 
