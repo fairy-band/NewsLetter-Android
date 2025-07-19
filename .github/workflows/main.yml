@@ -9,7 +9,7 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  test:
+  review:
     runs-on: ubuntu-latest
     steps:
       - uses: anc95/ChatGPT-CodeReview@main
@@ -18,5 +18,5 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           # optional
           LANGUAGE: Korean
-          PROMPT:
+          PROMPT: 코드에 잠재적인 문제가 있는지 혹은 더 좋은 방안이 있는지 확인해줘
           IGNORE_PATTERNS: /node_modules,*.md # Regex pattern to ignore files, separated by comma
