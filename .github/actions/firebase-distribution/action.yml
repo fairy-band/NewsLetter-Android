@@ -8,6 +8,8 @@ inputs:
   firebase-service-account:
     description: firebase credential json
     required: true
+  google-services:
+    description: google services json
 
 runs:
   using: "composite"
@@ -21,15 +23,12 @@ runs:
         distribution: 'temurin'
         java-version: 17
 
-    - name: Decode keystore
+    - name: Restore needed files
       shell: bash
       run: |
         echo "${{ inputs.debug-keystore-b64 }}" | base64 --decode > debug.keystore
-
-    - name: Write service account JSON
-      shell: bash
-      run: |
         echo '${{ inputs.firebase-service-account }}' > app/firebase-account.json
+        echo '${{ inputs.google-services }}' > app/google-services.json
 
     - name: Restore keystore.properties
       shell: bash

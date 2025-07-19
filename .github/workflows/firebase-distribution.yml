@@ -11,3 +11,4 @@ jobs:
         with:
           debug-keystore-b64: ${{ secrets.DEBUG_KEYSTORE_64 }}
           firebase-service-account: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          google-services: ${{ secrets.GOOGLE_SERVICES }}
