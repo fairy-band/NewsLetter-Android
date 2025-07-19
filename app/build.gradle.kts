@@ -1,3 +1,4 @@
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -5,6 +6,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.service)
+    alias(libs.plugins.firebase.distribution)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -35,6 +37,7 @@ android {
     }
 
     buildTypes {
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -45,6 +48,13 @@ android {
         debug {
             isDebuggable = true
             applicationIdSuffix = ".debug"
+
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "test2"
+                testers = "algosketch@gmail.com"
+                serviceCredentialsFile = "$rootDir/app/firebase-account.json"
+            }
         }
     }
     compileOptions {
