@@ -17,9 +17,13 @@ runs:
         distribution: 'temurin'
         java-version: 11
 
+    - name: Restore debug keystore from base64
+      run: |
+        echo "${{ secrets.DEBUG_KEYSTORE_64 }}" | base64 --decode > debug.keystore
+
     - name: Restore keystore.properties
       run: |
-        echo "storeFile=your-release-key.keystore" > keystore.properties
+        echo "storeFile=debug.keystore" > keystore.properties
         echo "storePassword=android" >> keystore.properties
         echo "keyAlias=androiddebugkey" >> keystore.properties
         echo "keyPassword=android" >> keystore.properties
