@@ -55,10 +55,10 @@ private object ColorPalette {
 }
 
 /**
- * [SemanticColor]
+ * [KnownKnownsColors]
  * 임의로 수정하여 사용할 수 없고, 각 목적에 맞는 컬러를 정의합니다.
  */
-data class SemanticColor(
+data class KnownKnownsColors(
     // Background
     val backgroundBase: Color = ColorPalette.white,
     val backgroundSurface: Color = ColorPalette.white,
