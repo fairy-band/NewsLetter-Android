@@ -9,5 +9,5 @@ jobs:
 
       - uses: ./.github/actions/firebase-distribution
         with:
-          x: 13
-          y: 3
+          debug-keystore-b64: ${{ secrets.DEBUG_KEYSTORE_64 }}
+          firebase-service-account: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

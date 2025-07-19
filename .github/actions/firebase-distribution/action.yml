@@ -1,10 +1,14 @@
 name: Algosketch's Firebase Distribution
-description: this is a test actions, so you shouldn't use it. haha
+description: 내가 만든 액션 ㅎㅎㅎㅎㅎ
+
 inputs:
-  x:
-    default: 0
-  y:
-    default: 0
+  debug-keystore-b64:
+    description: base64 encoded debug keystore
+    required: true
+  firebase-service-account:
+    description: firebase credential json
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -17,9 +21,15 @@ runs:
         distribution: 'temurin'
         java-version: 11
 
-    - name: Restore debug keystore from base64
+    - name: Decode keystore
+      shell: bash
       run: |
-        echo "${{ secrets.DEBUG_KEYSTORE_64 }}" | base64 --decode > debug.keystore
+        echo "${{ inputs.debug-keystore-b64 }}" | base64 --decode > debug.keystore
+
+    - name: Write service account JSON
+      shell: bash
+      run: |
+        echo '${{ inputs.firebase-service-account }}' > app/firebase-account.json
 
     - name: Restore keystore.properties
       run: |
