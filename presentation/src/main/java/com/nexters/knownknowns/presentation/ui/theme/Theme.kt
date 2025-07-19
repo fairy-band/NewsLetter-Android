@@ -7,16 +7,15 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 
-private val LocalKnownKnownsColors = staticCompositionLocalOf<KnownKnownsColors> {
+val LocalKnownKnownsColors = staticCompositionLocalOf<SemanticColor> {
     error("No KnownKnownsColors provided")
 }
 
 private val LocalKnownKnownsTypography = staticCompositionLocalOf<KnownKnownsTypography> {
     error("No LocalKnownKnownsTypography provided")
 }
-
 object KnownKnownsTheme {
-    val colors: KnownKnownsColors
+    val colors: SemanticColor
         @Composable
         @ReadOnlyComposable
         get() = LocalKnownKnownsColors.current
@@ -28,31 +27,15 @@ object KnownKnownsTheme {
 }
 
 @Composable
-fun ProvideKnownKnownsColorsAndTypography(
-    colors: KnownKnownsColors,
-    typography: KnownKnownsTypography,
-    content: @Composable () -> Unit
-) {
-    val provideColors = remember { colors.copy() }
-    provideColors.update(colors)
-    val provideTypography = remember { typography.copy() }.apply { update(typography) }
-    CompositionLocalProvider(
-        LocalKnownKnownsColors provides provideColors,
-        LocalKnownKnownsTypography provides provideTypography,
-        content = content
-    )
-}
-
-@Composable
 fun KnownKnownsTheme(
     content: @Composable () -> Unit
 ) {
-    val colors = KnownKnownsColors()
     val typography = KnownKnownsTypography()
+    val provideTypography = remember { typography.copy() }.apply { update(typography) }
 
-    ProvideKnownKnownsColorsAndTypography(
-        colors,
-        typography
+    CompositionLocalProvider(
+        LocalKnownKnownsColors provides  SemanticColor(),
+        LocalKnownKnownsTypography provides provideTypography,
     ) {
         MaterialTheme(content = content)
     }
