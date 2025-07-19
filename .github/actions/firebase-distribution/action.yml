@@ -1,4 +1,4 @@
-name: Calculate Action
+name: Algosketch's Firebase Distribution
 description: this is a test actions, so you shouldn't use it. haha
 inputs:
   x:
@@ -20,9 +20,9 @@ runs:
     - name: Restore keystore.properties
       run: |
         echo "storeFile=your-release-key.keystore" > keystore.properties
-        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
-        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
-        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+        echo "storePassword=android" >> keystore.properties
+        echo "keyAlias=androiddebugkey" >> keystore.properties
+        echo "keyPassword=android" >> keystore.properties
 
     - name: Write Firebase credentials to file
       run: |

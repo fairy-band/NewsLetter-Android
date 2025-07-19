@@ -1,7 +1,7 @@
 name: Firebase App Distribution
 on: push
 jobs:
-  calculate:
+  distribute:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
