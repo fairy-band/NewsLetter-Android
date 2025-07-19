@@ -2,12 +2,10 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.nexters.knownknowns.presentation"
+    namespace = "com.nexters.knownknowns.core"
     compileSdk = 36
 
     defaultConfig {
@@ -33,36 +31,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
-    // module
-    implementation(project(":data"))
-    implementation(project(":core"))
-
-    // core
-    implementation(libs.androidx.core.ktx)
-
     // compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.ui)
     implementation(libs.androidx.compose.saveable)
-
-    // lifecycle
-    implementation(libs.bundles.lifecycle.compose)
-
-    // navigation
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-
-    // di
-    implementation(libs.koin.annotations)
-    ksp(libs.koin.ksp)
-
-    // serialization
-    implementation(libs.kotlinx.serialization.core)
 }
