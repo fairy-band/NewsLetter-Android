@@ -8,15 +8,28 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: echo "Hi, I am a Calculator action!"
-      shell: bash
-    - run: echo "x = ${{ inputs.x }}, y = ${{ inputs.y }}"
-      shell: bash
-    - id: plus
-      run: echo "result=$((${{ inputs.x }} + ${{ inputs.y }}))" >> $GITHUB_OUTPUT
-      shell: bash
-    - id: minus
-      run: echo "result=$((${{ inputs.x }} - ${{ inputs.y }}))" >> $GITHUB_OUTPUT
-      shell: bash
-    - run: echo `plus:${{ steps.plus.outputs.result }}, minus:${{ steps.minus.outputs.result }}`
-      shell: bash
+    - name: Checkout
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: 11
+
+    - name: Restore keystore.properties
+      run: |
+        echo "storeFile=your-release-key.keystore" > keystore.properties
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+
+    - name: Write Firebase credentials to file
+      run: |
+        echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > app/firebase-account.json
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Build and distribute
+      run: ./gradlew assembleDebug appDistributionUploadDebug
