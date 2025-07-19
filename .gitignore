@@ -19,3 +19,6 @@ google-services.json
 # Keystore files
 *.jks
 *.keystore
+
+# Kotlin files
+.kotlin/

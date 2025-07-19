@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.ui.theme
+package com.nexters.knownknowns.core.theme
 
 import androidx.compose.ui.graphics.Color
 

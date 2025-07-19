@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.ui.theme
+package com.nexters.knownknowns.core.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable

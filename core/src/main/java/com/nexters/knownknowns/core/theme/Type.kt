@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.ui.theme
+package com.nexters.knownknowns.core.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -8,7 +8,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.nexters.knownknowns.presentation.R
+import com.nexters.knownknowns.core.R
 
 val pretendardFamily = FontFamily(
     Font(R.font.pretendard_regular, FontWeight.Normal),
