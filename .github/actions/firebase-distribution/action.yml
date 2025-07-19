@@ -32,18 +32,17 @@ runs:
         echo '${{ inputs.firebase-service-account }}' > app/firebase-account.json
 
     - name: Restore keystore.properties
+      shell: bash
       run: |
         echo "storeFile=debug.keystore" > keystore.properties
         echo "storePassword=android" >> keystore.properties
         echo "keyAlias=androiddebugkey" >> keystore.properties
         echo "keyPassword=android" >> keystore.properties
 
-    - name: Write Firebase credentials to file
-      run: |
-        echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > app/firebase-account.json
-
     - name: Make gradlew executable
+      shell: bash
       run: chmod +x ./gradlew
 
     - name: Build and distribute
+      shell: bash
       run: ./gradlew assembleDebug appDistributionUploadDebug
