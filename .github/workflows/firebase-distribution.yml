@@ -1,0 +1,10 @@
+name: Firebase App Distribution
+on: push
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/firebase-distribution
+        with:
+          x: 13
+          y: 3

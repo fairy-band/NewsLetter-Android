@@ -1,0 +1,22 @@
+name: Calculate Action
+description: this is a test actions, so you shouldn't use it. haha
+inputs:
+  x:
+    default: 0
+  y:
+    default: 0
+runs:
+  using: "composite"
+  steps:
+    - run: echo "Hi, I am a Calculator action!"
+      shell: bash
+    - run: echo "x = ${{ inputs.x }}, y = ${{ inputs.y }}"
+      shell: bash
+    - id: plus
+      run: echo "result=$((${{ inputs.x }} + ${{ inputs.y }}))" >> $GITHUB_OUTPUT
+      shell: bash
+    - id: minus
+      run: echo "result=$((${{ inputs.x }} - ${{ inputs.y }}))" >> $GITHUB_OUTPUT
+      shell: bash
+    - run: echo `plus:${{ steps.plus.outputs.result }}, minus:${{ steps.minus.outputs.result }}`
+      shell: bash
