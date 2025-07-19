@@ -19,3 +19,6 @@ google-services.json
 # Keystore files
 *.jks
 *.keystore
+
+# firebase distribution
+firebase-account.json

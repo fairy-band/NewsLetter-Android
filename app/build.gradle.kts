@@ -51,9 +51,9 @@ android {
 
             firebaseAppDistribution {
                 artifactType = "APK"
-                releaseNotes = "test2"
-                testers = "algosketch@gmail.com"
                 serviceCredentialsFile = "$rootDir/app/firebase-account.json"
+                releaseNotesFile = "$rootDir/app/release-note.txt"
+                groups = "안드요정단"
             }
         }
     }
