@@ -10,24 +10,46 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
+
+private data object Main
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            KnownKnownsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            val backStack = remember { mutableStateListOf<Any>(Main) }
+
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                entryProvider = { key ->
+                    when (key) {
+                        is Main -> NavEntry(key) {
+                            KnownKnownsTheme {
+                                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                                    Greeting(
+                                        name = "Android",
+                                        modifier = Modifier.padding(innerPadding)
+                                    )
+                                }
+                            }
+                        }
+
+                        else -> {
+                            error("Unknown Route: $key")
+                        }
+                    }
                 }
-            }
+            )
         }
     }
 }
