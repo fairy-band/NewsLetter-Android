@@ -16,24 +16,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
+import kotlinx.serialization.Serializable
 
-private data object Main
+@Serializable
+sealed interface Screen : NavKey {
+    data object Main : Screen
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val backStack = remember { mutableStateListOf<Any>(Main) }
+            val backStack = rememberNavBackStack(Screen.Main)
 
             NavDisplay(
                 backStack = backStack,
                 onBack = { backStack.removeLastOrNull() },
                 entryProvider = { key ->
                     when (key) {
-                        is Main -> NavEntry(key) {
+                        is Screen.Main -> NavEntry(key) {
                             KnownKnownsTheme {
                                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                                     Greeting(
