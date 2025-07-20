@@ -20,5 +20,9 @@ google-services.json
 *.jks
 *.keystore
 
+# Kotlin files
+.kotlin/
+
+
 # firebase distribution
 firebase-account.json
