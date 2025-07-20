@@ -22,3 +22,7 @@ google-services.json
 
 # Kotlin files
 .kotlin/
+
+
+# firebase distribution
+firebase-account.json

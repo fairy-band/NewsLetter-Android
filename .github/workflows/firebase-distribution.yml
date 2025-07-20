@@ -1,0 +1,19 @@
+name: Firebase App Distribution
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/firebase-distribution
+        with:
+          debug-keystore-b64: ${{ secrets.DEBUG_KEYSTORE_64 }}
+          firebase-service-account: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          google-services: ${{ secrets.GOOGLE_SERVICES }}
