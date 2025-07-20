@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.feature
+package com.nexters.knownknowns.presentation.feature.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +12,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    viewModel: MainViewModel
+) {
+    MainScreen()
+}
+
+@Composable
+fun MainScreen(
+
+) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Greeting(
             name = "Android",
@@ -38,5 +47,13 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     KnownKnownsTheme {
         Greeting("Android")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    KnownKnownsTheme {
+        MainScreen()
     }
 }
