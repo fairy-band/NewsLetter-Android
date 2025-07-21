@@ -3,9 +3,15 @@ package com.nexters.knownknowns.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 
 class NavController(val backStack: NavBackStack) {
+
+    fun navigate(dest: NavKey) {
+        backStack.add(dest)
+        println("navigate")
+    }
 
     fun pop() {
         backStack.removeLastOrNull()

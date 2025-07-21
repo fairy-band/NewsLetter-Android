@@ -7,4 +7,9 @@ sealed interface Screen : NavKey {
 
     @Serializable
     data object Main : Screen
+
+    @Serializable
+    data class Detail(
+        val title: String,
+    ) : Screen
 }

@@ -1,5 +1,6 @@
 package com.nexters.knownknowns.presentation.feature.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,29 +13,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavBackStack
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.data.model.NewsResponse
+import com.nexters.knownknowns.presentation.navigation.Screen
+import com.nexters.knownknowns.presentation.navigation.rememberNavController
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MainScreen(
+    backStack: NavBackStack,
     viewModel: MainViewModel = koinViewModel()
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
 
-    MainScreen(news = news)
+    MainScreen(backStack = backStack, news = news)
 }
 
 @Composable
 fun MainScreen(
+    backStack: NavBackStack,
     news: List<NewsResponse>
 ) {
+    val navController = rememberNavController()
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         LazyColumn {
             items(news.size) {
                 Greeting(
                     name = news[it].title,
                     modifier = Modifier.padding(innerPadding)
+                        .clickable {
+                            backStack.add(Screen.Detail(news[it].title))
+//                            navController.navigate(Screen.Detail(news[it].title))
+                        }
                 )
             }
         }
@@ -65,6 +77,6 @@ fun GreetingPreview() {
 @Composable
 fun MainScreenPreview() {
     KnownKnownsTheme {
-        MainScreen()
+//        MainScreen()
     }
 }
