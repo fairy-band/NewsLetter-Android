@@ -5,4 +5,4 @@ import org.koin.core.annotation.Module
 
 @Module
 @ComponentScan("com.nexters.knownknowns.data")
-class AppModule
+class DataModule
