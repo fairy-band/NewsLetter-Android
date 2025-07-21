@@ -4,16 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.data.repository.NewsRepository
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class MainViewModel(newsRepository: NewsRepository) : ViewModel() {
-    private val _news = MutableStateFlow<List<NewsResponse>>(emptyList())
-
-    //  예시 1
-    //  val news = _news.asStateFlow()
+//      예시 1
+//     private val _news = MutableStateFlow<List<NewsResponse>>(emptyList())
+//      val news = _news.asStateFlow()
 
     val news: StateFlow<List<NewsResponse>> = newsRepository.getNews().stateIn(
         viewModelScope,
