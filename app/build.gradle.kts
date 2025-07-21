@@ -82,5 +82,6 @@ dependencies {
 
     // di
     implementation(libs.koin.annotations)
+    implementation(libs.koin.android)
     ksp(libs.koin.ksp)
 }

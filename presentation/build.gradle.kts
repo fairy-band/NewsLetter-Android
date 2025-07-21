@@ -62,6 +62,8 @@ dependencies {
     // di
     implementation(libs.koin.annotations)
     implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     ksp(libs.koin.ksp)
 
     // serialization
