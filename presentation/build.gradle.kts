@@ -69,6 +69,10 @@ dependencies {
     // serialization
     implementation(libs.kotlinx.serialization.core)
 
+    // firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
     // coroutine
     implementation(libs.kotlinx.coroutines.android)
 }
