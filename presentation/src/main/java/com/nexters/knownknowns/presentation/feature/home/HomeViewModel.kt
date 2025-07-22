@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.feature.main
+package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class MainViewModel(newsRepository: NewsRepository) : ViewModel() {
+class HomeViewModel(newsRepository: NewsRepository) : ViewModel() {
 //      예시 1
 //     private val _news = MutableStateFlow<List<NewsResponse>>(emptyList())
 //      val news = _news.asStateFlow()

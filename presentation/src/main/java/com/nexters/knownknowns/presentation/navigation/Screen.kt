@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 sealed class Screen(val name: String) : NavKey {
 
     @Serializable
-    data object Main : Screen("main")
+    data object Home : Screen("main")
 
     @Serializable
     data class Detail(

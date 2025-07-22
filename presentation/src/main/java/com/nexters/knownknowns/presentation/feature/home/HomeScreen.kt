@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.feature.main
+package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,20 +17,19 @@ import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.navigation.Screen
-import com.nexters.knownknowns.presentation.navigation.rememberNavController
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = koinViewModel()
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
 
-    MainScreen(news = news)
+    HomeScreen(news = news)
 }
 
 @Composable
-fun MainScreen(
+fun HomeScreen(
     news: List<NewsResponse>
 ) {
     val navController = LocalNavController.current
