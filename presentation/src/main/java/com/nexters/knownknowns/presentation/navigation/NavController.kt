@@ -10,7 +10,6 @@ class NavController(val backStack: NavBackStack) {
 
     fun navigate(dest: NavKey) {
         backStack.add(dest)
-        println("navigate")
     }
 
     fun pop() {

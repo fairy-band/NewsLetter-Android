@@ -9,6 +9,10 @@ class DetailViewModel : ViewModel() {
         println("ViewModel이 생성되었어요.")
     }
 
+    fun temp() {
+        println("왜 안 호출 돼~~")
+    }
+
     override fun onCleared() {
         super.onCleared()
 

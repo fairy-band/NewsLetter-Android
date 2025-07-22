@@ -5,14 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.feature.detail.DetailScreen
@@ -31,32 +31,27 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KnownKnownsTheme {
-                val backStack = rememberNavBackStack(Screen.Main)
                 val navController = rememberNavController()
-//
-//                LaunchedEffect(navController.backStack) {
-//                    println("navigated ${navController.backStack}")
-//                }
 
                 CompositionLocalProvider(LocalNavController provides navController) {
                     NavDisplay(
-                        backStack = backStack,
-                        onBack = { backStack.removeLastOrNull() },
-                        entryProvider = createEntryProvider(backStack)
+                        backStack = navController.backStack,
+                        onBack = { navController.pop() },
+                        entryProvider = createEntryProvider(),
                     )
                 }
             }
         }
     }
 
-    fun createEntryProvider(backStack: NavBackStack): (NavKey) -> NavEntry<NavKey> {
+    fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
         return entryProvider {
             entry<Screen.Main> { main ->
-                MainScreen(backStack)
+                MainScreen()
             }
 
             entry<Screen.Detail> { detail ->
-                DetailScreen(detail.title)
+                DetailScreen(title = detail.title)
             }
         }
     }
