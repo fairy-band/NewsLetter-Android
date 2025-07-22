@@ -5,14 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.feature.detail.DetailScreen
@@ -38,6 +37,10 @@ class MainActivity : ComponentActivity() {
                         backStack = navController.backStack,
                         onBack = { navController.pop() },
                         entryProvider = createEntryProvider(),
+                        entryDecorators = listOf(
+                            rememberSavedStateNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        )
                     )
                 }
             }
