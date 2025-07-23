@@ -17,7 +17,18 @@ val pretendardFamily = FontFamily(
     Font(R.font.pretendard_bold, FontWeight.Bold)
 )
 
+val jalnanGothicFamily = FontFamily(
+    Font(R.font.pretendard_regular, FontWeight.Normal),
+)
+
 data class KnownKnownsTypography(
+    val title: TextStyle = createTextStyle(
+        fontFamily = jalnanGothicFamily,
+        fontSize = 32.sp,
+        lineHeight = 1.4.em,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = (-1).sp
+    ),
     val head28: TextStyle = createTextStyle(
         fontFamily = pretendardFamily,
         fontSize = 28.sp,
