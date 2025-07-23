@@ -19,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -77,87 +79,136 @@ fun Cards(
     ) {
         Card(
             modifier = Modifier
-                .zIndex(5f)
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(4f)
-                .offset(y = (-80).dp)
-                .padding(horizontal = 16.dp)
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(3f)
-                .offset(y = (-160).dp)
-                .padding(horizontal = 32.dp)
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(2f)
-                .offset(y = (-240).dp)
-                .padding(horizontal = 48.dp)
+                .zIndex(0f)
+                .offset(y = (-400).dp)
+                .padding(horizontal = 80.dp),
+            cardColor = KnownKnownsTheme.colors.accentPurple,
+            topPadding = 16.dp,
+            bottomPadding = 12.dp,
+            textStyle = KnownKnownsTheme.typography.body13.copy(
+                fontWeight = FontWeight.Bold,
+                color = KnownKnownsTheme.colors.textStrong
+            ),
         )
         Card(
             modifier = Modifier
                 .zIndex(1f)
                 .offset(y = (-320).dp)
-                .padding(horizontal = 64.dp)
+                .padding(horizontal = 64.dp),
+            cardColor = KnownKnownsTheme.colors.accentOrange,
+            topPadding = 16.dp,
+            bottomPadding = 12.dp,
+            textStyle = KnownKnownsTheme.typography.body14.copy(
+                fontWeight = FontWeight.Bold,
+                color = KnownKnownsTheme.colors.textStrong
+            ),
         )
         Card(
             modifier = Modifier
-                .zIndex(0f)
-                .offset(y = (-400).dp)
-                .padding(horizontal = 80.dp)
+                .zIndex(2f)
+                .offset(y = (-240).dp)
+                .padding(horizontal = 48.dp),
+            cardColor = KnownKnownsTheme.colors.accentSkyBlue,
+            topPadding = 20.dp,
+            bottomPadding = 16.dp,
+            textStyle = KnownKnownsTheme.typography.body15.copy(
+                fontWeight = FontWeight.Bold,
+                color = KnownKnownsTheme.colors.textStrong
+            ),
+        )
+        Card(
+            modifier = Modifier
+                .zIndex(3f)
+                .offset(y = (-160).dp)
+                .padding(horizontal = 32.dp),
+            cardColor = KnownKnownsTheme.colors.accentLemonYellow,
+            topPadding = 20.dp,
+            bottomPadding = 16.dp,
+            textStyle = KnownKnownsTheme.typography.body16.copy(
+                fontWeight = FontWeight.Bold,
+                color = KnownKnownsTheme.colors.textStrong
+            ),
+            showKeyword = true,
+        )
+        Card(
+            modifier = Modifier
+                .zIndex(4f)
+                .offset(y = (-80).dp)
+                .padding(horizontal = 16.dp),
+            cardColor = KnownKnownsTheme.colors.accentPink,
+            topPadding = 20.dp,
+            bottomPadding = 16.dp,
+            textStyle = KnownKnownsTheme.typography.body18.copy(
+                fontWeight = FontWeight.Bold,
+                color = KnownKnownsTheme.colors.textStrong
+            ),
+            showKeyword = true,
+        )
+        Card(
+            modifier = Modifier
+                .zIndex(5f),
+            cardColor = KnownKnownsTheme.colors.accentGreen,
+            topPadding = 20.dp,
+            bottomPadding = 16.dp,
+            textStyle = KnownKnownsTheme.typography.body18.copy(
+                fontWeight = FontWeight.Bold,
+                color = KnownKnownsTheme.colors.textStrong
+            ),
+            showKeyword = true,
         )
     }
 }
 
-// 탑, 바텀 마진은 다르다.
-// 폰트 사이즈 다르다.
-// 위에 세 개는 두 줄일 때 키워드가 없다
-// 배경색 다르다.
-// 높이가 같다.
-// 좌우 마진이 같다.
+/**
+ * @param showKeyword 아래 세 개의 카든는 항상 키워드를 보여준다.
+ */
 @Composable
 fun Card(
+    topPadding: Dp,
+    bottomPadding: Dp,
+    textStyle: TextStyle,
+    cardColor: Color,
     modifier: Modifier = Modifier,
+    showKeyword: Boolean = false,
 ) {
     Column(
         modifier = modifier
             .height(166.dp)
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .background(color = KnownKnownsTheme.colors.accentGreen)
+            .background(color = cardColor)
             .padding(horizontal = 20.dp)
-            .padding(top = 20.dp, bottom = 16.dp),
+            .padding(top = topPadding, bottom = bottomPadding),
     ) {
         Text(
             text = "어제 먹은 치킨이 맛있었는데 제목이 두 줄이 나오려면 좀 더 길게 작성해야 하는 건에 대하여",
-            style = KnownKnownsTheme.typography.body18.copy(fontWeight = FontWeight.Bold)
+            style = textStyle
         )
-        Row(
-            modifier = Modifier.padding(top = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Kotlin",
-                style = KnownKnownsTheme.typography.body13.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+        if (showKeyword) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
+            Row(
+                modifier = Modifier.padding(top = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Kotlin",
+                    style = KnownKnownsTheme.typography.body13.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                    )
                 )
-            )
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 6.dp)
-                    .size(width = 1.dp, height = 14.dp)
-                    .background(color = Color.Black.copy(alpha = 0.1f))
-            )
-            Text(
-                text = "안드로이드 위클리",
-                style = KnownKnownsTheme.typography.body13.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .size(width = 1.dp, height = 14.dp)
+                        .background(color = Color.Black.copy(alpha = 0.1f))
                 )
-            )
+                Text(
+                    text = "안드로이드 위클리",
+                    style = KnownKnownsTheme.typography.body13.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                    )
+                )
+            }
         }
     }
 }

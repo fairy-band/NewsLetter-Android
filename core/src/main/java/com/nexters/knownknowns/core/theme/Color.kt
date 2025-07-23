@@ -194,7 +194,7 @@ data class KnownKnownsColors(
     // Accent
     val accentOrange: Color = ColorPalette.pointOrange400,
     val accentSkyBlue: Color = ColorPalette.pointBlue300,
-    val accentLemonYellow: Color = ColorPalette.pointLemonYellow100,
+    val accentLemonYellow: Color = ColorPalette.pointLemonYellow300,
     val accentPurple: Color = ColorPalette.pointPurple200,
     val accentPink: Color = ColorPalette.pointPink300,
     val accentGreen: Color = ColorPalette.pointGreen300
