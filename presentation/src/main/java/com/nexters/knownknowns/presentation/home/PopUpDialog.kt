@@ -11,6 +11,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -18,7 +19,8 @@ import androidx.compose.ui.window.DialogProperties
 
 private data class CarouselItem(
     val id: Int,
-    val contentDescription: String
+    val title: String,
+    val titleColor: Color,
 )
 
 @Composable
@@ -27,12 +29,36 @@ internal fun PopUpDialog(
 ) {
     val carouselItems = remember {
         listOf(
-            CarouselItem(0, "cupcake"),
-            CarouselItem(1, "donut"),
-            CarouselItem(2, "eclair"),
-            CarouselItem(3, "froyo"),
-            CarouselItem(4, "gingerbread"),
-            CarouselItem(5, "plus"),
+            CarouselItem(
+                id = 0,
+                title = "cupcake",
+                titleColor = Color(0xFF27C434)
+            ),
+            CarouselItem(
+                id = 1,
+                title = "donut",
+                titleColor = Color(0xFF27C434)
+            ),
+            CarouselItem(
+                id = 2,
+                title = "eclair",
+                titleColor = Color(0xFF27C434)
+            ),
+            CarouselItem(
+                id = 3,
+                title = "froyo",
+                titleColor = Color(0xFF27C434)
+            ),
+            CarouselItem(
+                id = 4,
+                title = "gingerbread",
+                titleColor = Color(0xFF27C434)
+            ),
+            CarouselItem(
+                id = 5,
+                title = "plus",
+                titleColor = Color(0xFF27C434)
+            ),
         )
     }
     val pagerState = rememberPagerState(pageCount = {
@@ -62,7 +88,10 @@ internal fun PopUpDialog(
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
             ) { pageIndex ->
                 val item = carouselItems[pageIndex]
-                PopUpItem()
+                PopUpItem(
+                    title = item.title,
+                    titleColor = item.titleColor
+                )
             }
         }
     }
