@@ -1,6 +1,7 @@
 package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.model.NewsFeed
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import org.koin.compose.viewmodel.koinViewModel
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Composable
 fun HomeScreen(
@@ -56,22 +63,59 @@ fun HomeScreen(
             modifier = Modifier.padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // TODO: 오늘 날짜로 변경하기
+            val today = LocalDate.now()
             Text(
                 modifier = Modifier
                     .padding(top = 44.dp)
-                    .padding(horizontal = 20.dp), // TODO: 좌우 마진 상수화 하기
-                text = "2025.07.08\nToday's Hot News", // TODO: 리소스화
-                style = KnownKnownsTheme.typography.title,
+                    .padding(horizontal = 20.dp),
+                // TODO: 리소스화
+                text = "${today.year}.${
+                    today.monthValue.toString().padStart(2, '0')
+                }.${today.dayOfMonth.toString().padStart(2, '0')}\nToday's Hot News",
+                style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
                 color = KnownKnownsTheme.colors.textStrong,
             )
-            // TODO: timer 적용하기
-            Text("00:43:43")
+            Timer()
             Spacer(modifier = Modifier.weight(1f))
             Cards(
                 news = news
             )
         }
+    }
+}
+
+@Composable
+fun Timer() {
+    val remainingUntilTomorrow by flow {
+        while (true) {
+            val now = LocalDateTime.now()
+            val midnight = now.toLocalDate().plusDays(1).atStartOfDay()
+            val duration = Duration.between(now, midnight)
+
+            val hours = duration.toHours()
+            val minutes = duration.toMinutes() % 60
+            val seconds = duration.seconds % 60
+            emit(Triple(first = hours, second = minutes, third = seconds % 60))
+            delay(200)
+        }
+    }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
+
+    Row(
+        modifier = Modifier.padding(top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(1.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
+        val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
+        val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
+        val numberStyle = KnownKnownsTheme.typography.body16.copy(fontWeight = FontWeight.SemiBold)
+        val colonStyle = KnownKnownsTheme.typography.body15.copy(fontWeight = FontWeight.Bold)
+
+        Text(hh, style = numberStyle)
+        Text(":", style = colonStyle)
+        Text(mm, style = numberStyle)
+        Text(":", style = colonStyle)
+        Text(ss, style = numberStyle)
     }
 }
 
