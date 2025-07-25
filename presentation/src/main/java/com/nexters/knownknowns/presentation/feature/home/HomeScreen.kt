@@ -150,6 +150,7 @@ fun Cards(
 
     Box(
         modifier = modifier,
+        contentAlignment = Alignment.BottomCenter
     ) {
         Card(
             modifier = Modifier
@@ -194,6 +195,7 @@ fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
+            showKeyword = true,
             onHeightInflated = { height -> card4Height = height }
         )
         Card(
@@ -265,9 +267,6 @@ fun Card(
         modifier = modifier
             .onGloballyPositioned { layoutCoordinates ->
                 onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
-
-                println((layoutCoordinates.size.height / density.density).toInt())
-                println(density.density)
             }
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
