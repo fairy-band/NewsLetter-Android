@@ -18,7 +18,7 @@ val pretendardFamily = FontFamily(
 )
 
 val jalnanGothicFamily = FontFamily(
-    Font(R.font.pretendard_regular, FontWeight.Normal),
+    Font(R.font.jalnan_gothic, FontWeight.Normal),
 )
 
 data class KnownKnownsTypography(

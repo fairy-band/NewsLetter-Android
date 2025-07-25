@@ -106,11 +106,18 @@ fun Timer() {
         horizontalArrangement = Arrangement.spacedBy(1.dp),
         verticalAlignment = Alignment.Top,
     ) {
+        val numberStyle = KnownKnownsTheme.typography.body16.copy(
+            fontWeight = FontWeight.SemiBold,
+            color = KnownKnownsTheme.colors.stateNegativePrimary
+        )
+        val colonStyle = KnownKnownsTheme.typography.body15.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.stateNegativePrimary
+        )
+
         val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
         val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
         val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
-        val numberStyle = KnownKnownsTheme.typography.body16.copy(fontWeight = FontWeight.SemiBold)
-        val colonStyle = KnownKnownsTheme.typography.body15.copy(fontWeight = FontWeight.Bold)
 
         Text(hh, style = numberStyle)
         Text(":", style = colonStyle)
