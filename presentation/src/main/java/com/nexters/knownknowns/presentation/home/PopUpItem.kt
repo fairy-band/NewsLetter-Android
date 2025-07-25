@@ -50,7 +50,7 @@ internal fun PopUpItem(
             style = KnownKnownsTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
             color = titleColor
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Row(
             modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.Center,
@@ -73,7 +73,7 @@ internal fun PopUpItem(
                 color = titleColor
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = summary,
             style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
