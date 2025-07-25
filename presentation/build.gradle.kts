@@ -50,6 +50,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.ui)
     implementation(libs.androidx.compose.saveable)
+    implementation(libs.kotlinx.collections.immutable)
 
     // lifecycle
     implementation(libs.bundles.lifecycle.compose)
