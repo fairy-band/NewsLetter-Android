@@ -4,12 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -110,7 +114,8 @@ internal fun PopUpDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable(onClick = onDismissRequest),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HorizontalPager(
                 state = pagerState,
@@ -128,6 +133,11 @@ internal fun PopUpDialog(
                     onClick = onDismissRequest,
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Indicator(
+                pageCount = carouselItems.size,
+                pageIndex = pagerState.currentPage
+            )
             Spacer(modifier = Modifier.height(42.dp))
             Image(
                 painter = painterResource(id = R.drawable.ic_popup_dismiss),
@@ -138,7 +148,32 @@ internal fun PopUpDialog(
                         shape = CircleShape
                     )
                     .padding(13.dp)
-                    .align(Alignment.CenterHorizontally)
+            )
+        }
+    }
+}
+
+@Composable
+private fun Indicator(
+    pageCount: Int,
+    pageIndex: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+    ) {
+        repeat(pageCount) { index ->
+            val isSelected = index == pageIndex % pageCount
+
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .clip(CircleShape)
+                    .size(8.dp)
+                    .background(
+                        if (isSelected) KnownKnownsTheme.colors.backgroundBase
+                        else KnownKnownsTheme.colors.backgroundBase.copy(alpha = 0.3f)
+                    )
             )
         }
     }
