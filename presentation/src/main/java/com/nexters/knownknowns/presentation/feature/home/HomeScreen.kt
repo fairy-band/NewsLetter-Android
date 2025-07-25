@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.model.NewsFeed
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,7 +55,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreen(
-    news: List<NewsFeed>
+    news: ImmutableList<NewsFeed>,
 ) {
     val navController = LocalNavController.current
 
@@ -121,7 +122,7 @@ fun Timer() {
 
 @Composable
 fun Cards(
-    news: List<NewsFeed>,
+    news: ImmutableList<NewsFeed>,
     modifier: Modifier = Modifier
 ) {
     var card1Height by remember { mutableIntStateOf(0) }
