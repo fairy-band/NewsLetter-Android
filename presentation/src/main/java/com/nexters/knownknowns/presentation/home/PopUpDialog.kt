@@ -20,7 +20,10 @@ import androidx.compose.ui.window.DialogProperties
 private data class CarouselItem(
     val id: Int,
     val title: String,
+    val category: String,
+    val newsLetter: String,
     val titleColor: Color,
+    val summary: String,
 )
 
 @Composable
@@ -32,31 +35,49 @@ internal fun PopUpDialog(
             CarouselItem(
                 id = 0,
                 title = "cupcake",
+                category = "Kotlin",
+                newsLetter = "안드로이드 위클리",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 id = 1,
                 title = "donut",
+                category = "Kotlin",
+                newsLetter = "안드로이드 위클리",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 id = 2,
                 title = "eclair",
+                category = "Kotlin",
+                newsLetter = "안드로이드 위클리",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 id = 3,
                 title = "froyo",
+                category = "Kotlin",
+                newsLetter = "안드로이드 위클리",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 id = 4,
                 title = "gingerbread",
+                category = "Kotlin",
+                newsLetter = "안드로이드 위클리",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 id = 5,
                 title = "plus",
+                category = "Kotlin",
+                newsLetter = "안드로이드 위클리",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
         )
@@ -68,8 +89,8 @@ internal fun PopUpDialog(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-    val pageSize = 300.dp
-    val horizontalPadding = (screenWidth - pageSize) / 2
+    val horizontalPadding = 20.dp
+    val pageSize = screenWidth - (horizontalPadding * 2)
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -83,14 +104,17 @@ internal fun PopUpDialog(
         ) {
             HorizontalPager(
                 state = pagerState,
-                pageSize = PageSize.Fixed(300.dp),
+                pageSize = PageSize.Fixed(pageSize),
                 pageSpacing = 12.dp,
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
             ) { pageIndex ->
                 val item = carouselItems[pageIndex]
                 PopUpItem(
                     title = item.title,
-                    titleColor = item.titleColor
+                    category = item.category,
+                    newsLetter = item.newsLetter,
+                    titleColor = item.titleColor,
+                    summary = item.summary,
                 )
             }
         }
