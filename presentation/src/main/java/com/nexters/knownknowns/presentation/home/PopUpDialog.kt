@@ -115,6 +115,7 @@ internal fun PopUpDialog(
                     newsLetter = item.newsLetter,
                     titleColor = item.titleColor,
                     summary = item.summary,
+                    onClick = onDismissRequest,
                 )
             }
         }

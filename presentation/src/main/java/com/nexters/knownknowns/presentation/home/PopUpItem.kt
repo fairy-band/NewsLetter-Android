@@ -20,9 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nexters.knownknowns.core.designsystem.button.BaseButton
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.home.PopUpItemDefaults.MAX_LINE
-import com.nexters.knownknowns.presentation.home.PopUpItemDefaults.POP_UP_HEIGHT
 
 @Composable
 internal fun PopUpItem(
@@ -31,6 +31,7 @@ internal fun PopUpItem(
     newsLetter: String,
     titleColor: Color,
     summary: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -40,7 +41,6 @@ internal fun PopUpItem(
                 shape = RoundedCornerShape(16.dp),
             )
             .fillMaxWidth()
-            .height(POP_UP_HEIGHT)
             .padding(24.dp),
     ) {
         Text(
@@ -80,11 +80,19 @@ internal fun PopUpItem(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(16.dp))
+        BaseButton(
+            paddingVertical = 12.dp,
+            onClick = onClick,
+            backgroundColor = KnownKnownsTheme.colors.backgroundSurface,
+            textColor = KnownKnownsTheme.colors.textPrimary,
+            cornerRadius = 16.dp,
+            text = "이어서 보기",
+            textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
+        )
     }
 }
 
 private object PopUpItemDefaults {
-    val POP_UP_HEIGHT = 366.dp
     const val MAX_LINE = 8
 }
 
@@ -97,7 +105,8 @@ private fun PopUpItemPreview() {
             category = "Kotlin",
             newsLetter = "안드로이드 위클리",
             titleColor = KnownKnownsTheme.colors.statePositivePrimary,
-            summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다."
+            summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
+            onClick = {},
         )
     }
 }
