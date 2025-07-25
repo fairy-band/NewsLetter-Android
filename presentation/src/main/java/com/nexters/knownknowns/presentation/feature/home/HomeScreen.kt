@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -137,11 +138,12 @@ fun Cards(
     var card3Height by remember { mutableIntStateOf(0) }
     var card4Height by remember { mutableIntStateOf(0) }
     var card5Height by remember { mutableIntStateOf(0) }
-    val card2Offset by remember { derivedStateOf { card1Height } }
-    val card3Offset by remember { derivedStateOf { card2Offset + card2Height } }
-    val card4Offset by remember { derivedStateOf { card3Offset + card3Height } }
-    val card5Offset by remember { derivedStateOf { card4Offset + card4Height } }
-    val card6Offset by remember { derivedStateOf { card5Offset + card5Height } }
+    var card6Height by remember { mutableIntStateOf(0) }
+    val card2Offset by remember { derivedStateOf { card1Height + card2Height } }
+    val card3Offset by remember { derivedStateOf { card2Offset + card3Height } }
+    val card4Offset by remember { derivedStateOf { card3Offset + card4Height } }
+    val card5Offset by remember { derivedStateOf { card4Offset + card5Height } }
+    val card6Offset by remember { derivedStateOf { card5Offset + card6Height } }
 
     if (news.size < 6) {
         // TODO: loading or error
@@ -155,7 +157,7 @@ fun Cards(
         Card(
             modifier = Modifier
                 .zIndex(0f)
-                .offset(y = (-card6Offset).dp)
+                .offset(y = (166 - card6Offset).dp)
                 .padding(horizontal = 80.dp),
             feed = news[5],
             cardColor = KnownKnownsTheme.colors.accentPurple,
@@ -165,12 +167,12 @@ fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
-            onHeightInflated = {}
+            onHeightInflated = { height -> card6Height = height }
         )
         Card(
             modifier = Modifier
                 .zIndex(1f)
-                .offset(y = (-card5Offset).dp)
+                .offset(y = (166 - card5Offset).dp)
                 .padding(horizontal = 64.dp),
             feed = news[4],
             cardColor = KnownKnownsTheme.colors.accentOrange,
@@ -185,7 +187,7 @@ fun Cards(
         Card(
             modifier = Modifier
                 .zIndex(2f)
-                .offset(y = (-card4Offset).dp)
+                .offset(y = (166 - card4Offset).dp)
                 .padding(horizontal = 48.dp),
             feed = news[3],
             cardColor = KnownKnownsTheme.colors.accentSkyBlue,
@@ -201,7 +203,7 @@ fun Cards(
         Card(
             modifier = Modifier
                 .zIndex(3f)
-                .offset(y = (-card3Offset).dp)
+                .offset(y = (166 - card3Offset).dp)
                 .padding(horizontal = 32.dp),
             feed = news[2],
             cardColor = KnownKnownsTheme.colors.accentLemonYellow,
@@ -217,7 +219,7 @@ fun Cards(
         Card(
             modifier = Modifier
                 .zIndex(4f)
-                .offset(y = (-card2Offset).dp)
+                .offset(y = (166 - card2Offset).dp)
                 .padding(horizontal = 16.dp),
             feed = news[1],
             cardColor = KnownKnownsTheme.colors.accentPink,
@@ -232,6 +234,7 @@ fun Cards(
         )
         Card(
             modifier = Modifier
+                .offset(y = (166 - card1Height).dp)
                 .zIndex(5f),
             feed = news[0],
             cardColor = KnownKnownsTheme.colors.accentGreen,
@@ -263,45 +266,50 @@ fun Card(
 ) {
     val density = LocalDensity.current
 
-    Column(
+    Box(
         modifier = modifier
-            .onGloballyPositioned { layoutCoordinates ->
-                onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
-            }
+            .height(166.dp)
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
-            .padding(horizontal = 20.dp)
-            .padding(top = topPadding, bottom = bottomPadding),
     ) {
-        Text(
-            text = feed.title,
-            style = textStyle
-        )
-        if (showKeyword) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
-            Row(
-                modifier = Modifier.padding(top = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    feed.keyword,
-                    style = KnownKnownsTheme.typography.body13.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+        Column(
+            modifier = Modifier
+                .onGloballyPositioned { layoutCoordinates ->
+                    onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
+                }
+                .padding(horizontal = 20.dp)
+                .padding(top = topPadding, bottom = bottomPadding),
+        ) {
+            Text(
+                text = feed.title,
+                style = textStyle
+            )
+            if (showKeyword) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
+                Row(
+                    modifier = Modifier.padding(top = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        feed.keyword,
+                        style = KnownKnownsTheme.typography.body13.copy(
+                            fontWeight = FontWeight.Medium,
+                            color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                        )
                     )
-                )
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .size(width = 1.dp, height = 14.dp)
-                        .background(color = Color.Black.copy(alpha = 0.1f))
-                )
-                Text(
-                    text = feed.letter,
-                    style = KnownKnownsTheme.typography.body13.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp)
+                            .size(width = 1.dp, height = 14.dp)
+                            .background(color = Color.Black.copy(alpha = 0.1f))
                     )
-                )
+                    Text(
+                        text = feed.letter,
+                        style = KnownKnownsTheme.typography.body13.copy(
+                            fontWeight = FontWeight.Medium,
+                            color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                        )
+                    )
+                }
             }
         }
     }
