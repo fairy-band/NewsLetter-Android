@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,11 +13,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -74,13 +79,24 @@ fun HomeScreen(
 fun Cards(
     modifier: Modifier = Modifier
 ) {
+    var card1Height by remember { mutableIntStateOf(0) }
+    var card2Height by remember { mutableIntStateOf(0) }
+    var card3Height by remember { mutableIntStateOf(0) }
+    var card4Height by remember { mutableIntStateOf(0) }
+    var card5Height by remember { mutableIntStateOf(0) }
+    val card2Offset by remember { derivedStateOf { card1Height } }
+    val card3Offset by remember { derivedStateOf { card2Offset + card2Height } }
+    val card4Offset by remember { derivedStateOf { card3Offset + card3Height } }
+    val card5Offset by remember { derivedStateOf { card4Offset + card4Height } }
+    val card6Offset by remember { derivedStateOf { card5Offset + card5Height } }
+
     Box(
         modifier = modifier,
     ) {
         Card(
             modifier = Modifier
                 .zIndex(0f)
-                .offset(y = (-400).dp)
+                .offset(y = (-card6Offset).dp)
                 .padding(horizontal = 80.dp),
             cardColor = KnownKnownsTheme.colors.accentPurple,
             topPadding = 16.dp,
@@ -89,11 +105,12 @@ fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
+            onHeightInflated = {}
         )
         Card(
             modifier = Modifier
                 .zIndex(1f)
-                .offset(y = (-320).dp)
+                .offset(y = (-card5Offset).dp)
                 .padding(horizontal = 64.dp),
             cardColor = KnownKnownsTheme.colors.accentOrange,
             topPadding = 16.dp,
@@ -102,11 +119,12 @@ fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
+            onHeightInflated = { height -> card5Height = height }
         )
         Card(
             modifier = Modifier
                 .zIndex(2f)
-                .offset(y = (-240).dp)
+                .offset(y = (-card4Offset).dp)
                 .padding(horizontal = 48.dp),
             cardColor = KnownKnownsTheme.colors.accentSkyBlue,
             topPadding = 20.dp,
@@ -115,11 +133,12 @@ fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
+            onHeightInflated = { height -> card4Height = height }
         )
         Card(
             modifier = Modifier
                 .zIndex(3f)
-                .offset(y = (-160).dp)
+                .offset(y = (-card3Offset).dp)
                 .padding(horizontal = 32.dp),
             cardColor = KnownKnownsTheme.colors.accentLemonYellow,
             topPadding = 20.dp,
@@ -129,11 +148,12 @@ fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             showKeyword = true,
+            onHeightInflated = { height -> card3Height = height }
         )
         Card(
             modifier = Modifier
                 .zIndex(4f)
-                .offset(y = (-80).dp)
+                .offset(y = (-card2Offset).dp)
                 .padding(horizontal = 16.dp),
             cardColor = KnownKnownsTheme.colors.accentPink,
             topPadding = 20.dp,
@@ -143,6 +163,7 @@ fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             showKeyword = true,
+            onHeightInflated = { height -> card2Height = height }
         )
         Card(
             modifier = Modifier
@@ -155,6 +176,7 @@ fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             showKeyword = true,
+            onHeightInflated = { height -> card1Height = height }
         )
     }
 }
@@ -170,10 +192,18 @@ fun Card(
     cardColor: Color,
     modifier: Modifier = Modifier,
     showKeyword: Boolean = false,
+    onHeightInflated: (height: Int) -> Unit,
 ) {
+    val density = LocalDensity.current
+
     Column(
         modifier = modifier
-            .height(166.dp)
+            .onGloballyPositioned { layoutCoordinates ->
+                onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
+
+                println((layoutCoordinates.size.height / density.density).toInt())
+                println(density.density)
+            }
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
             .padding(horizontal = 20.dp)
