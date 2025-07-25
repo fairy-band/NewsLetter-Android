@@ -16,12 +16,14 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.designsystem.button.BaseButton
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
+import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.home.PopUpItemDefaults.MAX_LINE
 
 @Composable
@@ -86,7 +88,7 @@ internal fun PopUpItem(
             backgroundColor = KnownKnownsTheme.colors.backgroundSurface,
             textColor = KnownKnownsTheme.colors.textPrimary,
             cornerRadius = 16.dp,
-            text = "이어서 보기",
+            text = stringResource(id = R.string.home_popup_button_text),
             textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
         )
     }
