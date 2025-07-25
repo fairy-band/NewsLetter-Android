@@ -2,27 +2,28 @@ package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.data.repository.NewsRepository
+import com.nexters.knownknowns.presentation.model.NewsFeed
+import com.nexters.knownknowns.presentation.model.toNewsFeed
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(newsRepository: NewsRepository) : ViewModel() {
-//      예시 1
-//     private val _news = MutableStateFlow<List<NewsResponse>>(emptyList())
-//      val news = _news.asStateFlow()
-
-    val news: StateFlow<List<NewsResponse>> = newsRepository.getNews().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        emptyList()
-    )
+    val news: StateFlow<List<NewsFeed>> = newsRepository
+        .getNews()
+        .map { it.map { response -> response.toNewsFeed() } }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            emptyList()
+        )
 
     // 예시 1
-    // 이렇게 받을 수도 있지만 더 진화된 방법을 쓸 수 있음.
+    // 일반적인 코루틴은 아래처럼 사용할 수 있다.
 //    fun fetchNews() {
 //        newsRepository
 //            .getNews()

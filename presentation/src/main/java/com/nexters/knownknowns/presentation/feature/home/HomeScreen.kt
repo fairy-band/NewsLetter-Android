@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
-import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.presentation.LocalNavController
+import com.nexters.knownknowns.presentation.model.NewsFeed
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -47,7 +47,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreen(
-    news: List<NewsResponse>
+    news: List<NewsFeed>
 ) {
     val navController = LocalNavController.current
 
@@ -69,7 +69,7 @@ fun HomeScreen(
             Text("00:43:43")
             Spacer(modifier = Modifier.weight(1f))
             Cards(
-
+                news = news
             )
         }
     }
@@ -77,6 +77,7 @@ fun HomeScreen(
 
 @Composable
 fun Cards(
+    news: List<NewsFeed>,
     modifier: Modifier = Modifier
 ) {
     var card1Height by remember { mutableIntStateOf(0) }
@@ -90,6 +91,11 @@ fun Cards(
     val card5Offset by remember { derivedStateOf { card4Offset + card4Height } }
     val card6Offset by remember { derivedStateOf { card5Offset + card5Height } }
 
+    if (news.size < 6) {
+        // TODO: loading or error
+        return
+    }
+
     Box(
         modifier = modifier,
     ) {
@@ -98,6 +104,7 @@ fun Cards(
                 .zIndex(0f)
                 .offset(y = (-card6Offset).dp)
                 .padding(horizontal = 80.dp),
+            feed = news[5],
             cardColor = KnownKnownsTheme.colors.accentPurple,
             topPadding = 16.dp,
             bottomPadding = 12.dp,
@@ -112,6 +119,7 @@ fun Cards(
                 .zIndex(1f)
                 .offset(y = (-card5Offset).dp)
                 .padding(horizontal = 64.dp),
+            feed = news[4],
             cardColor = KnownKnownsTheme.colors.accentOrange,
             topPadding = 16.dp,
             bottomPadding = 12.dp,
@@ -126,6 +134,7 @@ fun Cards(
                 .zIndex(2f)
                 .offset(y = (-card4Offset).dp)
                 .padding(horizontal = 48.dp),
+            feed = news[3],
             cardColor = KnownKnownsTheme.colors.accentSkyBlue,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
@@ -140,6 +149,7 @@ fun Cards(
                 .zIndex(3f)
                 .offset(y = (-card3Offset).dp)
                 .padding(horizontal = 32.dp),
+            feed = news[2],
             cardColor = KnownKnownsTheme.colors.accentLemonYellow,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
@@ -155,6 +165,7 @@ fun Cards(
                 .zIndex(4f)
                 .offset(y = (-card2Offset).dp)
                 .padding(horizontal = 16.dp),
+            feed = news[1],
             cardColor = KnownKnownsTheme.colors.accentPink,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
@@ -168,6 +179,7 @@ fun Cards(
         Card(
             modifier = Modifier
                 .zIndex(5f),
+            feed = news[0],
             cardColor = KnownKnownsTheme.colors.accentGreen,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
@@ -186,6 +198,7 @@ fun Cards(
  */
 @Composable
 fun Card(
+    feed: NewsFeed,
     topPadding: Dp,
     bottomPadding: Dp,
     textStyle: TextStyle,
@@ -210,7 +223,7 @@ fun Card(
             .padding(top = topPadding, bottom = bottomPadding),
     ) {
         Text(
-            text = "어제 먹은 치킨이 맛있었는데 제목이 두 줄이 나오려면 좀 더 길게 작성해야 하는 건에 대하여",
+            text = feed.title,
             style = textStyle
         )
         if (showKeyword) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
@@ -219,7 +232,7 @@ fun Card(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Kotlin",
+                    feed.keyword,
                     style = KnownKnownsTheme.typography.body13.copy(
                         fontWeight = FontWeight.Medium,
                         color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
@@ -232,7 +245,7 @@ fun Card(
                         .background(color = Color.Black.copy(alpha = 0.1f))
                 )
                 Text(
-                    text = "안드로이드 위클리",
+                    text = feed.letter,
                     style = KnownKnownsTheme.typography.body13.copy(
                         fontWeight = FontWeight.Medium,
                         color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
