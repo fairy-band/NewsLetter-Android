@@ -59,7 +59,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeScreen(
+private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
@@ -94,7 +94,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun Timer() {
+private fun Timer() {
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()

@@ -15,6 +15,6 @@ fun DetailScreen(
 }
 
 @Composable
-fun DetailScreen(title1: String) {
+private fun DetailScreen(title1: String) {
     Text(title1, color = Color.Blue)
 }
