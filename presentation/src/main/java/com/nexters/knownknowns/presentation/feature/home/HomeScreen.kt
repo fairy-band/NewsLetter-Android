@@ -136,7 +136,7 @@ private fun Timer() {
 }
 
 @Composable
-fun Cards(
+private fun Cards(
     news: ImmutableList<NewsFeed>,
     modifier: Modifier = Modifier
 ) {
@@ -260,7 +260,7 @@ fun Cards(
  * @param showKeyword 아래 세 개의 카드는 항상 키워드를 보여준다.
  */
 @Composable
-fun Card(
+private fun Card(
     feed: NewsFeed,
     topPadding: Dp,
     bottomPadding: Dp,
@@ -328,7 +328,7 @@ fun Card(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+private fun HomeScreenPreview() {
     KnownKnownsTheme {
         HomeScreen(
             news = persistentListOf(
