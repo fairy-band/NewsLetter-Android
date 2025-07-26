@@ -26,7 +26,7 @@ fun BaseButton(
     textStyle: TextStyle,
     modifier: Modifier = Modifier,
     borderWidth: Dp = 1.dp,
-    borderColor: Color = KnownKnownsTheme.colors.borderSecondary
+    borderColor: Color = KnownKnownsTheme.colors.borderPrimary
 ) {
     Button(
         contentPadding = PaddingValues(vertical = paddingVertical),

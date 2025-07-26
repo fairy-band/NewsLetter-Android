@@ -89,7 +89,8 @@ internal fun PopUpItem(
             textColor = KnownKnownsTheme.colors.textPrimary,
             cornerRadius = 16.dp,
             text = stringResource(id = R.string.home_popup_button_text),
-            textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
+            textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+            borderColor = KnownKnownsTheme.colors.borderSecondary
         )
     }
 }

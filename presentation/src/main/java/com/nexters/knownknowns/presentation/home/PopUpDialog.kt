@@ -32,7 +32,6 @@ import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 
 private data class CarouselItem(
-    val id: Int,
     val title: String,
     val category: String,
     val newsLetter: String,
@@ -44,10 +43,9 @@ private data class CarouselItem(
 internal fun PopUpDialog(
     onDismissRequest: () -> Unit,
 ) {
-    val carouselItems = remember {
+    val dummyItems = remember {
         listOf(
             CarouselItem(
-                id = 0,
                 title = "cupcake",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
@@ -55,7 +53,6 @@ internal fun PopUpDialog(
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
-                id = 1,
                 title = "donut",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
@@ -63,7 +60,6 @@ internal fun PopUpDialog(
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
-                id = 2,
                 title = "eclair",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
@@ -71,7 +67,6 @@ internal fun PopUpDialog(
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
-                id = 3,
                 title = "froyo",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
@@ -79,7 +74,6 @@ internal fun PopUpDialog(
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
-                id = 4,
                 title = "gingerbread",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
@@ -87,7 +81,6 @@ internal fun PopUpDialog(
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
-                id = 5,
                 title = "plus",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
@@ -97,7 +90,7 @@ internal fun PopUpDialog(
         )
     }
     val pagerState = rememberPagerState(pageCount = {
-        carouselItems.size
+        dummyItems.size
     })
 
     val configuration = LocalConfiguration.current
@@ -122,8 +115,9 @@ internal fun PopUpDialog(
                 pageSize = PageSize.Fixed(pageSize),
                 pageSpacing = 12.dp,
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
+                key = { it }
             ) { pageIndex ->
-                val item = carouselItems[pageIndex]
+                val item = dummyItems[pageIndex]
                 PopUpItem(
                     title = item.title,
                     category = item.category,
@@ -135,7 +129,7 @@ internal fun PopUpDialog(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Indicator(
-                pageCount = carouselItems.size,
+                pageCount = dummyItems.size,
                 pageIndex = pagerState.currentPage
             )
             Spacer(modifier = Modifier.height(42.dp))
