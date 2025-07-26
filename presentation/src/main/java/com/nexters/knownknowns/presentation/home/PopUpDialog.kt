@@ -96,7 +96,7 @@ internal fun PopUpDialog(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-    val pageSize = screenWidth * (0.8f)
+    val pageSize = screenWidth * 0.8f
     val horizontalPadding = (screenWidth - pageSize) / 2
 
     Dialog(
