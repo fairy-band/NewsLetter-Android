@@ -293,7 +293,7 @@ fun Card(
                     lineCount = textLayoutResult.lineCount
                 }
             )
-            if (showKeyword || lineCount == 1) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
+            if (showKeyword || lineCount == 1) {
                 Row(
                     modifier = Modifier.padding(top = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
