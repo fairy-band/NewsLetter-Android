@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.home
+package com.nexters.knownknowns.presentation.feature.home.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
-import com.nexters.knownknowns.presentation.home.PopUpDialogDefaults.CARD_WIDTH_RATIO
+import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
 
 private data class CarouselItem(
     val title: String,

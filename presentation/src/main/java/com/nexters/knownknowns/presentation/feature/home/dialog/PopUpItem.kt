@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.home
+package com.nexters.knownknowns.presentation.feature.home.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.designsystem.button.BaseButton
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
-import com.nexters.knownknowns.presentation.home.PopUpDialogDefaults.MAX_LINE
+import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.MAX_LINE
 
 @Composable
 internal fun PopUpItem(
