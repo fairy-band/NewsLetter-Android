@@ -96,8 +96,8 @@ internal fun PopUpDialog(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-    val horizontalPadding = 20.dp
-    val pageSize = screenWidth - (horizontalPadding * 2)
+    val pageSize = screenWidth * (0.8f)
+    val horizontalPadding = (screenWidth - pageSize) / 2
 
     Dialog(
         onDismissRequest = onDismissRequest,
