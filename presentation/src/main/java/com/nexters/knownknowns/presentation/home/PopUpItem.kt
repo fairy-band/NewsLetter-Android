@@ -63,7 +63,6 @@ internal fun PopUpItem(
             )
             Spacer(modifier = Modifier.width(6.dp))
             VerticalDivider(
-                thickness = 1.dp,
                 color = titleColor,
                 modifier = Modifier.padding(vertical = 2.dp)
             )

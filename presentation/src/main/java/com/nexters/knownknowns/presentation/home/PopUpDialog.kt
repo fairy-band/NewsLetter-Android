@@ -125,6 +125,7 @@ internal fun PopUpDialog(
                 key = { it }
             ) { pageIndex ->
                 val item = dummyItems[pageIndex]
+
                 PopUpItem(
                     title = item.title,
                     category = item.category,
