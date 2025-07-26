@@ -66,12 +66,15 @@ private fun HomeScreen(
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
+    // TODO: 다이얼로그 띄우는 방식 수정 by 이유빈
     var dialogVisibility by remember { mutableStateOf(false) }
+    var cardIndex by remember { mutableIntStateOf(-1) }
 
     if (dialogVisibility) {
         PopUpDialog(
             onDismissRequest = { dialogVisibility = false },
-            cardItems = news
+            cardItems = news,
+            cardIndex = cardIndex
         )
     }
 
@@ -98,8 +101,9 @@ private fun HomeScreen(
             Spacer(modifier = Modifier.weight(1f))
             Cards(
                 news = news,
-                onClick = {
+                onClick = { index ->
                     dialogVisibility = true
+                    cardIndex = index
                 }
             )
         }
@@ -151,7 +155,7 @@ private fun Timer() {
 @Composable
 private fun Cards(
     news: ImmutableList<NewsFeed>,
-    onClick: () -> Unit,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var card1Height by remember { mutableIntStateOf(0) }
@@ -189,7 +193,7 @@ private fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             onHeightInflated = { height -> card6Height = height },
-            onClick = onClick
+            onClick = { onClick(5) }
         )
         Card(
             modifier = Modifier
@@ -205,7 +209,7 @@ private fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             onHeightInflated = { height -> card5Height = height },
-            onClick = onClick
+            onClick = { onClick(4) }
         )
         Card(
             modifier = Modifier
@@ -221,7 +225,7 @@ private fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             onHeightInflated = { height -> card4Height = height },
-            onClick = onClick
+            onClick = { onClick(3) }
         )
         Card(
             modifier = Modifier
@@ -238,7 +242,7 @@ private fun Cards(
             ),
             showKeyword = true,
             onHeightInflated = { height -> card3Height = height },
-            onClick = onClick
+            onClick = { onClick(2) }
         )
         Card(
             modifier = Modifier
@@ -255,7 +259,7 @@ private fun Cards(
             ),
             showKeyword = true,
             onHeightInflated = { height -> card2Height = height },
-            onClick = onClick
+            onClick = { onClick(1) }
         )
         Card(
             modifier = Modifier
@@ -271,7 +275,7 @@ private fun Cards(
             ),
             showKeyword = true,
             onHeightInflated = { height -> card1Height = height },
-            onClick = onClick
+            onClick = { onClick(0) }
         )
     }
 }

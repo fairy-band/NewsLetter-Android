@@ -2,6 +2,7 @@ package com.nexters.knownknowns.presentation.feature.home.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,10 +42,12 @@ internal object PopUpDialogDefaults {
 internal fun PopUpDialog(
     onDismissRequest: () -> Unit,
     cardItems: ImmutableList<NewsFeed>,
+    cardIndex: Int,
 ) {
-    val pagerState = rememberPagerState(pageCount = {
-        cardItems.size
-    })
+    val pagerState = rememberPagerState(
+        pageCount = { cardItems.size },
+        initialPage = cardIndex
+    )
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -68,7 +71,7 @@ internal fun PopUpDialog(
                 pageSize = PageSize.Fixed(pageSize),
                 pageSpacing = 12.dp,
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
-                key = { cardItems[it].id }
+                key = { cardItems[it].id },
             ) { pageIndex ->
                 val item = cardItems[pageIndex]
 
