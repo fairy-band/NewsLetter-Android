@@ -2,6 +2,7 @@ package com.nexters.knownknowns.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -74,13 +75,19 @@ internal fun PopUpItem(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = summary,
-            style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
-            color = KnownKnownsTheme.colors.textPrimary,
-            maxLines = MAX_LINE,
-            overflow = TextOverflow.Ellipsis
-        )
+        Box {
+            Text(
+                text = "\n".repeat(MAX_LINE - 1),
+                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
+            )
+            Text(
+                text = summary,
+                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
+                color = KnownKnownsTheme.colors.textPrimary,
+                maxLines = MAX_LINE,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         BaseButton(
             paddingVertical = 12.dp,
