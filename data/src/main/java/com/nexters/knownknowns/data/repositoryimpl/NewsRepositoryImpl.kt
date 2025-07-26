@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
 
 @Single
-class NewsRepositoryImpl : NewsRepository {
+internal class NewsRepositoryImpl : NewsRepository {
     private val _news = listOf(
         NewsResponse(id = "1", title = " 도망 간 슬픈 이야기. 여름이었다.", keyword = "Kotlin", letter = "Android Weekly", summary = "", url = "https://www.naver.com"),
         NewsResponse(id = "2", title = " 도망 간 슬픈 이야기. 여름이었다.", keyword = "Kotlin", letter = "Android Weekly", summary = "", url = "https://www.naver.com"),
