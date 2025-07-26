@@ -2,7 +2,6 @@ package com.nexters.knownknowns.presentation.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.home.PopUpDialogDefaults.CARD_WIDTH_RATIO
@@ -113,7 +113,7 @@ internal fun PopUpDialog(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable(onClick = onDismissRequest),
+                .noRippleClickable(onClick = onDismissRequest),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -149,6 +149,7 @@ internal fun PopUpDialog(
                         shape = CircleShape
                     )
                     .padding(13.dp)
+                    .noRippleClickable(onClick = onDismissRequest)
             )
         }
     }
