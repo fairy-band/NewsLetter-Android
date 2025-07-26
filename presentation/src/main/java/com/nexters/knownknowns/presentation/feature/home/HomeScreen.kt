@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -197,7 +198,6 @@ fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
-            showKeyword = true,
             onHeightInflated = { height -> card4Height = height }
         )
         Card(
@@ -251,7 +251,7 @@ fun Cards(
 }
 
 /**
- * @param showKeyword 아래 세 개의 카든는 항상 키워드를 보여준다.
+ * @param showKeyword 아래 세 개의 카드는 항상 키워드를 보여준다.
  */
 @Composable
 fun Card(
@@ -265,6 +265,7 @@ fun Card(
     onHeightInflated: (height: Int) -> Unit,
 ) {
     val density = LocalDensity.current
+    var lineCount by remember { mutableIntStateOf(2) }
 
     Box(
         modifier = modifier
@@ -274,6 +275,7 @@ fun Card(
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .onGloballyPositioned { layoutCoordinates ->
                     onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
                 }
@@ -282,9 +284,12 @@ fun Card(
         ) {
             Text(
                 text = feed.title,
-                style = textStyle
+                style = textStyle,
+                onTextLayout = { textLayoutResult ->
+                    lineCount = textLayoutResult.lineCount
+                }
             )
-            if (showKeyword) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
+            if (showKeyword || lineCount == 1) { // TODO: 한 줄일 때에도 항상 보여줘야 한다.
                 Row(
                     modifier = Modifier.padding(top = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
