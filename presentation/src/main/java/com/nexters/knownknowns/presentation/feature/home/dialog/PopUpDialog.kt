@@ -17,11 +17,9 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -31,14 +29,8 @@ import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
-
-private data class CarouselItem(
-    val title: String,
-    val keyword: String,
-    val newsLetter: String,
-    val titleColor: Color,
-    val summary: String,
-)
+import com.nexters.knownknowns.presentation.model.NewsFeed
+import kotlinx.collections.immutable.ImmutableList
 
 internal object PopUpDialogDefaults {
     const val MAX_LINE = 8
@@ -48,56 +40,10 @@ internal object PopUpDialogDefaults {
 @Composable
 internal fun PopUpDialog(
     onDismissRequest: () -> Unit,
+    cardItems: ImmutableList<NewsFeed>,
 ) {
-    // TODO: dummyItems는 제거 예정입니다. by 이유빈
-    val dummyItems = remember {
-        listOf(
-            CarouselItem(
-                title = "cupcake",
-                keyword = "Kotlin",
-                newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
-                titleColor = Color(0xFF27C434)
-            ),
-            CarouselItem(
-                title = "donut",
-                keyword = "Kotlin",
-                newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
-                titleColor = Color(0xFF27C434)
-            ),
-            CarouselItem(
-                title = "eclair",
-                keyword = "Kotlin",
-                newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.",
-                titleColor = Color(0xFF27C434)
-            ),
-            CarouselItem(
-                title = "froyo",
-                keyword = "Kotlin",
-                newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov",
-                titleColor = Color(0xFF27C434)
-            ),
-            CarouselItem(
-                title = "gingerbread",
-                keyword = "Kotlin",
-                newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
-                titleColor = Color(0xFF27C434)
-            ),
-            CarouselItem(
-                title = "plus",
-                keyword = "Kotlin",
-                newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
-                titleColor = Color(0xFF27C434)
-            ),
-        )
-    }
     val pagerState = rememberPagerState(pageCount = {
-        dummyItems.size
+        cardItems.size
     })
 
     val configuration = LocalConfiguration.current
@@ -122,22 +68,22 @@ internal fun PopUpDialog(
                 pageSize = PageSize.Fixed(pageSize),
                 pageSpacing = 12.dp,
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
-                key = { it }
+                key = { cardItems[it].id }
             ) { pageIndex ->
-                val item = dummyItems[pageIndex]
+                val item = cardItems[pageIndex]
 
                 PopUpItem(
                     title = item.title,
                     keyword = item.keyword,
-                    newsLetter = item.newsLetter,
-                    titleColor = item.titleColor,
+                    letter = item.letter,
+                    titleColor = KnownKnownsTheme.colors.accentGreen, // TODO: 색상 분기처리하기 by 이유빈
                     summary = item.summary,
                     onClick = onDismissRequest,
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Indicator(
-                pageCount = dummyItems.size,
+                pageCount = cardItems.size,
                 pageIndex = pagerState.currentPage
             )
             Spacer(modifier = Modifier.height(42.dp))

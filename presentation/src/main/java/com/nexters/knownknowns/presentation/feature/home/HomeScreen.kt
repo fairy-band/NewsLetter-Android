@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,9 +37,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
-import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.R
+import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -64,6 +66,14 @@ private fun HomeScreen(
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
+    var dialogVisibility by remember { mutableStateOf(false) }
+
+    if (dialogVisibility) {
+        PopUpDialog(
+            onDismissRequest = { dialogVisibility = false },
+            cardItems = news
+        )
+    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -87,7 +97,10 @@ private fun HomeScreen(
             Timer()
             Spacer(modifier = Modifier.weight(1f))
             Cards(
-                news = news
+                news = news,
+                onClick = {
+                    dialogVisibility = true
+                }
             )
         }
     }
@@ -138,6 +151,7 @@ private fun Timer() {
 @Composable
 private fun Cards(
     news: ImmutableList<NewsFeed>,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var card1Height by remember { mutableIntStateOf(0) }
@@ -174,7 +188,8 @@ private fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
-            onHeightInflated = { height -> card6Height = height }
+            onHeightInflated = { height -> card6Height = height },
+            onClick = onClick
         )
         Card(
             modifier = Modifier
@@ -189,7 +204,8 @@ private fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
-            onHeightInflated = { height -> card5Height = height }
+            onHeightInflated = { height -> card5Height = height },
+            onClick = onClick
         )
         Card(
             modifier = Modifier
@@ -204,7 +220,8 @@ private fun Cards(
                 fontWeight = FontWeight.Bold,
                 color = KnownKnownsTheme.colors.textStrong
             ),
-            onHeightInflated = { height -> card4Height = height }
+            onHeightInflated = { height -> card4Height = height },
+            onClick = onClick
         )
         Card(
             modifier = Modifier
@@ -220,7 +237,8 @@ private fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             showKeyword = true,
-            onHeightInflated = { height -> card3Height = height }
+            onHeightInflated = { height -> card3Height = height },
+            onClick = onClick
         )
         Card(
             modifier = Modifier
@@ -236,7 +254,8 @@ private fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             showKeyword = true,
-            onHeightInflated = { height -> card2Height = height }
+            onHeightInflated = { height -> card2Height = height },
+            onClick = onClick
         )
         Card(
             modifier = Modifier
@@ -251,7 +270,8 @@ private fun Cards(
                 color = KnownKnownsTheme.colors.textStrong
             ),
             showKeyword = true,
-            onHeightInflated = { height -> card1Height = height }
+            onHeightInflated = { height -> card1Height = height },
+            onClick = onClick
         )
     }
 }
@@ -266,6 +286,7 @@ private fun Card(
     bottomPadding: Dp,
     textStyle: TextStyle,
     cardColor: Color,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
@@ -278,6 +299,7 @@ private fun Card(
             .height(166.dp)
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
+            .noRippleClickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier

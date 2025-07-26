@@ -35,7 +35,7 @@ class NewsRepositoryImpl : NewsRepository {
         ),
         NewsResponse(
             id = "4",
-            title = "",
+            title = "도망가지 않은 기쁜 이야기. 겨울이었다.",
             keyword = "Kotlin",
             letter = "Android Weekly",
             summary = "Anatolii Frolov",
