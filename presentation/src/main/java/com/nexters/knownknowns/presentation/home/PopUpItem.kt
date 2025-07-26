@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.designsystem.button.BaseButton
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
-import com.nexters.knownknowns.presentation.home.PopUpItemDefaults.MAX_LINE
+import com.nexters.knownknowns.presentation.home.PopUpDialogDefaults.MAX_LINE
 
 @Composable
 internal fun PopUpItem(
@@ -100,10 +100,6 @@ internal fun PopUpItem(
             borderColor = KnownKnownsTheme.colors.borderSecondary
         )
     }
-}
-
-private object PopUpItemDefaults {
-    const val MAX_LINE = 8
 }
 
 @Preview(showBackground = true)

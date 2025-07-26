@@ -30,6 +30,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
+import com.nexters.knownknowns.presentation.home.PopUpDialogDefaults.CARD_WIDTH_RATIO
 
 private data class CarouselItem(
     val title: String,
@@ -39,10 +40,16 @@ private data class CarouselItem(
     val summary: String,
 )
 
+internal object PopUpDialogDefaults {
+    const val MAX_LINE = 8
+    const val CARD_WIDTH_RATIO = 0.8f
+}
+
 @Composable
 internal fun PopUpDialog(
     onDismissRequest: () -> Unit,
 ) {
+    // TODO: dummyItems는 제거 예정입니다. by 이유빈
     val dummyItems = remember {
         listOf(
             CarouselItem(
@@ -96,7 +103,7 @@ internal fun PopUpDialog(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-    val pageSize = screenWidth * 0.8f
+    val pageSize = screenWidth * CARD_WIDTH_RATIO
     val horizontalPadding = (screenWidth - pageSize) / 2
 
     Dialog(
