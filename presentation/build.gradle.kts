@@ -50,6 +50,8 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.ui)
     implementation(libs.androidx.compose.saveable)
+    implementation(libs.kotlinx.collections.immutable)
+    debugImplementation(libs.androidx.ui.tooling)
 
     // lifecycle
     implementation(libs.bundles.lifecycle.compose)
@@ -61,8 +63,18 @@ dependencies {
 
     // di
     implementation(libs.koin.annotations)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     ksp(libs.koin.ksp)
 
     // serialization
     implementation(libs.kotlinx.serialization.core)
+
+    // firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
+    // coroutine
+    implementation(libs.kotlinx.coroutines.android)
 }

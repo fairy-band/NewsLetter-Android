@@ -40,5 +40,9 @@ dependencies {
 
     // di
     implementation(libs.koin.annotations)
+    implementation(libs.koin.core)
     ksp(libs.koin.ksp)
+
+    // coroutine
+    implementation(libs.kotlinx.coroutines.android)
 }

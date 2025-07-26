@@ -52,6 +52,84 @@ private object ColorPalette {
     val green700: Color = Color(0xFF098514)
     val green800: Color = Color(0xFF006108)
     val green900: Color = Color(0xFF004005)
+
+    // Point Blue
+    val pointBlue50: Color = Color(0xFFF5F9FF)
+    val pointBlue100: Color = Color(0xFFEBF4FF)
+    val pointBlue150: Color = Color(0xFFD6E9FF)
+    val pointBlue200: Color = Color(0xFFB8D9FF)
+    val pointBlue300: Color = Color(0xFF99C9FF)
+    val pointBlue400: Color = Color(0xFF7FBBFF)
+    val pointBlue500: Color = Color(0xFF5CA8FF)
+    val pointBlue600: Color = Color(0xFF3386E5)
+    val pointBlue700: Color = Color(0xFF266BBA)
+    val pointBlue800: Color = Color(0xFF154984)
+    val pointBlue900: Color = Color(0xFF072D59)
+
+    // Point Orange
+    val pointOrange50: Color = Color(0xFFFFF2EB)
+    val pointOrange100: Color = Color(0xFFFFEADE)
+    val pointOrange150: Color = Color(0xFFFFD5BD)
+    val pointOrange200: Color = Color(0xFFFFB890)
+    val pointOrange300: Color = Color(0xFFFF9B63)
+    val pointOrange400: Color = Color(0xFFFF7E35)
+    val pointOrange500: Color = Color(0xFFFE650F)
+    val pointOrange600: Color = Color(0xFFE65706)
+    val pointOrange700: Color = Color(0xFFC74902)
+    val pointOrange800: Color = Color(0xFF983700)
+    val pointOrange900: Color = Color(0xFF551F00)
+
+    // Point Pink
+    val pointPink50: Color = Color(0xFFFFF5FD)
+    val pointPink100: Color = Color(0xFFFFE9F8)
+    val pointPink150: Color = Color(0xFFFFD4F1)
+    val pointPink200: Color = Color(0xFFFFC2EB)
+    val pointPink300: Color = Color(0xFFFFB3E6)
+    val pointPink400: Color = Color(0xFFFF9ADD)
+    val pointPink500: Color = Color(0xFFFF77D1)
+    val pointPink600: Color = Color(0xFFF755C0)
+    val pointPink700: Color = Color(0xFFD13E9F)
+    val pointPink800: Color = Color(0xFFA71877)
+    val pointPink900: Color = Color(0xFF780451)
+
+    // Point Purple
+    val pointPurple50: Color = Color(0xFFFCF8FF)
+    val pointPurple100: Color = Color(0xFFF5EBFD)
+    val pointPurple150: Color = Color(0xFFECD7FA)
+    val pointPurple200: Color = Color(0xFFDBB7F4)
+    val pointPurple300: Color = Color(0xFFD7A6F9)
+    val pointPurple400: Color = Color(0xFFD290FF)
+    val pointPurple500: Color = Color(0xFFC569F9)
+    val pointPurple600: Color = Color(0xFFAE65E0)
+    val pointPurple700: Color = Color(0xFF9856C4)
+    val pointPurple800: Color = Color(0xFF7C40A4)
+    val pointPurple900: Color = Color(0xFF5A3375)
+
+    // Point Green
+    val pointGreen50: Color = Color(0xFFF0FFF7)
+    val pointGreen100: Color = Color(0xFFDEFFEC)
+    val pointGreen150: Color = Color(0xFFBDFFD9)
+    val pointGreen200: Color = Color(0xFF8FFFBF)
+    val pointGreen300: Color = Color(0xFF33FE8B)
+    val pointGreen400: Color = Color(0xFF15F074)
+    val pointGreen500: Color = Color(0xFF01E062)
+    val pointGreen600: Color = Color(0xFF00C757)
+    val pointGreen700: Color = Color(0xFF009B43)
+    val pointGreen800: Color = Color(0xFF007027)
+    val pointGreen900: Color = Color(0xFF005223)
+
+    // Point Lemon Yellow
+    val pointLemonYellow50: Color = Color(0xFFFCFFEF)
+    val pointLemonYellow100: Color = Color(0xFFF6FFCC)
+    val pointLemonYellow150: Color = Color(0xFFF0FFA9)
+    val pointLemonYellow200: Color = Color(0xFFEAFF85)
+    val pointLemonYellow300: Color = Color(0xFFE1FC61)
+    val pointLemonYellow400: Color = Color(0xFFD2F725)
+    val pointLemonYellow500: Color = Color(0xFFBADD14)
+    val pointLemonYellow600: Color = Color(0xFFA7C615)
+    val pointLemonYellow700: Color = Color(0xFF8CA70B)
+    val pointLemonYellow800: Color = Color(0xFF728808)
+    val pointLemonYellow900: Color = Color(0xFF586908)
 }
 
 /**
@@ -112,4 +190,12 @@ data class KnownKnownsColors(
     val stateNegativePrimary: Color = ColorPalette.red500,
     val stateNegativeBorder: Color = ColorPalette.red150,
     val stateNegativeBackground: Color = ColorPalette.red50,
+
+    // Accent
+    val accentOrange: Color = ColorPalette.pointOrange400,
+    val accentSkyBlue: Color = ColorPalette.pointBlue300,
+    val accentLemonYellow: Color = ColorPalette.pointLemonYellow300,
+    val accentPurple: Color = ColorPalette.pointPurple200,
+    val accentPink: Color = ColorPalette.pointPink300,
+    val accentGreen: Color = ColorPalette.pointGreen300
 )
