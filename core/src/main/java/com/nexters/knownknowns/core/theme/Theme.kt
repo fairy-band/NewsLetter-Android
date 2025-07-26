@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
 val LocalKnownKnownsColors = staticCompositionLocalOf<KnownKnownsColors> {
     error("No KnownKnownsColors provided")
@@ -34,6 +35,11 @@ fun KnownKnownsTheme(
         LocalKnownKnownsColors provides KnownKnownsColors(),
         LocalKnownKnownsTypography provides KnownKnownsTypography(),
     ) {
-        MaterialTheme(content = content)
+        MaterialTheme(
+            content = content,
+            colorScheme = MaterialTheme.colorScheme.copy(
+                background = Color.White
+            )
+        )
     }
 }
