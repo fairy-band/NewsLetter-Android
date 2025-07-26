@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +38,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.LocalNavController
+import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
@@ -71,10 +73,12 @@ fun HomeScreen(
                 modifier = Modifier
                     .padding(top = 44.dp)
                     .padding(horizontal = 20.dp),
-                // TODO: 리소스화
-                text = "${today.year}.${
-                    today.monthValue.toString().padStart(2, '0')
-                }.${today.dayOfMonth.toString().padStart(2, '0')}\nToday's Hot News",
+                text = stringResource(
+                    R.string.home_title,
+                    today.year,
+                    today.monthValue.toString().padStart(2, '0'),
+                    today.dayOfMonth.toString().padStart(2, '0')
+                ),
                 style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
                 color = KnownKnownsTheme.colors.textStrong,
             )
