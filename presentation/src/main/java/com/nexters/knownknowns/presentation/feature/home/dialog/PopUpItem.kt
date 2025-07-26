@@ -30,7 +30,7 @@ import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefau
 @Composable
 internal fun PopUpItem(
     title: String,
-    category: String,
+    keyword: String,
     newsLetter: String,
     titleColor: Color,
     summary: String,
@@ -57,7 +57,7 @@ internal fun PopUpItem(
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = category,
+                text = keyword,
                 style = KnownKnownsTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
                 color = titleColor
             )
@@ -107,7 +107,7 @@ private fun PopUpItemPreview() {
     KnownKnownsTheme {
         PopUpItem(
             title = "IT 직장인이라면 알아야 할 주 4일제의 모든 것을 알려준다",
-            category = "Kotlin",
+            keyword = "Kotlin",
             newsLetter = "안드로이드 위클리",
             titleColor = KnownKnownsTheme.colors.statePositivePrimary,
             summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",

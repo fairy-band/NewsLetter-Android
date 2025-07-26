@@ -34,7 +34,7 @@ import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefau
 
 private data class CarouselItem(
     val title: String,
-    val category: String,
+    val keyword: String,
     val newsLetter: String,
     val titleColor: Color,
     val summary: String,
@@ -54,42 +54,42 @@ internal fun PopUpDialog(
         listOf(
             CarouselItem(
                 title = "cupcake",
-                category = "Kotlin",
+                keyword = "Kotlin",
                 newsLetter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 title = "donut",
-                category = "Kotlin",
+                keyword = "Kotlin",
                 newsLetter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 title = "eclair",
-                category = "Kotlin",
+                keyword = "Kotlin",
                 newsLetter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 title = "froyo",
-                category = "Kotlin",
+                keyword = "Kotlin",
                 newsLetter = "안드로이드 위클리",
                 summary = "Anatolii Frolov",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 title = "gingerbread",
-                category = "Kotlin",
+                keyword = "Kotlin",
                 newsLetter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 title = "plus",
-                category = "Kotlin",
+                keyword = "Kotlin",
                 newsLetter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 titleColor = Color(0xFF27C434)
@@ -128,7 +128,7 @@ internal fun PopUpDialog(
 
                 PopUpItem(
                     title = item.title,
-                    category = item.category,
+                    keyword = item.keyword,
                     newsLetter = item.newsLetter,
                     titleColor = item.titleColor,
                     summary = item.summary,
