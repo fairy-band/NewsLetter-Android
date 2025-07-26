@@ -2,8 +2,6 @@ package com.nexters.knownknowns.presentation.feature.home.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,9 +61,9 @@ internal fun PopUpDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .noRippleClickable(onClick = onDismissRequest),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.weight(217f))
             HorizontalPager(
                 state = pagerState,
                 pageSize = PageSize.Fixed(pageSize),
@@ -79,7 +77,7 @@ internal fun PopUpDialog(
                     title = item.title,
                     keyword = item.keyword,
                     letter = item.letter,
-                    titleColor = KnownKnownsTheme.colors.accentGreen, // TODO: 색상 분기처리하기 by 이유빈
+                    titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
                     summary = item.summary,
                     onClick = onDismissRequest,
                 )
@@ -101,6 +99,7 @@ internal fun PopUpDialog(
                     .padding(13.dp)
                     .noRippleClickable(onClick = onDismissRequest)
             )
+            Spacer(modifier = Modifier.weight(124f))
         }
     }
 }
