@@ -63,14 +63,14 @@ internal fun PopUpDialog(
                 title = "eclair",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
+                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
                 title = "froyo",
                 category = "Kotlin",
                 newsLetter = "안드로이드 위클리",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
+                summary = "Anatolii Frolov",
                 titleColor = Color(0xFF27C434)
             ),
             CarouselItem(
@@ -157,7 +157,7 @@ private fun Indicator(
         modifier = modifier
     ) {
         repeat(pageCount) { index ->
-            val isSelected = index == pageIndex % pageCount
+            val isSelected = index == pageIndex
 
             Box(
                 modifier = Modifier
