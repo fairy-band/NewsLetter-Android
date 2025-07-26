@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.bundles.compose.ui)
     implementation(libs.androidx.compose.saveable)
     implementation(libs.kotlinx.collections.immutable)
+    debugImplementation(libs.androidx.ui.tooling)
 
     // lifecycle
     implementation(libs.bundles.lifecycle.compose)

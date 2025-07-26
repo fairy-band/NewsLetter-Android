@@ -41,6 +41,7 @@ import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,7 +62,8 @@ fun HomeScreen(
 fun HomeScreen(
     news: ImmutableList<NewsFeed>,
 ) {
-    val navController = LocalNavController.current
+    // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
+//    val navController = LocalNavController.current
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -326,8 +328,59 @@ fun Card(
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
+fun HomeScreenPreview() {
     KnownKnownsTheme {
-//        MainScreen()
+        HomeScreen(
+            news = persistentListOf(
+                NewsFeed(
+                    id = "1",
+                    title = "38800원은 너무 비싸",
+                    keyword = "Kotlin",
+                    letter = "Android Weekly",
+                    summary = "",
+                    url = "https://naver.com"
+                ),
+                NewsFeed(
+                    id = "1",
+                    title = "38800원은 너무 비싸",
+                    keyword = "Kotlin",
+                    letter = "Android Weekly",
+                    summary = "",
+                    url = "https://naver.com"
+                ),
+                NewsFeed(
+                    id = "1",
+                    title = "38800원은 너무 비싸",
+                    keyword = "Kotlin",
+                    letter = "Android Weekly",
+                    summary = "",
+                    url = "https://naver.com"
+                ),
+                NewsFeed(
+                    id = "1",
+                    title = "38800원은 너무 비싸",
+                    keyword = "Kotlin",
+                    letter = "Android Weekly",
+                    summary = "",
+                    url = "https://naver.com"
+                ),
+                NewsFeed(
+                    id = "1",
+                    title = "38800원은 너무 비싸",
+                    keyword = "Kotlin",
+                    letter = "Android Weekly",
+                    summary = "",
+                    url = "https://naver.com"
+                ),
+                NewsFeed(
+                    id = "1",
+                    title = "38800원은 너무 비싸",
+                    keyword = "Kotlin",
+                    letter = "Android Weekly",
+                    summary = "",
+                    url = "https://naver.com"
+                ),
+            )
+        )
     }
 }
