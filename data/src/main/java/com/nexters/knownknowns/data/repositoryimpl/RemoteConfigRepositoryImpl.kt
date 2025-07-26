@@ -11,6 +11,10 @@ import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+/**
+ * AB테스트를 위해 Remote Config 설정을 가져옵니다. 아래 코드는 예시이므로,
+ * 실제 사용할 때에는 새롭게 AB테스트를 설정 후 아래 코드를 수정하여 사용하세요.
+ */
 @Single
 internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
     private val remoteConfig = Firebase.remoteConfig
