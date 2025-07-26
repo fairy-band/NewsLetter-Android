@@ -45,4 +45,11 @@ dependencies {
 
     // coroutine
     implementation(libs.kotlinx.coroutines.android)
+
+    // firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
+    // log
+    implementation(libs.timber)
 }

@@ -77,4 +77,7 @@ dependencies {
 
     // coroutine
     implementation(libs.kotlinx.coroutines.android)
+
+    // log
+    implementation(libs.timber)
 }

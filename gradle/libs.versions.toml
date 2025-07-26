@@ -37,6 +37,7 @@ firebaseBom = "33.16.0"
 
 # coroutine
 kotlinxCoroutinesAndroid = "1.10.2"
+timber = "5.0.1"
 
 [libraries]
 # core
@@ -82,6 +83,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [bundles]
 compose-ui = [
