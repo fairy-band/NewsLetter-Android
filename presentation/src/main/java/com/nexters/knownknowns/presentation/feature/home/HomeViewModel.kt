@@ -3,6 +3,7 @@ package com.nexters.knownknowns.presentation.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexters.knownknowns.data.repository.NewsRepository
+import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import com.nexters.knownknowns.presentation.model.toNewsFeed
 import kotlinx.collections.immutable.ImmutableList
@@ -15,7 +16,10 @@ import kotlinx.coroutines.flow.stateIn
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class HomeViewModel(newsRepository: NewsRepository) : ViewModel() {
+class HomeViewModel(
+    newsRepository: NewsRepository,
+    remoteConfigRepository: RemoteConfigRepository,
+) : ViewModel() {
     val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
         .getNews()
         .map {
@@ -27,6 +31,13 @@ class HomeViewModel(newsRepository: NewsRepository) : ViewModel() {
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             persistentListOf()
+        )
+    val colorType = remoteConfigRepository
+        .getColor()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            "static"
         )
 
     // 예시 1

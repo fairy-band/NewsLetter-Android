@@ -54,6 +54,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
+    val colorType by viewModel.colorType.collectAsStateWithLifecycle()
 
     HomeScreen(news = news)
 }
