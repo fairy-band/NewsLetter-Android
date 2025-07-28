@@ -200,7 +200,7 @@ data class KnownKnownsColors(
     val greenBackgroundTertiary: Color = ColorPalette.green400,
     val greenText: Color = ColorPalette.green600,
     val lemonYellowBackgroundPrimary: Color = ColorPalette.lemonYellow300,
-    // val lemonYellowBackgroundSecondary: Color = ColorPalette TODO: 문의중
+    val lemonYellowBackgroundSecondary: Color = ColorPalette.lemonYellow200,
     val lemonYellowBackgroundTertiary: Color = ColorPalette.lemonYellow400,
     val lemonYellowText: Color = ColorPalette.lemonYellow700
 )
