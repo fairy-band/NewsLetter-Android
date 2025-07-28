@@ -107,9 +107,9 @@ private object ColorPalette {
 
     // Lemon Yellow
     val lemonYellow50: Color = Color(0xFFFCFFEF)
-    val lemonYellow100: Color = Color(0xFFF6FFCC)
-    val lemonYellow150: Color = Color(0xFFF0FFA9)
-    val lemonYellow200: Color = Color(0xFFEAFF85)
+    val lemonYellow100: Color = Color(0xFFF8FFD8)
+    val lemonYellow150: Color = Color(0xFFF3FFBD)
+    val lemonYellow200: Color = Color(0xFFECFF92)
     val lemonYellow300: Color = Color(0xFFE1FC61)
     val lemonYellow400: Color = Color(0xFFD2F725)
     val lemonYellow500: Color = Color(0xFFBADD14)
