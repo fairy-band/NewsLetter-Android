@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -80,8 +81,10 @@ internal fun PopUpItem(
         Spacer(modifier = Modifier.height(16.dp))
         Box {
             Text(
-                text = "\n".repeat(MAX_LINE - 1),
+                text = "",
                 style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
+                minLines = MAX_LINE,
+                maxLines = MAX_LINE,
             )
             Text(
                 text = newsFeed.summary,
@@ -97,7 +100,7 @@ internal fun PopUpItem(
             onClick = onClick,
             backgroundColor = KnownKnownsTheme.colors.backgroundSurface,
             textColor = KnownKnownsTheme.colors.textPrimary,
-            cornerRadius = 16.dp,
+            shape = CircleShape,
             text = stringResource(id = R.string.home_popup_button_text),
             textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
             borderColor = KnownKnownsTheme.colors.borderSecondary
