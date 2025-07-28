@@ -2,4 +2,6 @@
 <resources>
 <!--    홈-->
     <string name="home_title">"%s.%s.%s\nToday's Hot News"</string>
+    <!--PopUpDialog-->
+    <string name="home_popup_button_text">원문 보기</string>
 </resources>

@@ -144,7 +144,7 @@ data class KnownKnownsColors(
 
     // Border
     val borderPrimary: Color = ColorPalette.gray100,
-    val borderSecondary: Color = ColorPalette.gray50,
+    val borderSecondary: Color = ColorPalette.gray150,
     val borderStrong: Color = ColorPalette.gray950,
     val borderDisabled: Color = ColorPalette.gray100,
     val borderActive: Color = ColorPalette.gray300,

@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
+    private fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
         return entryProvider {
             entry<Screen.Home> { main ->
                 HomeScreen()
