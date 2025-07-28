@@ -74,11 +74,15 @@ internal fun PopUpDialog(
                 val item = cardItems[pageIndex]
 
                 PopUpItem(
-                    title = item.title,
-                    keyword = item.keyword,
-                    letter = item.letter,
+                    newsFeed = NewsFeed(
+                        id = item.id,
+                        title = item.title,
+                        keyword = item.keyword,
+                        letter = item.letter,
+                        summary = item.summary,
+                        url = item.url
+                    ),
                     titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
-                    summary = item.summary,
                     onClick = onDismissRequest,
                 )
             }
