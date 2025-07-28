@@ -167,7 +167,7 @@ private fun Cards(
                 .offset(y = (166 - card6Offset).dp)
                 .padding(horizontal = 80.dp),
             feed = news[5],
-            cardColor = KnownKnownsTheme.colors.accentPurple,
+            cardColor = KnownKnownsTheme.colors.purpleBackgroundPrimary,
             topPadding = 16.dp,
             bottomPadding = 12.dp,
             textStyle = KnownKnownsTheme.typography.body13.copy(
@@ -182,7 +182,7 @@ private fun Cards(
                 .offset(y = (166 - card5Offset).dp)
                 .padding(horizontal = 64.dp),
             feed = news[4],
-            cardColor = KnownKnownsTheme.colors.accentOrange,
+            cardColor = KnownKnownsTheme.colors.orangeBackgroundPrimary,
             topPadding = 16.dp,
             bottomPadding = 12.dp,
             textStyle = KnownKnownsTheme.typography.body14.copy(
@@ -197,7 +197,7 @@ private fun Cards(
                 .offset(y = (166 - card4Offset).dp)
                 .padding(horizontal = 48.dp),
             feed = news[3],
-            cardColor = KnownKnownsTheme.colors.accentSkyBlue,
+            cardColor = KnownKnownsTheme.colors.blueBackgroundPrimary,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
             textStyle = KnownKnownsTheme.typography.body15.copy(
@@ -212,7 +212,7 @@ private fun Cards(
                 .offset(y = (166 - card3Offset).dp)
                 .padding(horizontal = 32.dp),
             feed = news[2],
-            cardColor = KnownKnownsTheme.colors.accentLemonYellow,
+            cardColor = KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
             textStyle = KnownKnownsTheme.typography.body16.copy(
@@ -228,7 +228,7 @@ private fun Cards(
                 .offset(y = (166 - card2Offset).dp)
                 .padding(horizontal = 16.dp),
             feed = news[1],
-            cardColor = KnownKnownsTheme.colors.accentPink,
+            cardColor = KnownKnownsTheme.colors.pinkBackgroundPrimary,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
             textStyle = KnownKnownsTheme.typography.body18.copy(
@@ -243,7 +243,7 @@ private fun Cards(
                 .offset(y = (166 - card1Height).dp)
                 .zIndex(5f),
             feed = news[0],
-            cardColor = KnownKnownsTheme.colors.accentGreen,
+            cardColor = KnownKnownsTheme.colors.greenBackgroundPrimary,
             topPadding = 20.dp,
             bottomPadding = 16.dp,
             textStyle = KnownKnownsTheme.typography.body18.copy(
