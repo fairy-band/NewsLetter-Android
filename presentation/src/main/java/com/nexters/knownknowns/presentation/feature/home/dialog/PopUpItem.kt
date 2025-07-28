@@ -79,21 +79,14 @@ internal fun PopUpItem(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Box {
-            Text(
-                text = "",
-                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
-                minLines = MAX_LINE,
-                maxLines = MAX_LINE,
-            )
-            Text(
-                text = newsFeed.summary,
-                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
-                color = KnownKnownsTheme.colors.textPrimary,
-                maxLines = MAX_LINE,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            text = newsFeed.summary,
+            style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
+            color = KnownKnownsTheme.colors.textPrimary,
+            maxLines = MAX_LINE,
+            minLines = MAX_LINE,
+            overflow = TextOverflow.Ellipsis
+        )
         Spacer(modifier = Modifier.height(16.dp))
         BaseButton(
             paddingVertical = 12.dp,
