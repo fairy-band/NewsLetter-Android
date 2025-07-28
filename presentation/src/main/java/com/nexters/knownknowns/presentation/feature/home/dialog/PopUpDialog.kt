@@ -2,6 +2,7 @@ package com.nexters.knownknowns.presentation.feature.home.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -115,14 +116,14 @@ private fun Indicator(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         repeat(pageCount) { index ->
             val isSelected = index == pageIndex
 
             Box(
                 modifier = Modifier
-                    .padding(4.dp)
                     .clip(CircleShape)
                     .size(8.dp)
                     .background(
