@@ -127,8 +127,7 @@ private fun Indicator(
                     .clip(CircleShape)
                     .size(8.dp)
                     .background(
-                        if (isSelected) KnownKnownsTheme.colors.backgroundBase
-                        else KnownKnownsTheme.colors.backgroundBase.copy(alpha = 0.3f)
+                        KnownKnownsTheme.colors.backgroundBase.copy(alpha = if (isSelected) 1f else 0.3f)
                     )
             )
         }
