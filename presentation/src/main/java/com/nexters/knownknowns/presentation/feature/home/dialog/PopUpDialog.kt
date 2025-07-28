@@ -33,7 +33,8 @@ import com.nexters.knownknowns.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
 
 internal object PopUpDialogDefaults {
-    const val MAX_LINE = 8
+    const val SUMMARY_MAX_LINE = 8
+    const val TITLE_MAX_LINE = 2
     const val CARD_WIDTH_RATIO = 0.8f
 }
 

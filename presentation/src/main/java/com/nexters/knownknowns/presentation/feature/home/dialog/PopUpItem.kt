@@ -2,7 +2,6 @@ package com.nexters.knownknowns.presentation.feature.home.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.designsystem.button.BaseButton
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
-import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.MAX_LINE
+import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
+import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.nexters.knownknowns.presentation.model.NewsFeed
 
 @Composable
@@ -45,17 +45,13 @@ internal fun PopUpItem(
             .fillMaxWidth()
             .padding(24.dp),
     ) {
-        Box {
-            Text(
-                text = "\n",
-                style = KnownKnownsTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
-            )
-            Text(
-                text = newsFeed.title,
-                style = KnownKnownsTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
-                color = titleColor
-            )
-        }
+        Text(
+            text = newsFeed.title,
+            style = KnownKnownsTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
+            color = titleColor,
+            minLines = TITLE_MAX_LINE,
+            maxLines = TITLE_MAX_LINE
+        )
         Spacer(modifier = Modifier.height(4.dp))
         Row(
             modifier = Modifier.height(IntrinsicSize.Min),
@@ -83,8 +79,8 @@ internal fun PopUpItem(
             text = newsFeed.summary,
             style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
             color = KnownKnownsTheme.colors.textPrimary,
-            maxLines = MAX_LINE,
-            minLines = MAX_LINE,
+            maxLines = SUMMARY_MAX_LINE,
+            minLines = SUMMARY_MAX_LINE,
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(16.dp))
