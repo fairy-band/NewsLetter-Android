@@ -66,15 +66,13 @@ private fun HomeScreen(
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
-    // TODO: 다이얼로그 띄우는 방식 수정 by 이유빈
-    var dialogVisibility by remember { mutableStateOf(false) }
-    var cardIndex by remember { mutableIntStateOf(-1) }
+    var cardIndex: Int? by remember { mutableStateOf(null) }
 
-    if (dialogVisibility) {
+    if (cardIndex != null) {
         PopUpDialog(
-            onDismissRequest = { dialogVisibility = false },
+            onDismissRequest = { cardIndex = null },
             cardItems = news,
-            cardIndex = cardIndex
+            cardIndex = cardIndex ?: -1
         )
     }
 
@@ -102,7 +100,6 @@ private fun HomeScreen(
             Cards(
                 news = news,
                 onClick = { index ->
-                    dialogVisibility = true
                     cardIndex = index
                 }
             )
