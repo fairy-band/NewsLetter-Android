@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -20,8 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -92,17 +92,11 @@ internal fun PopUpDialog(
                 pageCount = cardItems.size,
                 pageIndex = pagerState.currentPage
             )
-            Spacer(modifier = Modifier.height(42.dp))
+            Spacer(modifier = Modifier.height(49.dp))
             Image(
-                painter = painterResource(id = R.drawable.ic_popup_dismiss),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
                 contentDescription = "pop up dismiss button",
-                modifier = Modifier
-                    .background(
-                        color = KnownKnownsTheme.colors.backgroundBase.copy(alpha = 0.1f),
-                        shape = CircleShape
-                    )
-                    .padding(13.dp)
-                    .noRippleClickable(onClick = onDismissRequest)
+                modifier = Modifier.noRippleClickable(onClick = onDismissRequest)
             )
             Spacer(modifier = Modifier.weight(124f))
         }
