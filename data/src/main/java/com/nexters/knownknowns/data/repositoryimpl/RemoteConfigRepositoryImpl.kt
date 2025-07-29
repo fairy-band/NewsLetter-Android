@@ -31,6 +31,7 @@ internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
                     continuation.resume(it)
                 }
             } else {
+                Timber.d("remoteConfig[${key}] 값을 가져오는 데 실패했어요.")
                 continuation.resume(null)
             }
         }
