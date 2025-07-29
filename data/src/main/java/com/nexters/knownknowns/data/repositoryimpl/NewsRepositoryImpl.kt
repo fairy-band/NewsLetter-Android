@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
 
 @Single
-class NewsRepositoryImpl : NewsRepository {
+internal class NewsRepositoryImpl : NewsRepository {
     private val _news = listOf(
         NewsResponse(
             id = "1",

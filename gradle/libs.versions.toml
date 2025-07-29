@@ -37,6 +37,7 @@ firebaseBom = "33.16.0"
 
 # coroutine
 kotlinxCoroutinesAndroid = "1.10.2"
+timber = "5.0.1"
 
 [libraries]
 # core
@@ -63,6 +64,7 @@ androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", vers
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 
 # di
+firebase-config-ktx = { module = "com.google.firebase:firebase-config-ktx" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinCore" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCore" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
@@ -83,6 +85,9 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+
+# logging
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [bundles]
 compose-ui = [

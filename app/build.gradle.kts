@@ -65,6 +65,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 ksp {
@@ -84,4 +88,7 @@ dependencies {
     implementation(libs.koin.annotations)
     implementation(libs.koin.android)
     ksp(libs.koin.ksp)
+
+    // log
+    implementation(libs.timber)
 }
