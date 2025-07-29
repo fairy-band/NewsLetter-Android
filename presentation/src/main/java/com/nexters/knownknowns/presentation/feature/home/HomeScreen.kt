@@ -208,96 +208,27 @@ private fun Cards(
         }
     }
 
-    if (news.size < 6) {
-        // TODO: loading or error
-        return
-    }
-
     Box(
         modifier = modifier,
         contentAlignment = Alignment.BottomCenter
     ) {
-        Card(
-            modifier = Modifier
-                .zIndex(0f)
-                .offset(y = (166 - cardOffsets[5]).dp)
-                .padding(horizontal = horizontalPaddings[5]),
-            feed = news[5],
-            cardColor = cardColors[5],
-            topPadding = topPaddings[5],
-            bottomPadding = bottomPaddings[5],
-            textStyle = textStyles[5],
-            onHeightInflated = { height -> cardHeights[5] = height },
-            onClick = { onClick(5) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(1f)
-                .offset(y = (166 - cardOffsets[4]).dp)
-                .padding(horizontal = horizontalPaddings[4]),
-            feed = news[4],
-            cardColor = cardColors[4],
-            topPadding = topPaddings[4],
-            bottomPadding = bottomPaddings[4],
-            textStyle = textStyles[4],
-            onHeightInflated = { height -> cardHeights[4] = height },
-            onClick = { onClick(4) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(2f)
-                .offset(y = (166 - cardOffsets[3]).dp)
-                .padding(horizontal = horizontalPaddings[3]),
-            feed = news[3],
-            cardColor = cardColors[3],
-            topPadding = topPaddings[3],
-            bottomPadding = bottomPaddings[3],
-            textStyle = textStyles[3],
-            onHeightInflated = { height -> cardHeights[3] = height },
-            onClick = { onClick(3) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(3f)
-                .offset(y = (166 - cardOffsets[2]).dp)
-                .padding(horizontal = horizontalPaddings[2]),
-            feed = news[2],
-            cardColor = cardColors[2],
-            topPadding = topPaddings[2],
-            bottomPadding = bottomPaddings[2],
-            textStyle = textStyles[2],
-            showKeyword = keywordVisibilities[2],
-            onHeightInflated = { height -> cardHeights[2] = height },
-            onClick = { onClick(2) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(4f)
-                .offset(y = (166 - cardOffsets[1]).dp)
-                .padding(horizontal = horizontalPaddings[1]),
-            feed = news[1],
-            cardColor = cardColors[1],
-            topPadding = topPaddings[1],
-            bottomPadding = bottomPaddings[1],
-            textStyle = textStyles[1],
-            showKeyword = keywordVisibilities[1],
-            onHeightInflated = { height -> cardHeights[1] = height },
-            onClick = { onClick(1) }
-        )
-        Card(
-            modifier = Modifier
-                .offset(y = (166 - cardOffsets[0]).dp)
-                .zIndex(5f)
-                .padding(horizontal = horizontalPaddings[0]),
-            feed = news[0],
-            cardColor = cardColors[0],
-            topPadding = topPaddings[0],
-            bottomPadding = bottomPaddings[0],
-            textStyle = textStyles[0],
-            showKeyword = keywordVisibilities[0],
-            onHeightInflated = { height -> cardHeights[0] = height },
-            onClick = { onClick(0) }
-        )
+        // 항상 6
+        repeat(news.size) { index ->
+            Card(
+                modifier = Modifier
+                    .zIndex(5f - index)
+                    .offset(y = (166 - cardOffsets[index]).dp)
+                    .padding(horizontal = horizontalPaddings[index]),
+                feed = news[index],
+                cardColor = cardColors[index],
+                topPadding = topPaddings[index],
+                bottomPadding = bottomPaddings[index],
+                textStyle = textStyles[index],
+                showKeyword = keywordVisibilities[index],
+                onHeightInflated = { height -> cardHeights[index] = height },
+                onClick = { onClick(index) },
+            )
+        }
     }
 }
 
