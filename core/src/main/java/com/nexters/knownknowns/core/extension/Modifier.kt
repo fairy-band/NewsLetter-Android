@@ -1,5 +1,6 @@
 package com.nexters.knownknowns.core.extension
 
+import android.os.VibrationEffect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier = composed {
@@ -24,6 +26,8 @@ fun Modifier.bounceClick(
     durationMillis: Int = 150,
     onClick: () -> Unit
 ): Modifier = composed {
+    val context = LocalContext.current
+    val vibrator = context.vibrator
     val scope = rememberCoroutineScope()
     val scale = remember { Animatable(1f) }
 
@@ -37,6 +41,12 @@ fun Modifier.bounceClick(
             interactionSource = remember { MutableInteractionSource() }
         ) {
             scope.launch {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        100,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
                 scale.animateTo(
                     targetValue = scaleTo,
                     animationSpec = tween(durationMillis)
