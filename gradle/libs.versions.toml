@@ -84,6 +84,8 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+
+# logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [bundles]
