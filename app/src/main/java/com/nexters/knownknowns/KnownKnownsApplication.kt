@@ -21,13 +21,17 @@ class KnownKnownsApplication : Application() {
             modules(DataModule().module, PresentationModule().module)
         }
 
-        // fixme debug에서만 동작하도록 설정하세요.
-//        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-//        }
+        }
 
-        val forceRefresh = true
-        FirebaseInstallations.getInstance().getToken(forceRefresh)
+        printInstallationToken()
+    }
+
+    fun printInstallationToken() {
+        if (!BuildConfig.DEBUG) return
+
+        FirebaseInstallations.getInstance().getToken(true)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Timber.d("설치 인증 토큰: ${task.result?.token}")
