@@ -156,6 +156,45 @@ private fun Cards(
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardColors = listOf(
+        KnownKnownsTheme.colors.greenBackgroundPrimary,
+        KnownKnownsTheme.colors.pinkBackgroundPrimary,
+        KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
+        KnownKnownsTheme.colors.blueBackgroundPrimary,
+        KnownKnownsTheme.colors.orangeBackgroundPrimary,
+        KnownKnownsTheme.colors.purpleBackgroundPrimary,
+    )
+    val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
+    val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
+    val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
+    val keywordVisibilities = listOf(true, true, true, false, false, false)
+    val textStyles = listOf(
+        KnownKnownsTheme.typography.body18.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body18.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body16.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body15.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body14.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body13.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        )
+    )
+
     var card1Height by remember { mutableIntStateOf(0) }
     var card2Height by remember { mutableIntStateOf(0) }
     var card3Height by remember { mutableIntStateOf(0) }
@@ -181,15 +220,12 @@ private fun Cards(
             modifier = Modifier
                 .zIndex(0f)
                 .offset(y = (166 - card6Offset).dp)
-                .padding(horizontal = 80.dp),
+                .padding(horizontal = horizontalPaddings[5]),
             feed = news[5],
-            cardColor = KnownKnownsTheme.colors.purpleBackgroundPrimary,
-            topPadding = 16.dp,
-            bottomPadding = 12.dp,
-            textStyle = KnownKnownsTheme.typography.body13.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
+            cardColor = cardColors[5],
+            topPadding = topPaddings[5],
+            bottomPadding = bottomPaddings[5],
+            textStyle = textStyles[5],
             onHeightInflated = { height -> card6Height = height },
             onClick = { onClick(5) }
         )
@@ -197,15 +233,12 @@ private fun Cards(
             modifier = Modifier
                 .zIndex(1f)
                 .offset(y = (166 - card5Offset).dp)
-                .padding(horizontal = 64.dp),
+                .padding(horizontal = horizontalPaddings[4]),
             feed = news[4],
-            cardColor = KnownKnownsTheme.colors.orangeBackgroundPrimary,
-            topPadding = 16.dp,
-            bottomPadding = 12.dp,
-            textStyle = KnownKnownsTheme.typography.body14.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
+            cardColor = cardColors[4],
+            topPadding = topPaddings[4],
+            bottomPadding = bottomPaddings[4],
+            textStyle = textStyles[4],
             onHeightInflated = { height -> card5Height = height },
             onClick = { onClick(4) }
         )
@@ -213,15 +246,12 @@ private fun Cards(
             modifier = Modifier
                 .zIndex(2f)
                 .offset(y = (166 - card4Offset).dp)
-                .padding(horizontal = 48.dp),
+                .padding(horizontal = horizontalPaddings[3]),
             feed = news[3],
-            cardColor = KnownKnownsTheme.colors.blueBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body15.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
+            cardColor = cardColors[3],
+            topPadding = topPaddings[3],
+            bottomPadding = bottomPaddings[3],
+            textStyle = textStyles[3],
             onHeightInflated = { height -> card4Height = height },
             onClick = { onClick(3) }
         )
@@ -229,16 +259,13 @@ private fun Cards(
             modifier = Modifier
                 .zIndex(3f)
                 .offset(y = (166 - card3Offset).dp)
-                .padding(horizontal = 32.dp),
+                .padding(horizontal = horizontalPaddings[2]),
             feed = news[2],
-            cardColor = KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body16.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            showKeyword = true,
+            cardColor = cardColors[2],
+            topPadding = topPaddings[2],
+            bottomPadding = bottomPaddings[2],
+            textStyle = textStyles[2],
+            showKeyword = keywordVisibilities[2],
             onHeightInflated = { height -> card3Height = height },
             onClick = { onClick(2) }
         )
@@ -246,32 +273,27 @@ private fun Cards(
             modifier = Modifier
                 .zIndex(4f)
                 .offset(y = (166 - card2Offset).dp)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = horizontalPaddings[1]),
             feed = news[1],
-            cardColor = KnownKnownsTheme.colors.pinkBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body18.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            showKeyword = true,
+            cardColor = cardColors[1],
+            topPadding = topPaddings[1],
+            bottomPadding = bottomPaddings[1],
+            textStyle = textStyles[1],
+            showKeyword = keywordVisibilities[1],
             onHeightInflated = { height -> card2Height = height },
             onClick = { onClick(1) }
         )
         Card(
             modifier = Modifier
                 .offset(y = (166 - card1Height).dp)
-                .zIndex(5f),
+                .zIndex(5f)
+                .padding(horizontal = horizontalPaddings[0]),
             feed = news[0],
-            cardColor = KnownKnownsTheme.colors.greenBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body18.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            showKeyword = true,
+            cardColor = cardColors[0],
+            topPadding = topPaddings[0],
+            bottomPadding = bottomPaddings[0],
+            textStyle = textStyles[0],
+            showKeyword = keywordVisibilities[0],
             onHeightInflated = { height -> card1Height = height },
             onClick = { onClick(0) }
         )
