@@ -3,8 +3,6 @@ package com.nexters.knownknowns.core.designsystem.button
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -21,14 +19,17 @@ import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 fun BaseButton(
     paddingVertical: Dp,
     onClick: () -> Unit,
-    backgroundColor: Color,
-    textColor: Color,
+    containerColor: Color,
+    contentColor: Color,
     shape: Shape,
     text: String,
     textStyle: TextStyle,
     modifier: Modifier = Modifier,
-    borderWidth: Dp = 1.dp,
-    borderColor: Color = KnownKnownsTheme.colors.borderPrimary
+    isEnabled: Boolean = true,
+    borderWidth: Dp = 0.dp,
+    borderColor: Color = KnownKnownsTheme.colors.borderPrimary,
+    disabledContainerColor: Color = KnownKnownsTheme.colors.fillDisabled,
+    disabledContentColor: Color = KnownKnownsTheme.colors.textDisabled
 ) {
     Button(
         contentPadding = PaddingValues(vertical = paddingVertical),
@@ -39,9 +40,12 @@ fun BaseButton(
                 color = borderColor,
                 shape = shape
             ),
+        enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor,
-            contentColor = textColor,
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = disabledContainerColor,
+            disabledContentColor = disabledContentColor,
         ),
         onClick = onClick,
     ) {
