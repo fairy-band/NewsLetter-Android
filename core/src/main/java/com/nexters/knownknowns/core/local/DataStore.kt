@@ -6,6 +6,5 @@ interface DataStore {
     val clickStateFlow: Flow<ClickState>
     suspend fun incrementClickCount()
     suspend fun resetClickState()
-     fun getClickState(): Flow<ClickState>
     suspend fun recordBottomSheetShown()
 }

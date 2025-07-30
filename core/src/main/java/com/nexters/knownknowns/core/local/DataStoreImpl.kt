@@ -27,8 +27,6 @@ class DataStoreImpl(context: Context) : DataStore {
             )
         }
 
-    override fun getClickState(): Flow<ClickState> = clickStateFlow
-
     override suspend fun recordBottomSheetShown() {
         dataStore.edit { preferences ->
             preferences[LAST_SHOWN_TIMESTAMP] = System.currentTimeMillis()
