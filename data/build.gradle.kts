@@ -34,6 +34,9 @@ android {
 }
 
 dependencies {
+    // module
+    implementation(project(":core"))
+
     // network
     implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
