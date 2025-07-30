@@ -1,6 +1,6 @@
 package com.nexters.knownknowns.presentation.model
 
-import com.nexters.knownknowns.data.model.NewsResponse
+import com.nexters.knownknowns.data.network.model.NewsResponse
 
 data class NewsFeed(
     val id: String,
@@ -15,9 +15,9 @@ fun NewsResponse.toNewsFeed(): NewsFeed {
     return NewsFeed(
         id = id,
         title = title,
-        keyword = keyword,
-        letter = letter,
+        keyword = topKeyword,
+        letter = newsletterName,
         summary = summary,
-        url = url,
+        url = contentUrl,
     )
 }
