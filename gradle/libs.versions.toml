@@ -31,9 +31,10 @@ okhttp = "5.1.0"
 # serialization
 kotlinxSerializationCore = "1.6.2"
 
-# firebase
+# google
 google-services = "4.4.3"
 firebaseBom = "33.16.0"
+flowlayout = "0.36.0"
 
 # coroutine
 kotlinxCoroutinesAndroid = "1.10.2"
@@ -82,9 +83,10 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 # serialization
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
-# firebase
+# google
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "flowlayout" }
 
 # logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
