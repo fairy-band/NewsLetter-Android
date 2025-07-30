@@ -75,10 +75,13 @@ internal fun HomeBottomSheet(
                 containerColor = KnownKnownsTheme.colors.fillPrimaryInverse,
                 contentColor = KnownKnownsTheme.colors.textStrongInverse,
                 shape = CircleShape,
-                text = stringResource(id = R.string.home_bottomsheet_button),
-                textStyle = KnownKnownsTheme.typography.body16.copy(fontWeight = FontWeight.SemiBold),
                 isEnabled = true
-            )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.home_bottomsheet_button),
+                    style = KnownKnownsTheme.typography.body16.copy(fontWeight = FontWeight.SemiBold)
+                )
+            }
             Spacer(modifier = Modifier.height(37.dp))
         }
     }

@@ -87,14 +87,15 @@ internal fun PopUpItem(
         BaseButton(
             paddingVertical = 12.dp,
             onClick = onClick,
-            containerColor = KnownKnownsTheme.colors.backgroundSurface,
-            contentColor = KnownKnownsTheme.colors.textPrimary,
             shape = CircleShape,
-            text = stringResource(id = R.string.home_popup_button_text),
-            textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
             borderWidth = 1.dp,
             borderColor = KnownKnownsTheme.colors.borderSecondary
-        )
+        ) {
+            Text(
+                text = stringResource(id = R.string.home_popup_button_text),
+                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+            )
+        }
     }
 }
 

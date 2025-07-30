@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
@@ -19,17 +17,16 @@ import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 fun BaseButton(
     paddingVertical: Dp,
     onClick: () -> Unit,
-    containerColor: Color,
-    contentColor: Color,
     shape: Shape,
-    text: String,
-    textStyle: TextStyle,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
     borderWidth: Dp = 0.dp,
     borderColor: Color = KnownKnownsTheme.colors.borderPrimary,
+    containerColor: Color = KnownKnownsTheme.colors.backgroundSurface,
+    contentColor: Color = KnownKnownsTheme.colors.textPrimary,
     disabledContainerColor: Color = KnownKnownsTheme.colors.fillDisabled,
-    disabledContentColor: Color = KnownKnownsTheme.colors.textDisabled
+    disabledContentColor: Color = KnownKnownsTheme.colors.textDisabled,
+    content: @Composable () -> Unit,
 ) {
     Button(
         contentPadding = PaddingValues(vertical = paddingVertical),
@@ -49,9 +46,6 @@ fun BaseButton(
         ),
         onClick = onClick,
     ) {
-        Text(
-            text = text,
-            style = textStyle,
-        )
+        content()
     }
 }
