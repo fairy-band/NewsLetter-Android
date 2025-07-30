@@ -2,7 +2,6 @@ package com.nexters.knownknowns.presentation.feature.home.bottomsheet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.designsystem.bottomsheet.BaseBottomSheet
 import com.nexters.knownknowns.core.designsystem.button.BaseButton
+import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 
@@ -130,7 +130,7 @@ private fun PositionList(
                     )
                     .padding(start = 10.dp, end = 12.dp)
                     .padding(vertical = 8.dp)
-                    .clickable { onClick(position) },
+                    .noRippleClickable { onClick(position) },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -172,7 +172,7 @@ private fun CareerList(
                     )
                     .padding(start = 10.dp, end = 12.dp)
                     .padding(vertical = 8.dp)
-                    .clickable { onClick(career) },
+                    .noRippleClickable { onClick(career) },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
