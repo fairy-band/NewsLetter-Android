@@ -62,7 +62,7 @@ internal fun PopUpDialog(
     Box {
         AnimatedVisibility(
             visibility,
-            enter = fadeIn(animationSpec = tween(200)),
+            enter = fadeIn(animationSpec = tween(150)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
             Box(
@@ -75,7 +75,7 @@ internal fun PopUpDialog(
 
         AnimatedVisibility(
             visibility,
-            enter = fadeIn(animationSpec = tween(150, 200)),
+            enter = fadeIn(animationSpec = tween(200, 150)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
             Column(
