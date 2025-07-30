@@ -54,11 +54,6 @@ internal fun PopUpDialog(
     val pageSize = screenWidth * CARD_WIDTH_RATIO
     val horizontalPadding = (screenWidth - pageSize) / 2
 
-    val pagerState = rememberPagerState(
-        pageCount = { cardItems.size },
-        initialPage = cardIndex
-    )
-
     Box {
         AnimatedVisibility(
             visibility,
@@ -78,6 +73,11 @@ internal fun PopUpDialog(
             enter = fadeIn(animationSpec = tween(200, 150)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
+            val pagerState = rememberPagerState(
+                pageCount = { cardItems.size },
+                initialPage = cardIndex
+            )
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
