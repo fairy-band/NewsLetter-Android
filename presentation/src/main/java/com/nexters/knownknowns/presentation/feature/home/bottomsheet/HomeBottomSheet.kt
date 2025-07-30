@@ -2,6 +2,7 @@ package com.nexters.knownknowns.presentation.feature.home.bottomsheet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -17,6 +18,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -91,21 +97,29 @@ internal fun HomeBottomSheet(
 private fun PositionList(
     modifier: Modifier = Modifier,
 ) {
+    val selectedPositions = remember { mutableStateListOf<Position>() }
+
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Position.entries.forEach { position ->
+            val isSelected = position in selectedPositions
+
             Row(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
-                        color = KnownKnownsTheme.colors.borderPrimary,
+                        color = if (isSelected) KnownKnownsTheme.colors.borderStrong else KnownKnownsTheme.colors.borderPrimary,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(start = 10.dp, end = 12.dp)
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 8.dp)
+                    .clickable {
+                        if (isSelected) selectedPositions.remove(position)
+                        else selectedPositions.add(position)
+                    },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -128,21 +142,28 @@ private fun PositionList(
 private fun CareerList(
     modifier: Modifier = Modifier,
 ) {
+    var selectedCareer by remember { mutableStateOf<Career?>(null) }
+
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Career.entries.forEach { career ->
+            val isSelected = career == selectedCareer
+
             Row(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
-                        color = KnownKnownsTheme.colors.borderPrimary,
+                        color = if (isSelected) KnownKnownsTheme.colors.borderStrong else KnownKnownsTheme.colors.borderPrimary,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(start = 10.dp, end = 12.dp)
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 8.dp)
+                    .clickable {
+                        selectedCareer = career
+                    },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
