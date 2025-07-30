@@ -16,4 +16,9 @@ sealed class Screen(val name: String) : NavKey {
     data class Detail(
         val title: String,
     ) : Screen("detail")
+
+    @Serializable
+    data class WebView(
+        val url: String,
+    ) : Screen("webview")
 }
