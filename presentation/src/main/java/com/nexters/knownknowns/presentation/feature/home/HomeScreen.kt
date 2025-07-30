@@ -1,12 +1,6 @@
 package com.nexters.knownknowns.presentation.feature.home
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,15 +22,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -49,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexters.knownknowns.core.extension.bounceClick
-import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
@@ -58,7 +47,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.Duration
 import java.time.LocalDate
@@ -82,40 +70,41 @@ private fun HomeScreen(
 //    val navController = LocalNavController.current
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
-    if (cardIndex != null) {
-        PopUpDialog(
-            onDismissRequest = { cardIndex = null },
-            cardItems = news,
-            cardIndex = cardIndex ?: -1
-        )
-    }
-
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            val today = LocalDate.now()
-            Text(
-                modifier = Modifier
-                    .padding(top = 44.dp)
-                    .padding(horizontal = 20.dp),
-                text = stringResource(
-                    R.string.home_title,
-                    today.year,
-                    today.monthValue.toString().padStart(2, '0'),
-                    today.dayOfMonth.toString().padStart(2, '0')
-                ),
-                style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
-                color = KnownKnownsTheme.colors.textStrong,
-            )
-            Timer()
-            Spacer(modifier = Modifier.weight(1f))
-            Cards(
-                news = news,
-                onClick = { index ->
-                    cardIndex = index
-                }
+        Box {
+            Column(
+                modifier = Modifier.padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                val today = LocalDate.now()
+                Text(
+                    modifier = Modifier
+                        .padding(top = 44.dp)
+                        .padding(horizontal = 20.dp),
+                    text = stringResource(
+                        R.string.home_title,
+                        today.year,
+                        today.monthValue.toString().padStart(2, '0'),
+                        today.dayOfMonth.toString().padStart(2, '0')
+                    ),
+                    style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
+                    color = KnownKnownsTheme.colors.textStrong,
+                )
+                Timer()
+                Spacer(modifier = Modifier.weight(1f))
+                Cards(
+                    news = news,
+                    onClick = { index ->
+                        cardIndex = index
+                    }
+                )
+            }
+
+            PopUpDialog(
+                visibility = cardIndex != null,
+                onDismissRequest = { cardIndex = null },
+                cardItems = news,
+                cardIndex = cardIndex ?: 0
             )
         }
     }

@@ -1,5 +1,9 @@
 package com.nexters.knownknowns.presentation.feature.home.dialog
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
@@ -40,68 +43,84 @@ internal object PopUpDialogDefaults {
 
 @Composable
 internal fun PopUpDialog(
+    visibility: Boolean,
     onDismissRequest: () -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
 ) {
-    val pagerState = rememberPagerState(
-        pageCount = { cardItems.size },
-        initialPage = cardIndex
-    )
-
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
     val pageSize = screenWidth * CARD_WIDTH_RATIO
     val horizontalPadding = (screenWidth - pageSize) / 2
 
-    Dialog(
-        onDismissRequest = onDismissRequest,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .noRippleClickable(onClick = onDismissRequest),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.weight(217f))
-            HorizontalPager(
-                state = pagerState,
-                pageSize = PageSize.Fixed(pageSize),
-                pageSpacing = 12.dp,
-                contentPadding = PaddingValues(horizontal = horizontalPadding),
-                key = { cardItems[it].id },
-            ) { pageIndex ->
-                val item = cardItems[pageIndex]
+    val pagerState = rememberPagerState(
+        pageCount = { cardItems.size },
+        initialPage = cardIndex
+    )
 
-                PopUpItem(
-                    newsFeed = NewsFeed(
-                        id = item.id,
-                        title = item.title,
-                        keyword = item.keyword,
-                        letter = item.letter,
-                        summary = item.summary,
-                        url = item.url
-                    ),
-                    titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
-                    onClick = onDismissRequest,
+    Box {
+        AnimatedVisibility(
+            visibility,
+            enter = fadeIn(animationSpec = tween(200)),
+            exit = fadeOut(animationSpec = tween(200)),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.7f))
+                    .noRippleClickable(onClick = onDismissRequest)
+            )
+        }
+
+        AnimatedVisibility(
+            visibility,
+            enter = fadeIn(animationSpec = tween(150, 200)),
+            exit = fadeOut(animationSpec = tween(200)),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.weight(217f))
+                HorizontalPager(
+                    state = pagerState,
+                    pageSize = PageSize.Fixed(pageSize),
+                    pageSpacing = 12.dp,
+                    contentPadding = PaddingValues(horizontal = horizontalPadding),
+                    key = { cardItems[it].id },
+                ) { pageIndex ->
+                    val item = cardItems[pageIndex]
+
+                    PopUpItem(
+                        newsFeed = NewsFeed(
+                            id = item.id,
+                            title = item.title,
+                            keyword = item.keyword,
+                            letter = item.letter,
+                            summary = item.summary,
+                            url = item.url
+                        ),
+                        titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
+                        onClick = onDismissRequest,
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Indicator(
+                    pageCount = cardItems.size,
+                    pageIndex = pagerState.currentPage
                 )
+                Spacer(modifier = Modifier.height(49.dp))
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
+                    contentDescription = "pop up dismiss button",
+                    modifier = Modifier.noRippleClickable(onClick = onDismissRequest)
+                )
+                Spacer(modifier = Modifier.weight(124f))
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Indicator(
-                pageCount = cardItems.size,
-                pageIndex = pagerState.currentPage
-            )
-            Spacer(modifier = Modifier.height(49.dp))
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
-                contentDescription = "pop up dismiss button",
-                modifier = Modifier.noRippleClickable(onClick = onDismissRequest)
-            )
-            Spacer(modifier = Modifier.weight(124f))
         }
     }
+
 }
 
 @Composable
