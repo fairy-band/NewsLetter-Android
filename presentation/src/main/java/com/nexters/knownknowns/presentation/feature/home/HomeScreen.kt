@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -40,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
+import com.nexters.knownknowns.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
@@ -57,25 +59,52 @@ fun HomeScreen(
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.colorType.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    HomeScreen(news = news)
-}
-
-@Composable
-private fun HomeScreen(
-    news: ImmutableList<NewsFeed>,
-) {
-    // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
-//    val navController = LocalNavController.current
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
     if (cardIndex != null) {
         PopUpDialog(
-            onDismissRequest = { cardIndex = null },
+            onDismissRequest = {
+                cardIndex = null
+                viewModel.onNewsClicked()
+            },
             cardItems = news,
             cardIndex = cardIndex ?: -1
         )
     }
+
+    var bottomSheetVisibility by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.clickCount) {
+        if (state.clickCount >= 3) {
+            bottomSheetVisibility = true
+        }
+    }
+
+    if (bottomSheetVisibility) {
+        HomeBottomSheet(
+            onDismissRequest = {
+                bottomSheetVisibility = false
+            }
+        )
+    }
+
+    HomeScreen(
+        onCardClick = { index ->
+            cardIndex = index
+        },
+        news = news
+    )
+}
+
+@Composable
+private fun HomeScreen(
+    onCardClick: (Int) -> Unit,
+    news: ImmutableList<NewsFeed>,
+) {
+    // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
+//    val navController = LocalNavController.current
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -101,7 +130,7 @@ private fun HomeScreen(
             Cards(
                 news = news,
                 onClick = { index ->
-                    cardIndex = index
+                    onCardClick(index)
                 }
             )
         }
@@ -355,6 +384,7 @@ private fun Card(
 private fun HomeScreenPreview() {
     KnownKnownsTheme {
         HomeScreen(
+            onCardClick = {},
             news = persistentListOf(
                 NewsFeed(
                     id = "1",
