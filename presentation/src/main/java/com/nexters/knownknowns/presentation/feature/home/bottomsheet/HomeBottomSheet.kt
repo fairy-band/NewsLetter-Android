@@ -41,6 +41,9 @@ internal fun HomeBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val selectedPositions = remember { mutableStateListOf<Position>() }
+    var selectedCareer by remember { mutableStateOf<Career?>(null) }
+    val isButtonEnabled = selectedCareer != null && selectedPositions.isNotEmpty()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     BaseBottomSheet(
@@ -65,7 +68,13 @@ internal fun HomeBottomSheet(
                 style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
             )
             Spacer(modifier = Modifier.height(12.dp))
-            PositionList()
+            PositionList(
+                selectedPositions = selectedPositions,
+                onClick = { position ->
+                    if (position in selectedPositions) selectedPositions.remove(position)
+                    else selectedPositions.add(position)
+                }
+            )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = stringResource(id = R.string.home_bottomsheet_career),
@@ -73,7 +82,12 @@ internal fun HomeBottomSheet(
                 style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
             )
             Spacer(modifier = Modifier.height(12.dp))
-            CareerList()
+            CareerList(
+                selectedCareer = selectedCareer,
+                onClick = { career ->
+                    selectedCareer = career
+                }
+            )
             Spacer(modifier = Modifier.height(32.dp))
             BaseButton(
                 paddingVertical = 16.dp,
@@ -81,7 +95,7 @@ internal fun HomeBottomSheet(
                 containerColor = KnownKnownsTheme.colors.fillPrimaryInverse,
                 contentColor = KnownKnownsTheme.colors.textStrongInverse,
                 shape = CircleShape,
-                isEnabled = true
+                isEnabled = isButtonEnabled
             ) {
                 Text(
                     text = stringResource(id = R.string.home_bottomsheet_button),
@@ -95,10 +109,10 @@ internal fun HomeBottomSheet(
 
 @Composable
 private fun PositionList(
+    selectedPositions: List<Position>,
+    onClick: (Position) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val selectedPositions = remember { mutableStateListOf<Position>() }
-
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -116,10 +130,7 @@ private fun PositionList(
                     )
                     .padding(start = 10.dp, end = 12.dp)
                     .padding(vertical = 8.dp)
-                    .clickable {
-                        if (isSelected) selectedPositions.remove(position)
-                        else selectedPositions.add(position)
-                    },
+                    .clickable { onClick(position) },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -140,10 +151,10 @@ private fun PositionList(
 
 @Composable
 private fun CareerList(
+    selectedCareer: Career?,
+    onClick: (Career) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedCareer by remember { mutableStateOf<Career?>(null) }
-
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -161,9 +172,7 @@ private fun CareerList(
                     )
                     .padding(start = 10.dp, end = 12.dp)
                     .padding(vertical = 8.dp)
-                    .clickable {
-                        selectedCareer = career
-                    },
+                    .clickable { onClick(career) },
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
