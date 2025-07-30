@@ -37,7 +37,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
@@ -59,7 +61,7 @@ fun HomeScreen(
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.colorType.collectAsStateWithLifecycle()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
@@ -76,10 +78,16 @@ fun HomeScreen(
 
     var bottomSheetVisibility by remember { mutableStateOf(false) }
 
-    LaunchedEffect(state.clickCount) {
-        if (state.clickCount >= 3) {
-            bottomSheetVisibility = true
-        }
+    LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
+        viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
+            .collect { event ->
+                when (event) {
+                    is HomeSideEffect.ShowBottomSheet -> {
+                        bottomSheetVisibility = true
+                        viewModel.onBottomSheetShown()
+                    }
+                }
+            }
     }
 
     if (bottomSheetVisibility) {

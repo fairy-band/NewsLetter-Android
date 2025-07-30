@@ -1,5 +1,6 @@
 package com.nexters.knownknowns.data.repositoryimpl
 
+import com.nexters.knownknowns.core.local.ClickState
 import com.nexters.knownknowns.core.local.DataStore
 import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.data.repository.NewsRepository
@@ -66,9 +67,17 @@ internal class NewsRepositoryImpl(
         emit(_news.toList())
     }
 
-    override suspend fun getClickCount(): Flow<Int> = dataStore.clickCountFlow
+    override suspend fun getClickState(): Flow<ClickState> = dataStore.clickStateFlow
 
     override suspend fun incrementClickCount() {
         dataStore.incrementClickCount()
+    }
+
+    override suspend fun resetClickState() {
+        dataStore.resetClickState()
+    }
+
+    override suspend fun recordBottomSheetShown() {
+        dataStore.recordBottomSheetShown()
     }
 }

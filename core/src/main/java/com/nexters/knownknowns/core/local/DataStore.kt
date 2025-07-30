@@ -3,7 +3,9 @@ package com.nexters.knownknowns.core.local
 import kotlinx.coroutines.flow.Flow
 
 interface DataStore {
-    val clickCountFlow: Flow<Int>
+    val clickStateFlow: Flow<ClickState>
     suspend fun incrementClickCount()
-    suspend fun resetClickCount()
+    suspend fun resetClickState()
+     fun getClickState(): Flow<ClickState>
+    suspend fun recordBottomSheetShown()
 }

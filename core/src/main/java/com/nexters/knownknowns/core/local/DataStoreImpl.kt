@@ -3,20 +3,37 @@ package com.nexters.knownknowns.core.local
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
+
+data class ClickState(
+    val count: Int,
+    val lastShownTimestamp: Long
+)
 
 @Single
 class DataStoreImpl(context: Context) : DataStore {
     private val Context.dataStore by preferencesDataStore(name = "dataStore")
     private val dataStore = context.dataStore
 
-    override val clickCountFlow: Flow<Int> = dataStore.data
+    override val clickStateFlow: Flow<ClickState> = dataStore.data
         .map { preferences ->
-            preferences[CLICK_COUNT] ?: 0
+            ClickState(
+                count = preferences[CLICK_COUNT] ?: 0,
+                lastShownTimestamp = preferences[LAST_SHOWN_TIMESTAMP] ?: 0L
+            )
         }
+
+    override fun getClickState(): Flow<ClickState> = clickStateFlow
+
+    override suspend fun recordBottomSheetShown() {
+        dataStore.edit { preferences ->
+            preferences[LAST_SHOWN_TIMESTAMP] = System.currentTimeMillis()
+        }
+    }
 
     override suspend fun incrementClickCount() {
         dataStore.edit { preferences ->
@@ -25,13 +42,15 @@ class DataStoreImpl(context: Context) : DataStore {
         }
     }
 
-    override suspend fun resetClickCount() {
+    override suspend fun resetClickState() {
         dataStore.edit { preferences ->
             preferences[CLICK_COUNT] = 0
+            preferences[LAST_SHOWN_TIMESTAMP] = 0L
         }
     }
 
     companion object {
         private val CLICK_COUNT = intPreferencesKey("news_click_count")
+        private val LAST_SHOWN_TIMESTAMP = longPreferencesKey("last_shown_timestamp")
     }
 }

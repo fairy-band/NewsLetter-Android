@@ -9,23 +9,24 @@ import com.nexters.knownknowns.presentation.model.toNewsFeed
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import java.util.concurrent.TimeUnit
 
 @KoinViewModel
 class HomeViewModel(
     private val newsRepository: NewsRepository,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
-    private var _state: MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
-    val state: StateFlow<HomeState> = _state.asStateFlow()
+    private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
         .getNews()
@@ -47,28 +48,44 @@ class HomeViewModel(
             "static"
         )
 
-    init {
-        observeClickCount()
-    }
+    private val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
 
-    private fun observeClickCount() {
+    fun onBottomSheetShown() {
         viewModelScope.launch {
-            newsRepository.getClickCount().collect { countFromDataStore ->
-                _state.update { currentState ->
-                    currentState.copy(clickCount = countFromDataStore)
-                }
-            }
+            newsRepository.recordBottomSheetShown()
         }
     }
 
     fun onNewsClicked() {
         viewModelScope.launch {
-            newsRepository.incrementClickCount()
+            val currentState = newsRepository.getClickState().first()
+            val lastShown = currentState.lastShownTimestamp
+
+            if (lastShown > 0L) {
+                val timeSinceLastShown = System.currentTimeMillis() - lastShown
+
+                if (timeSinceLastShown > sevenDaysInMillis) {
+                    newsRepository.resetClickState()
+                } else {
+                    return@launch
+                }
+            } else {
+                newsRepository.incrementClickCount()
+
+                if (currentState.count == TRIGGER_COUNT - 1) {
+                    _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
+                }
+            }
         }
     }
 
-    // 예시 1
-    // 일반적인 코루틴은 아래처럼 사용할 수 있다.
+    companion object {
+        private const val SUPPRESSION_DAYS = 7L
+        const val TRIGGER_COUNT = 3
+    }
+
+// 예시 1
+// 일반적인 코루틴은 아래처럼 사용할 수 있다.
 //    fun fetchNews() {
 //        newsRepository
 //            .getNews()
