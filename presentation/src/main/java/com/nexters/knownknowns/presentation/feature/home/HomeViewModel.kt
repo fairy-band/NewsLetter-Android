@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
+import com.nexters.knownknowns.domain.usecase.BottomSheetUseCase
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import com.nexters.knownknowns.presentation.model.toNewsFeed
 import kotlinx.collections.immutable.ImmutableList
@@ -13,16 +14,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import java.util.concurrent.TimeUnit
 
 @KoinViewModel
 class HomeViewModel(
     private val newsRepository: NewsRepository,
+    private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
@@ -56,29 +56,12 @@ class HomeViewModel(
 
     fun onNewsClicked() {
         viewModelScope.launch {
-            val currentState = newsRepository.getClickState().first()
-            val lastShown = currentState.lastShownTimestamp
+            val shouldShowBottomSheet = bottomSheetUseCase()
 
-            if (lastShown > 0L) {
-                val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
-                val timeSinceLastShown = System.currentTimeMillis() - lastShown
-
-                if (timeSinceLastShown < sevenDaysInMillis) return@launch
-
-                newsRepository.resetClickState()
-            } else {
-                newsRepository.incrementClickCount()
-
-                if (currentState.count == TRIGGER_COUNT - 1) {
-                    _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
-                }
+            if (shouldShowBottomSheet) {
+                _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
             }
         }
-    }
-
-    companion object {
-        private const val SUPPRESSION_DAYS = 7L
-        const val TRIGGER_COUNT = 3
     }
 
 // 예시 1
