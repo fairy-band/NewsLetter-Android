@@ -48,8 +48,6 @@ class HomeViewModel(
             "static"
         )
 
-    private val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
-
     fun onBottomSheetShown() {
         viewModelScope.launch {
             newsRepository.recordBottomSheetShown()
@@ -62,6 +60,7 @@ class HomeViewModel(
             val lastShown = currentState.lastShownTimestamp
 
             if (lastShown > 0L) {
+                val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
                 val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
                 if (timeSinceLastShown > sevenDaysInMillis) {
