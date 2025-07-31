@@ -23,4 +23,5 @@ rootProject.name = "Known Knowns"
 include(":app")
 include(":core")
 include(":data")
+include(":domain")
 include(":presentation")
