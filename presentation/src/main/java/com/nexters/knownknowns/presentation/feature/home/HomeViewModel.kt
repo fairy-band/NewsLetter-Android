@@ -63,11 +63,9 @@ class HomeViewModel(
                 val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
                 val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
-                if (timeSinceLastShown > sevenDaysInMillis) {
-                    newsRepository.resetClickState()
-                } else {
-                    return@launch
-                }
+                if (timeSinceLastShown < sevenDaysInMillis) return@launch
+
+                newsRepository.resetClickState()
             } else {
                 newsRepository.incrementClickCount()
 
