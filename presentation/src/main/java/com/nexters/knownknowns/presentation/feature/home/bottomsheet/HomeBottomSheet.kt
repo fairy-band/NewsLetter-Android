@@ -3,6 +3,7 @@ package com.nexters.knownknowns.presentation.feature.home.bottomsheet
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -49,6 +52,7 @@ internal fun HomeBottomSheet(
     BaseBottomSheet(
         sheetState = sheetState,
         onDismissRequest = onDismissRequest,
+        dragHandle = { DragHandle() }
     ) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),
@@ -183,5 +187,18 @@ private fun CareerList(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun DragHandle(
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.padding(top = 12.dp, bottom = 8.dp),
+        color = KnownKnownsTheme.colors.fillPrimary,
+        shape = MaterialTheme.shapes.extraLarge,
+    ) {
+        Box(Modifier.size(width = 40.dp, height = 4.dp))
     }
 }

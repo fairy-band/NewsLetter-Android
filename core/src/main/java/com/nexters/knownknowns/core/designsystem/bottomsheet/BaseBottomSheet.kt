@@ -12,12 +12,14 @@ import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 fun BaseBottomSheet(
     onDismissRequest: () -> Unit,
     sheetState: SheetState = rememberModalBottomSheetState(),
+    dragHandle: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = KnownKnownsTheme.colors.backgroundSurface,
+        dragHandle = dragHandle,
     ) {
         content()
     }
