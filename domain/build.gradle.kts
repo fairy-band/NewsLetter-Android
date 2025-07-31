@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -33,5 +34,14 @@ android {
 }
 
 dependencies {
+    // module
     implementation(project(":data"))
+
+    // coroutine
+    implementation(libs.kotlinx.coroutines.android)
+
+    // di
+    implementation(libs.koin.annotations)
+    implementation(libs.koin.core)
+    ksp(libs.koin.ksp)
 }
