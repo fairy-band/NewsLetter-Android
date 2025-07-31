@@ -84,7 +84,6 @@ fun HomeScreen(
                 when (event) {
                     is HomeSideEffect.ShowBottomSheet -> {
                         bottomSheetVisibility = true
-                        viewModel.onBottomSheetShown()
                     }
                 }
             }

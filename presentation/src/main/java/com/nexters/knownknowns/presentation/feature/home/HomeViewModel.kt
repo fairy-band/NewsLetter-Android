@@ -48,19 +48,20 @@ class HomeViewModel(
             "static"
         )
 
-    fun onBottomSheetShown() {
-        viewModelScope.launch {
-            newsRepository.recordBottomSheetShown()
-        }
-    }
-
     fun onNewsClicked() {
         viewModelScope.launch {
             val shouldShowBottomSheet = bottomSheetUseCase()
 
             if (shouldShowBottomSheet) {
                 _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
+                onBottomSheetShown()
             }
+        }
+    }
+
+    private fun onBottomSheetShown() {
+        viewModelScope.launch {
+            newsRepository.recordBottomSheetShown()
         }
     }
 
