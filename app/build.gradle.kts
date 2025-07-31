@@ -79,6 +79,7 @@ dependencies {
     // module
     implementation(project(":presentation"))
     implementation(project(":data"))
+    implementation(project(":domain"))
 
     // firebase
     implementation(platform(libs.firebase.bom))
