@@ -1,7 +1,7 @@
 package com.nexters.knownknowns.data.repositoryimpl
 
-import com.nexters.knownknowns.core.local.ClickState
-import com.nexters.knownknowns.core.local.DataStore
+import com.nexters.knownknowns.data.local.ClickState
+import com.nexters.knownknowns.data.local.DataStore
 import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.data.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow

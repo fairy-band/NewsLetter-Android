@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.core.local
+package com.nexters.knownknowns.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit

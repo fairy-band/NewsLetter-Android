@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.core.local
+package com.nexters.knownknowns.data.local
 
 import kotlinx.coroutines.flow.Flow
 

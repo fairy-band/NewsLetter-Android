@@ -34,9 +34,6 @@ android {
 }
 
 dependencies {
-    // module
-    implementation(project(":core"))
-
     // network
     implementation(libs.bundles.retrofit)
     implementation(libs.okhttp.logging)
@@ -56,4 +53,8 @@ dependencies {
 
     // log
     implementation(libs.timber)
+
+    // data store
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
 }

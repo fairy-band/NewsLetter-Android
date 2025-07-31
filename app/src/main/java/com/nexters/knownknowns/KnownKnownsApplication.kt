@@ -2,7 +2,6 @@ package com.nexters.knownknowns
 
 import android.app.Application
 import com.google.firebase.installations.FirebaseInstallations
-import com.nexters.knownknowns.core.local.di.DataStoreModule
 import com.nexters.knownknowns.data.di.DataModule
 import com.nexters.knownknowns.presentation.di.PresentationModule
 import org.koin.android.ext.koin.androidContext
@@ -22,7 +21,6 @@ class KnownKnownsApplication : Application() {
             modules(
                 DataModule().module,
                 PresentationModule().module,
-                DataStoreModule().module,
             )
         }
 
