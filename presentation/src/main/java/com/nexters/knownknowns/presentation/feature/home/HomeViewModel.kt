@@ -88,14 +88,12 @@ class HomeViewModel(
         viewModelScope.launch {
             userRepository.putUserInfo(
                 UserInfo(
-                    preference = "FRONTEND",
-                    workingExperience = "STUDENT"
+                    preference = preference[0],
+                    workingExperience = workingExperience
                 ).toRequest()
             ).onSuccess {
-                Timber.tag("TAG").d("성공")
-            }.onFailure {
-                Timber.tag("TAG").d("실패: ${it.message}")
-            }
+
+            }.onFailure(Timber::e)
         }
 
 //        viewModelScope.launch {

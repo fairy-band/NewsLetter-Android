@@ -99,8 +99,8 @@ internal fun HomeBottomSheet(
                 onClick = {
                     onDismissRequest()
                     onButtonClick(
-                        selectedPreferences.map { it.label },
-                        selectedWorkingExperience?.label.orEmpty(),
+                        selectedPreferences.map { it.stringValue },
+                        selectedWorkingExperience?.stringValue.orEmpty(),
                     )
                 },
                 containerColor = KnownKnownsTheme.colors.fillPrimaryInverse,
