@@ -13,11 +13,11 @@ data class NewsFeed(
 
 fun NewsResponse.toNewsFeed(): NewsFeed {
     return NewsFeed(
-        id = id,
+        id = contentUrl,
         title = title,
-        keyword = keyword,
-        letter = letter,
+        keyword = topKeyword,
+        letter = newsletterName,
         summary = summary,
-        url = url,
+        url = contentUrl,
     )
 }
