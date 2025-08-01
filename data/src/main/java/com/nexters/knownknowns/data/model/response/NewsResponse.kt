@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.data.model
+package com.nexters.knownknowns.data.model.response
 
 import kotlinx.serialization.Serializable
 

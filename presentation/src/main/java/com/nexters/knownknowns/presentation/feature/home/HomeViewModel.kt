@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
+import com.nexters.knownknowns.data.repository.UserRepository
 import com.nexters.knownknowns.domain.usecase.BottomSheetUseCase
 import com.nexters.knownknowns.presentation.model.NewsFeed
+import com.nexters.knownknowns.presentation.model.UserInfo
 import com.nexters.knownknowns.presentation.model.toNewsFeed
+import com.nexters.knownknowns.presentation.model.toRequest
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -19,10 +22,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import timber.log.Timber
 
 @KoinViewModel
 class HomeViewModel(
     private val newsRepository: NewsRepository,
+    private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
@@ -72,8 +77,37 @@ class HomeViewModel(
 
     private fun onBottomSheetShown() {
         viewModelScope.launch {
-            newsRepository.recordBottomSheetShown()
+            userRepository.recordBottomSheetShown()
         }
+    }
+
+    fun saveUserInfo(
+        preference: List<String>,
+        workingExperience: String
+    ) {
+        viewModelScope.launch {
+            userRepository.putUserInfo(
+                UserInfo(
+                    preference = preference[0],
+                    workingExperience = workingExperience
+                ).toRequest()
+            ).onSuccess {
+
+            }.onFailure(Timber::e)
+        }
+
+//        viewModelScope.launch {
+//            userRepository.putUserInfo(
+//                UserInfo(
+//                    position = "FRONTEND",
+//                    career = "STUDENT"
+//                ).toRequest()
+//            ).onCompletion {
+//                Timber.tag("TAG").d("성공")
+//            }.catch {
+//                Timber.tag("TAG").d("실패: ${it.message}")
+//            }
+//        }
     }
 
 // 예시 1

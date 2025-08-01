@@ -45,9 +45,9 @@ internal fun HomeBottomSheet(
     onButtonClick: (List<String>, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val selectedPositions = remember { mutableStateListOf<Position>() }
-    var selectedCareer by remember { mutableStateOf<Career?>(null) }
-    val isButtonEnabled = selectedCareer != null && selectedPositions.isNotEmpty()
+    val selectedPreferences = remember { mutableStateListOf<Preference>() }
+    var selectedWorkingExperience by remember { mutableStateOf<WorkingExperience?>(null) }
+    val isButtonEnabled = selectedWorkingExperience != null && selectedPreferences.isNotEmpty()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     BaseBottomSheet(
@@ -74,10 +74,10 @@ internal fun HomeBottomSheet(
             )
             Spacer(modifier = Modifier.height(12.dp))
             PositionList(
-                selectedPositions = selectedPositions,
+                selectedPreferences = selectedPreferences,
                 onClick = { position ->
-                    if (position in selectedPositions) selectedPositions.remove(position)
-                    else selectedPositions.add(position)
+                    if (position in selectedPreferences) selectedPreferences.remove(position)
+                    else selectedPreferences.add(position)
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -88,9 +88,9 @@ internal fun HomeBottomSheet(
             )
             Spacer(modifier = Modifier.height(12.dp))
             CareerList(
-                selectedCareer = selectedCareer,
+                selectedWorkingExperience = selectedWorkingExperience,
                 onClick = { career ->
-                    selectedCareer = career
+                    selectedWorkingExperience = career
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -99,8 +99,8 @@ internal fun HomeBottomSheet(
                 onClick = {
                     onDismissRequest()
                     onButtonClick(
-                        selectedPositions.map { it.label },
-                        selectedCareer?.label.orEmpty(),
+                        selectedPreferences.map { it.stringValue },
+                        selectedWorkingExperience?.stringValue.orEmpty(),
                     )
                 },
                 containerColor = KnownKnownsTheme.colors.fillPrimaryInverse,
@@ -120,8 +120,8 @@ internal fun HomeBottomSheet(
 
 @Composable
 private fun PositionList(
-    selectedPositions: List<Position>,
-    onClick: (Position) -> Unit,
+    selectedPreferences: List<Preference>,
+    onClick: (Preference) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(
@@ -129,8 +129,8 @@ private fun PositionList(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Position.entries.forEach { position ->
-            val isSelected = position in selectedPositions
+        Preference.entries.forEach { position ->
+            val isSelected = position in selectedPreferences
 
             Row(
                 modifier = Modifier
@@ -162,8 +162,8 @@ private fun PositionList(
 
 @Composable
 private fun CareerList(
-    selectedCareer: Career?,
-    onClick: (Career) -> Unit,
+    selectedWorkingExperience: WorkingExperience?,
+    onClick: (WorkingExperience) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(
@@ -171,8 +171,8 @@ private fun CareerList(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Career.entries.forEach { career ->
-            val isSelected = career == selectedCareer
+        WorkingExperience.entries.forEach { career ->
+            val isSelected = career == selectedWorkingExperience
 
             Row(
                 modifier = Modifier

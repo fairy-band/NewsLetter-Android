@@ -1,6 +1,6 @@
 package com.nexters.knownknowns.domain.usecase
 
-import com.nexters.knownknowns.data.repository.NewsRepository
+import com.nexters.knownknowns.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit
 
 @Single
 class BottomSheetUseCase(
-    private val newsRepository: NewsRepository
+    private val userRepository: UserRepository,
 ) {
-    val shouldShowBottomSheet: Flow<Boolean> = newsRepository.clickStateFlow
+    val shouldShowBottomSheet: Flow<Boolean> = userRepository.clickStateFlow
         .map { clickState ->
             val lastShown = clickState.lastShownTimestamp
 
@@ -19,7 +19,7 @@ class BottomSheetUseCase(
                 val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
                 val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
-                if (timeSinceLastShown > sevenDaysInMillis) newsRepository.resetClickState()
+                if (timeSinceLastShown > sevenDaysInMillis) userRepository.resetClickState()
                 return@map false
 
             } else {
@@ -29,7 +29,7 @@ class BottomSheetUseCase(
         .distinctUntilChanged()
 
     suspend fun onNewsClicked() {
-        newsRepository.incrementClickCount()
+        userRepository.incrementClickCount()
     }
 
     companion object {

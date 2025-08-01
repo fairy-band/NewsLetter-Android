@@ -32,6 +32,7 @@ okhttp = "5.1.0"
 
 # serialization
 kotlinxSerializationCore = "1.6.2"
+kotlinxSerializationJson = "1.9.0"
 
 # google
 google-services = "4.4.3"
@@ -88,6 +89,7 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 
 # serialization
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 # google
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
