@@ -1,5 +1,9 @@
 package com.nexters.knownknowns.presentation.feature.home.dialog
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
@@ -42,15 +47,11 @@ internal object PopUpDialogDefaults {
 
 @Composable
 internal fun PopUpDialog(
+    visibility: Boolean,
     onDismissRequest: () -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
 ) {
-    val pagerState = rememberPagerState(
-        pageCount = { cardItems.size },
-        initialPage = cardIndex
-    )
-
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
@@ -59,55 +60,75 @@ internal fun PopUpDialog(
 
     val navController = LocalNavController.current
 
-    Dialog(
-        onDismissRequest = onDismissRequest,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .noRippleClickable(onClick = onDismissRequest),
-            horizontalAlignment = Alignment.CenterHorizontally
+    Box {
+        AnimatedVisibility(
+            visibility,
+            enter = fadeIn(animationSpec = tween(150)),
+            exit = fadeOut(animationSpec = tween(200)),
         ) {
-            Spacer(modifier = Modifier.weight(217f))
-            HorizontalPager(
-                state = pagerState,
-                pageSize = PageSize.Fixed(pageSize),
-                pageSpacing = 12.dp,
-                contentPadding = PaddingValues(horizontal = horizontalPadding),
-                key = { cardItems[it].id },
-            ) { pageIndex ->
-                val item = cardItems[pageIndex]
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.7f))
+                    .noRippleClickable(onClick = onDismissRequest)
+            )
+        }
 
-                PopUpItem(
-                    newsFeed = NewsFeed(
-                        id = item.id,
-                        title = item.title,
-                        keyword = item.keyword,
-                        letter = item.letter,
-                        summary = item.summary,
-                        url = item.url
-                    ),
-                    titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
-                    onClick = {
-                        navController.navigate(Screen.WebView(url = item.url))
-                    },
+        AnimatedVisibility(
+            visibility,
+            enter = fadeIn(animationSpec = tween(200, 150)),
+            exit = fadeOut(animationSpec = tween(200)),
+        ) {
+            val pagerState = rememberPagerState(
+                pageCount = { cardItems.size },
+                initialPage = cardIndex
+            )
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.weight(217f))
+                HorizontalPager(
+                    state = pagerState,
+                    pageSize = PageSize.Fixed(pageSize),
+                    pageSpacing = 12.dp,
+                    contentPadding = PaddingValues(horizontal = horizontalPadding),
+                    key = { cardItems[it].id },
+                ) { pageIndex ->
+                    val item = cardItems[pageIndex]
+
+                    PopUpItem(
+                        newsFeed = NewsFeed(
+                            id = item.id,
+                            title = item.title,
+                            keyword = item.keyword,
+                            letter = item.letter,
+                            summary = item.summary,
+                            url = item.url
+                        ),
+                        titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
+                        onClick = {
+                            navController.navigate(Screen.WebView(url = item.url))
+                        },
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Indicator(
+                    pageCount = cardItems.size,
+                    pageIndex = pagerState.currentPage
                 )
+                Spacer(modifier = Modifier.height(49.dp))
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
+                    contentDescription = "pop up dismiss button",
+                    modifier = Modifier.noRippleClickable(onClick = onDismissRequest)
+                )
+                Spacer(modifier = Modifier.weight(124f))
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Indicator(
-                pageCount = cardItems.size,
-                pageIndex = pagerState.currentPage
-            )
-            Spacer(modifier = Modifier.height(49.dp))
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
-                contentDescription = "pop up dismiss button",
-                modifier = Modifier.noRippleClickable(onClick = onDismissRequest)
-            )
-            Spacer(modifier = Modifier.weight(124f))
         }
     }
+
 }
 
 @Composable
