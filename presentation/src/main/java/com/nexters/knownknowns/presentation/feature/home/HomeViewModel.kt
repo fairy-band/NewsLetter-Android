@@ -55,7 +55,7 @@ class HomeViewModel(
 
     private fun observeBottomSheetTrigger() {
         viewModelScope.launch {
-            bottomSheetUseCase.shouldShowBottomSheetFlow
+            bottomSheetUseCase.shouldShowBottomSheet
                 .filter { it }
                 .collect {
                     _eventFlow.emit(HomeSideEffect.ShowBottomSheet)

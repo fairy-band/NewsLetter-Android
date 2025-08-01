@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 class BottomSheetUseCase(
     private val newsRepository: NewsRepository
 ) {
-    val shouldShowBottomSheetFlow: Flow<Boolean> = newsRepository.clickStateFlow
+    val shouldShowBottomSheet: Flow<Boolean> = newsRepository.clickStateFlow
         .map { clickState ->
             val lastShown = clickState.lastShownTimestamp
 
