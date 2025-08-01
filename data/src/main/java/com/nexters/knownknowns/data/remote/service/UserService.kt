@@ -1,0 +1,14 @@
+package com.nexters.knownknowns.data.remote.service
+
+import com.nexters.knownknowns.data.model.request.UserInfoRequest
+import retrofit2.http.Body
+import retrofit2.http.PUT
+import retrofit2.http.Path
+
+interface UserService {
+    @PUT("api/users/{userId}")
+    suspend fun putUserInfo(
+        @Path(value = "userId") userId: Int,
+        @Body body: UserInfoRequest,
+    )
+}

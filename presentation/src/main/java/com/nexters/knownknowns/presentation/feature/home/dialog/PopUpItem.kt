@@ -15,6 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -45,12 +49,16 @@ internal fun PopUpItem(
             .fillMaxWidth()
             .padding(24.dp),
     ) {
+        var titleLineCount by remember { mutableIntStateOf(1) }
+
         Text(
             text = newsFeed.title,
             style = KnownKnownsTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
             color = titleColor,
-            minLines = TITLE_MAX_LINE,
-            maxLines = TITLE_MAX_LINE
+            maxLines = TITLE_MAX_LINE,
+            onTextLayout = { textLayout ->
+                titleLineCount = textLayout.lineCount
+            }
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row(
@@ -74,7 +82,7 @@ internal fun PopUpItem(
                 color = titleColor
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
         Text(
             text = newsFeed.summary,
             style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
@@ -87,13 +95,15 @@ internal fun PopUpItem(
         BaseButton(
             paddingVertical = 12.dp,
             onClick = onClick,
-            backgroundColor = KnownKnownsTheme.colors.backgroundSurface,
-            textColor = KnownKnownsTheme.colors.textPrimary,
             shape = CircleShape,
-            text = stringResource(id = R.string.home_popup_button_text),
-            textStyle = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+            borderWidth = 1.dp,
             borderColor = KnownKnownsTheme.colors.borderSecondary
-        )
+        ) {
+            Text(
+                text = stringResource(id = R.string.home_popup_button_text),
+                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+            )
+        }
     }
 }
 
