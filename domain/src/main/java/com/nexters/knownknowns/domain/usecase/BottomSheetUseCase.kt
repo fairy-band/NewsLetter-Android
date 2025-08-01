@@ -23,7 +23,7 @@ class BottomSheetUseCase(
                 return@map false
 
             } else {
-                clickState.count >= TRIGGER_COUNT
+                clickState.count == TRIGGER_COUNT
             }
         }
         .distinctUntilChanged()
