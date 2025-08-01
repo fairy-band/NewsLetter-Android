@@ -85,6 +85,17 @@ fun HomeScreen(
             }
     }
 
+    LaunchedEffect(Unit) {
+        snapshotFlow { bottomSheetVisibility }
+            .collect { isHome ->
+                val screenName = if (isHome) Screen.Home.name else Screen.BottomSheetCustom.name
+                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                    param("platform", "Android")
+                }
+            }
+    }
+
     if (bottomSheetVisibility) {
         HomeBottomSheet(
             onDismissRequest = {
