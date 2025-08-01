@@ -16,6 +16,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.feature.detail.DetailScreen
 import com.nexters.knownknowns.presentation.feature.home.HomeScreen
+import com.nexters.knownknowns.presentation.feature.webview.WebViewScreen
 import com.nexters.knownknowns.presentation.navigation.NavController
 import com.nexters.knownknowns.presentation.navigation.Screen
 import com.nexters.knownknowns.presentation.navigation.rememberNavController
@@ -55,6 +56,10 @@ class MainActivity : ComponentActivity() {
 
             entry<Screen.Detail> { detail ->
                 DetailScreen(title = detail.title)
+            }
+
+            entry<Screen.WebView> { webView ->
+                WebViewScreen(url = webView.url)
             }
         }
     }

@@ -28,11 +28,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
+import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
 import com.nexters.knownknowns.presentation.model.NewsFeed
+import com.nexters.knownknowns.presentation.navigation.Screen
 import kotlinx.collections.immutable.ImmutableList
 
 internal object PopUpDialogDefaults {
@@ -53,6 +57,8 @@ internal fun PopUpDialog(
 
     val pageSize = screenWidth * CARD_WIDTH_RATIO
     val horizontalPadding = (screenWidth - pageSize) / 2
+
+    val navController = LocalNavController.current
 
     Box {
         AnimatedVisibility(
@@ -102,7 +108,9 @@ internal fun PopUpDialog(
                             url = item.url
                         ),
                         titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
-                        onClick = onDismissRequest,
+                        onClick = {
+                            navController.navigate(Screen.WebView(url = item.url))
+                        },
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
