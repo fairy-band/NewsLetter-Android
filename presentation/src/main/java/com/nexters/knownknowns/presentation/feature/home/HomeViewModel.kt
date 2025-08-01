@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
+import com.nexters.knownknowns.data.repository.UserRepository
 import com.nexters.knownknowns.domain.usecase.BottomSheetUseCase
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import com.nexters.knownknowns.presentation.model.toNewsFeed
@@ -23,6 +24,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class HomeViewModel(
     private val newsRepository: NewsRepository,
+    private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
@@ -72,7 +74,7 @@ class HomeViewModel(
 
     private fun onBottomSheetShown() {
         viewModelScope.launch {
-            newsRepository.recordBottomSheetShown()
+            userRepository.recordBottomSheetShown()
         }
     }
 
