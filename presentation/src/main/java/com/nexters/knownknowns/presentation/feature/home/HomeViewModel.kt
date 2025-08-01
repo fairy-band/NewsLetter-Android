@@ -35,7 +35,7 @@ class HomeViewModel(
     val eventFlow = _eventFlow.asSharedFlow()
 
     val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
-        .getNews()
+        .getNews(userId = 14) // TODO: 실제 userId를 넣으세요.
         .map {
             it.map { response ->
                 response.toNewsFeed()
