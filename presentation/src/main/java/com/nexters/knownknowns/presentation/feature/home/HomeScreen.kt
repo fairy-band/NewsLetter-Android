@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +41,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.nexters.knownknowns.core.extension.noRippleClickable
+import com.nexters.knownknowns.core.extension.bounceClick
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.bottomsheet.HomeBottomSheet
@@ -62,19 +63,6 @@ fun HomeScreen(
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.colorType.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
-
-    var cardIndex: Int? by remember { mutableStateOf(null) }
-
-    if (cardIndex != null) {
-        PopUpDialog(
-            onDismissRequest = {
-                cardIndex = null
-                viewModel.onNewsClicked()
-            },
-            cardItems = news,
-            cardIndex = cardIndex ?: -1
-        )
-    }
 
     var bottomSheetVisibility by remember { mutableStateOf(false) }
 
@@ -98,8 +86,8 @@ fun HomeScreen(
     }
 
     HomeScreen(
-        onCardClick = { index ->
-            cardIndex = index
+        onDismissRequest = {
+            viewModel.onNewsClicked()
         },
         news = news
     )
@@ -107,38 +95,51 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreen(
-    onCardClick: (Int) -> Unit,
+    onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
+    var cardIndex: Int? by remember { mutableStateOf(null) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            val today = LocalDate.now()
-            Text(
-                modifier = Modifier
-                    .padding(top = 44.dp)
-                    .padding(horizontal = 20.dp),
-                text = stringResource(
-                    R.string.home_title,
-                    today.year,
-                    today.monthValue.toString().padStart(2, '0'),
-                    today.dayOfMonth.toString().padStart(2, '0')
-                ),
-                style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
-                color = KnownKnownsTheme.colors.textStrong,
-            )
-            Timer()
-            Spacer(modifier = Modifier.weight(1f))
-            Cards(
-                news = news,
-                onClick = { index ->
-                    onCardClick(index)
-                }
+        Box {
+            Column(
+                modifier = Modifier.padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                val today = LocalDate.now()
+                Text(
+                    modifier = Modifier
+                        .padding(top = 44.dp)
+                        .padding(horizontal = 20.dp),
+                    text = stringResource(
+                        R.string.home_title,
+                        today.year,
+                        today.monthValue.toString().padStart(2, '0'),
+                        today.dayOfMonth.toString().padStart(2, '0')
+                    ),
+                    style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
+                    color = KnownKnownsTheme.colors.textStrong,
+                )
+                Timer()
+                Spacer(modifier = Modifier.weight(1f))
+                Cards(
+                    news = news,
+                    onClick = { index ->
+                        cardIndex = index
+                    }
+                )
+            }
+
+            PopUpDialog(
+                visibility = cardIndex != null,
+                onDismissRequest = {
+                    cardIndex = null
+                    onDismissRequest()
+                },
+                cardItems = news,
+                cardIndex = cardIndex ?: -1
             )
         }
     }
@@ -192,125 +193,78 @@ private fun Cards(
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var card1Height by remember { mutableIntStateOf(0) }
-    var card2Height by remember { mutableIntStateOf(0) }
-    var card3Height by remember { mutableIntStateOf(0) }
-    var card4Height by remember { mutableIntStateOf(0) }
-    var card5Height by remember { mutableIntStateOf(0) }
-    var card6Height by remember { mutableIntStateOf(0) }
-    val card2Offset by remember { derivedStateOf { card1Height + card2Height } }
-    val card3Offset by remember { derivedStateOf { card2Offset + card3Height } }
-    val card4Offset by remember { derivedStateOf { card3Offset + card4Height } }
-    val card5Offset by remember { derivedStateOf { card4Offset + card5Height } }
-    val card6Offset by remember { derivedStateOf { card5Offset + card6Height } }
-
-    if (news.size < 6) {
-        // TODO: loading or error
-        return
+    val cardColors = listOf(
+        KnownKnownsTheme.colors.greenBackgroundPrimary,
+        KnownKnownsTheme.colors.pinkBackgroundPrimary,
+        KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
+        KnownKnownsTheme.colors.blueBackgroundPrimary,
+        KnownKnownsTheme.colors.orangeBackgroundPrimary,
+        KnownKnownsTheme.colors.purpleBackgroundPrimary,
+    )
+    val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
+    val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
+    val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
+    val keywordVisibilities = listOf(true, true, true, false, false, false)
+    val textStyles = listOf(
+        KnownKnownsTheme.typography.body18.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body18.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body16.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body15.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body14.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        ),
+        KnownKnownsTheme.typography.body13.copy(
+            fontWeight = FontWeight.Bold,
+            color = KnownKnownsTheme.colors.textStrong
+        )
+    )
+    val cardHeights = remember { mutableStateListOf(0, 0, 0, 0, 0, 0) }
+    val cardOffsets by remember {
+        derivedStateOf {
+            buildList {
+                var cumulative = 0
+                for (height in cardHeights) {
+                    cumulative += height
+                    add(cumulative)
+                }
+            }
+        }
     }
 
     Box(
         modifier = modifier,
         contentAlignment = Alignment.BottomCenter
     ) {
-        Card(
-            modifier = Modifier
-                .zIndex(0f)
-                .offset(y = (166 - card6Offset).dp)
-                .padding(horizontal = 80.dp),
-            feed = news[5],
-            cardColor = KnownKnownsTheme.colors.purpleBackgroundPrimary,
-            topPadding = 16.dp,
-            bottomPadding = 12.dp,
-            textStyle = KnownKnownsTheme.typography.body13.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            onHeightInflated = { height -> card6Height = height },
-            onClick = { onClick(5) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(1f)
-                .offset(y = (166 - card5Offset).dp)
-                .padding(horizontal = 64.dp),
-            feed = news[4],
-            cardColor = KnownKnownsTheme.colors.orangeBackgroundPrimary,
-            topPadding = 16.dp,
-            bottomPadding = 12.dp,
-            textStyle = KnownKnownsTheme.typography.body14.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            onHeightInflated = { height -> card5Height = height },
-            onClick = { onClick(4) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(2f)
-                .offset(y = (166 - card4Offset).dp)
-                .padding(horizontal = 48.dp),
-            feed = news[3],
-            cardColor = KnownKnownsTheme.colors.blueBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body15.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            onHeightInflated = { height -> card4Height = height },
-            onClick = { onClick(3) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(3f)
-                .offset(y = (166 - card3Offset).dp)
-                .padding(horizontal = 32.dp),
-            feed = news[2],
-            cardColor = KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body16.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            showKeyword = true,
-            onHeightInflated = { height -> card3Height = height },
-            onClick = { onClick(2) }
-        )
-        Card(
-            modifier = Modifier
-                .zIndex(4f)
-                .offset(y = (166 - card2Offset).dp)
-                .padding(horizontal = 16.dp),
-            feed = news[1],
-            cardColor = KnownKnownsTheme.colors.pinkBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body18.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            showKeyword = true,
-            onHeightInflated = { height -> card2Height = height },
-            onClick = { onClick(1) }
-        )
-        Card(
-            modifier = Modifier
-                .offset(y = (166 - card1Height).dp)
-                .zIndex(5f),
-            feed = news[0],
-            cardColor = KnownKnownsTheme.colors.greenBackgroundPrimary,
-            topPadding = 20.dp,
-            bottomPadding = 16.dp,
-            textStyle = KnownKnownsTheme.typography.body18.copy(
-                fontWeight = FontWeight.Bold,
-                color = KnownKnownsTheme.colors.textStrong
-            ),
-            showKeyword = true,
-            onHeightInflated = { height -> card1Height = height },
-            onClick = { onClick(0) }
-        )
+        // 항상 6
+        repeat(news.size) { index ->
+            Card(
+                modifier = Modifier
+                    .zIndex(5f - index)
+                    .offset(y = (166 - cardOffsets[index]).dp)
+                    .padding(horizontal = horizontalPaddings[index]),
+                feed = news[index],
+                cardColor = cardColors[index],
+                topPadding = topPaddings[index],
+                bottomPadding = bottomPaddings[index],
+                textStyle = textStyles[index],
+                showKeyword = keywordVisibilities[index],
+                onHeightInflated = { height -> cardHeights[index] = height },
+                onClick = { onClick(index) },
+            )
+        }
     }
 }
 
@@ -334,10 +288,10 @@ private fun Card(
 
     Box(
         modifier = modifier
+            .bounceClick(onClick = onClick)
             .height(166.dp)
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
-            .noRippleClickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier
@@ -391,7 +345,7 @@ private fun Card(
 private fun HomeScreenPreview() {
     KnownKnownsTheme {
         HomeScreen(
-            onCardClick = {},
+            onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
                     id = "1",
