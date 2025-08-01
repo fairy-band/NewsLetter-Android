@@ -15,6 +15,8 @@ composeSavable = "1.8.3"
 androidxLifecycle = "2.9.1"
 firebase-distribution = "5.1.1"
 foundation = "1.8.3"
+datastore = "1.1.7"
+
 # navigation
 nav3Core = "1.0.0-alpha01"
 lifecycleViewmodelNav3 = "1.0.0-alpha01"
@@ -31,9 +33,10 @@ okhttp = "5.1.0"
 # serialization
 kotlinxSerializationCore = "1.6.2"
 
-# firebase
+# google
 google-services = "4.4.3"
 firebaseBom = "33.16.0"
+flowlayout = "0.36.0"
 
 # coroutine
 kotlinxCoroutinesAndroid = "1.10.2"
@@ -63,6 +66,10 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 
+# datastore
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
+
 # di
 firebase-config-ktx = { module = "com.google.firebase:firebase-config-ktx" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinCore" }
@@ -82,9 +89,10 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 # serialization
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
-# firebase
+# google
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "flowlayout" }
 
 # logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

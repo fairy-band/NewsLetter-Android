@@ -1,5 +1,7 @@
 package com.nexters.knownknowns.data.repositoryimpl
 
+import com.nexters.knownknowns.data.local.ClickState
+import com.nexters.knownknowns.data.local.DataStore
 import com.nexters.knownknowns.data.model.NewsResponse
 import com.nexters.knownknowns.data.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +9,9 @@ import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
 
 @Single
-internal class NewsRepositoryImpl : NewsRepository {
+internal class NewsRepositoryImpl(
+    private val dataStore: DataStore
+) : NewsRepository {
     private val _news = listOf(
         NewsResponse(
             id = "1",
@@ -61,5 +65,20 @@ internal class NewsRepositoryImpl : NewsRepository {
 
     override fun getNews(): Flow<List<NewsResponse>> = flow {
         emit(_news.toList())
+    }
+
+    override val clickStateFlow: Flow<ClickState>
+        get() = dataStore.clickStateFlow
+
+    override suspend fun incrementClickCount() {
+        dataStore.incrementClickCount()
+    }
+
+    override suspend fun resetClickState() {
+        dataStore.resetClickState()
+    }
+
+    override suspend fun recordBottomSheetShown() {
+        dataStore.recordBottomSheetShown()
     }
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nexters.knownknowns.data"
+    namespace = "com.nexters.knownknowns.domain"
     compileSdk = 36
 
     defaultConfig {
@@ -34,27 +34,14 @@ android {
 }
 
 dependencies {
-    // network
-    implementation(libs.bundles.retrofit)
-    implementation(libs.okhttp.logging)
+    // module
+    implementation(project(":data"))
+
+    // coroutine
+    implementation(libs.kotlinx.coroutines.android)
 
     // di
     implementation(libs.koin.annotations)
     implementation(libs.koin.core)
     ksp(libs.koin.ksp)
-
-    // coroutine
-    implementation(libs.kotlinx.coroutines.android)
-
-    // firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.config.ktx)
-
-    // log
-    implementation(libs.timber)
-
-    // data store
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore.preferences.core)
 }

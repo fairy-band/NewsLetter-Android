@@ -42,6 +42,7 @@ dependencies {
     // module
     implementation(project(":data"))
     implementation(project(":core"))
+    implementation(project(":domain"))
 
     // core
     implementation(libs.androidx.core.ktx)
@@ -72,9 +73,10 @@ dependencies {
     // serialization
     implementation(libs.kotlinx.serialization.core)
 
-    // firebase
+    // google
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.accompanist.flowlayout)
 
     // coroutine
     implementation(libs.kotlinx.coroutines.android)

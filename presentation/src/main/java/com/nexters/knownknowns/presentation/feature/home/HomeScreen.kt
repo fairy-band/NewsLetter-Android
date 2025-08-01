@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -37,10 +38,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.nexters.knownknowns.core.extension.bounceClick
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
+import com.nexters.knownknowns.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
@@ -58,12 +62,43 @@ fun HomeScreen(
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.colorType.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    HomeScreen(news = news)
+    var bottomSheetVisibility by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
+        viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
+            .collect { event ->
+                when (event) {
+                    is HomeSideEffect.ShowBottomSheet -> {
+                        bottomSheetVisibility = true
+                    }
+                }
+            }
+    }
+
+    if (bottomSheetVisibility) {
+        HomeBottomSheet(
+            onDismissRequest = {
+                bottomSheetVisibility = false
+            },
+            onButtonClick = { position, career ->
+                // TODO: 서버통신 연동 시 작성 예정 by 이유빈
+            }
+        )
+    }
+
+    HomeScreen(
+        onDismissRequest = {
+            viewModel.onNewsClicked()
+        },
+        news = news
+    )
 }
 
 @Composable
 private fun HomeScreen(
+    onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
@@ -102,7 +137,10 @@ private fun HomeScreen(
 
             PopUpDialog(
                 visibility = cardIndex != null,
-                onDismissRequest = { cardIndex = null },
+                onDismissRequest = {
+                    cardIndex = null
+                    onDismissRequest()
+                },
                 cardItems = news,
                 cardIndex = cardIndex ?: 0
             )
@@ -310,6 +348,7 @@ private fun Card(
 private fun HomeScreenPreview() {
     KnownKnownsTheme {
         HomeScreen(
+            onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
                     id = "1",

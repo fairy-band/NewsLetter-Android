@@ -3,16 +3,12 @@ package com.nexters.knownknowns.core.designsystem.button
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
@@ -21,14 +17,16 @@ import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 fun BaseButton(
     paddingVertical: Dp,
     onClick: () -> Unit,
-    backgroundColor: Color,
-    textColor: Color,
     shape: Shape,
-    text: String,
-    textStyle: TextStyle,
     modifier: Modifier = Modifier,
-    borderWidth: Dp = 1.dp,
-    borderColor: Color = KnownKnownsTheme.colors.borderPrimary
+    isEnabled: Boolean = true,
+    borderWidth: Dp = 0.dp,
+    borderColor: Color = KnownKnownsTheme.colors.borderPrimary,
+    containerColor: Color = KnownKnownsTheme.colors.backgroundSurface,
+    contentColor: Color = KnownKnownsTheme.colors.textPrimary,
+    disabledContainerColor: Color = KnownKnownsTheme.colors.fillDisabled,
+    disabledContentColor: Color = KnownKnownsTheme.colors.textDisabled,
+    content: @Composable () -> Unit,
 ) {
     Button(
         contentPadding = PaddingValues(vertical = paddingVertical),
@@ -39,15 +37,15 @@ fun BaseButton(
                 color = borderColor,
                 shape = shape
             ),
+        enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor,
-            contentColor = textColor,
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = disabledContainerColor,
+            disabledContentColor = disabledContentColor,
         ),
         onClick = onClick,
     ) {
-        Text(
-            text = text,
-            style = textStyle,
-        )
+        content()
     }
 }
