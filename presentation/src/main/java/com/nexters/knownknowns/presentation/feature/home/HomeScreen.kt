@@ -83,7 +83,7 @@ fun HomeScreen(
                 bottomSheetVisibility = false
             },
             onButtonClick = { position, career ->
-
+                // TODO: 서버통신 연동 시 작성 예정 by 이유빈
             }
         )
     }
