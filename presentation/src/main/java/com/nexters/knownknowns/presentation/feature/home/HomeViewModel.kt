@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -48,14 +49,24 @@ class HomeViewModel(
             "static"
         )
 
+    init {
+        observeBottomSheetTrigger()
+    }
+
+    private fun observeBottomSheetTrigger() {
+        viewModelScope.launch {
+            bottomSheetUseCase.shouldShowBottomSheetFlow
+                .filter { it }
+                .collect {
+                    _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
+                    onBottomSheetShown()
+                }
+        }
+    }
+
     fun onNewsClicked() {
         viewModelScope.launch {
-            val shouldShowBottomSheet = bottomSheetUseCase()
-
-            if (shouldShowBottomSheet) {
-                _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
-                onBottomSheetShown()
-            }
+            bottomSheetUseCase.onNewsClicked()
         }
     }
 

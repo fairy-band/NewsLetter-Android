@@ -1,31 +1,35 @@
 package com.nexters.knownknowns.domain.usecase
 
 import com.nexters.knownknowns.data.repository.NewsRepository
-import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
+import java.util.concurrent.TimeUnit
 
 @Single
 class BottomSheetUseCase(
     private val newsRepository: NewsRepository
 ) {
-    suspend operator fun invoke(): Boolean {
-        val currentState = newsRepository.getClickState().first()
-        val lastShown = currentState.lastShownTimestamp
+    val shouldShowBottomSheetFlow: Flow<Boolean> = newsRepository.clickStateFlow
+        .map { clickState ->
+            val lastShown = clickState.lastShownTimestamp
 
-        if (lastShown > 0L) {
-            val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
-            val timeSinceLastShown = System.currentTimeMillis() - lastShown
+            if (lastShown > 0L) {
+                val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
+                val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
-            if (timeSinceLastShown < sevenDaysInMillis) return false
+                if (timeSinceLastShown > sevenDaysInMillis) newsRepository.resetClickState()
+                return@map false
 
-            newsRepository.resetClickState()
-            return false
-        } else {
-            newsRepository.incrementClickCount()
-
-            return currentState.count == TRIGGER_COUNT - 1
+            } else {
+                clickState.count >= TRIGGER_COUNT
+            }
         }
+        .distinctUntilChanged()
+
+    suspend fun onNewsClicked() {
+        newsRepository.incrementClickCount()
     }
 
     companion object {

@@ -67,7 +67,8 @@ internal class NewsRepositoryImpl(
         emit(_news.toList())
     }
 
-    override suspend fun getClickState(): Flow<ClickState> = dataStore.clickStateFlow
+    override val clickStateFlow: Flow<ClickState>
+        get() = dataStore.clickStateFlow
 
     override suspend fun incrementClickCount() {
         dataStore.incrementClickCount()
