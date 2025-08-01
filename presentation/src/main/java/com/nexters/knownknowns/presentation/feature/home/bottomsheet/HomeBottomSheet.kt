@@ -42,6 +42,7 @@ import com.nexters.knownknowns.presentation.R
 @Composable
 internal fun HomeBottomSheet(
     onDismissRequest: () -> Unit,
+    onButtonClick: (List<String>, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val selectedPositions = remember { mutableStateListOf<Position>() }
@@ -95,7 +96,13 @@ internal fun HomeBottomSheet(
             Spacer(modifier = Modifier.height(32.dp))
             BaseButton(
                 paddingVertical = 16.dp,
-                onClick = onDismissRequest,
+                onClick = {
+                    onDismissRequest()
+                    onButtonClick(
+                        selectedPositions.map { it.label },
+                        selectedCareer?.label.orEmpty(),
+                    )
+                },
                 containerColor = KnownKnownsTheme.colors.fillPrimaryInverse,
                 contentColor = KnownKnownsTheme.colors.textStrongInverse,
                 shape = CircleShape,

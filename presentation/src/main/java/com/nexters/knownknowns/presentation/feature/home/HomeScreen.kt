@@ -81,6 +81,9 @@ fun HomeScreen(
         HomeBottomSheet(
             onDismissRequest = {
                 bottomSheetVisibility = false
+            },
+            onButtonClick = { position, career ->
+
             }
         )
     }
