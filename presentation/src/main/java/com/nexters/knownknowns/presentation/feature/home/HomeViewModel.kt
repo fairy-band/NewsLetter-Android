@@ -7,7 +7,9 @@ import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import com.nexters.knownknowns.data.repository.UserRepository
 import com.nexters.knownknowns.domain.usecase.BottomSheetUseCase
 import com.nexters.knownknowns.presentation.model.NewsFeed
+import com.nexters.knownknowns.presentation.model.UserInfo
 import com.nexters.knownknowns.presentation.model.toNewsFeed
+import com.nexters.knownknowns.presentation.model.toRequest
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import timber.log.Timber
 
 @KoinViewModel
 class HomeViewModel(
@@ -76,6 +79,37 @@ class HomeViewModel(
         viewModelScope.launch {
             userRepository.recordBottomSheetShown()
         }
+    }
+
+    fun saveUserInfo(
+        position: List<String>,
+        career: String
+    ) {
+        viewModelScope.launch {
+            userRepository.putUserInfo(
+                UserInfo(
+                    position = "FRONTEND",
+                    career = "STUDENT"
+                ).toRequest()
+            ).onSuccess {
+                Timber.tag("TAG").d("성공")
+            }.onFailure {
+                Timber.tag("TAG").d("실패: ${it.message}")
+            }
+        }
+
+//        viewModelScope.launch {
+//            userRepository.putUserInfo(
+//                UserInfo(
+//                    position = "FRONTEND",
+//                    career = "STUDENT"
+//                ).toRequest()
+//            ).onCompletion {
+//                Timber.tag("TAG").d("성공")
+//            }.catch {
+//                Timber.tag("TAG").d("실패: ${it.message}")
+//            }
+//        }
     }
 
 // 예시 1

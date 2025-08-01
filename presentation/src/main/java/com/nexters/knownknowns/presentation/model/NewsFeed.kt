@@ -1,6 +1,6 @@
 package com.nexters.knownknowns.presentation.model
 
-import com.nexters.knownknowns.data.model.NewsResponse
+import com.nexters.knownknowns.data.model.response.NewsResponse
 
 data class NewsFeed(
     val id: String,
