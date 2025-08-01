@@ -139,7 +139,7 @@ private fun HomeScreen(
                     onDismissRequest()
                 },
                 cardItems = news,
-                cardIndex = cardIndex ?: -1
+                cardIndex = cardIndex ?: 0
             )
         }
     }
