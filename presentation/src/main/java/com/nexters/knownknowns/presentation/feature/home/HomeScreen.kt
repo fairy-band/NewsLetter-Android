@@ -84,8 +84,8 @@ fun HomeScreen(
             },
             onButtonClick = { position, career ->
                 viewModel.saveUserInfo(
-                    position = position,
-                    career = career
+                    preference = position,
+                    workingExperience = career
                 )
             }
         )

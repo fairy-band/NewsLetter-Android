@@ -2,7 +2,7 @@ package com.nexters.knownknowns.presentation.feature.home.bottomsheet
 
 import com.nexters.knownknowns.presentation.R
 
-enum class Position(
+enum class Preference(
     val label: String,
     val icon: Int
 ) {

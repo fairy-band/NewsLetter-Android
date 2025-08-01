@@ -1,6 +1,6 @@
 package com.nexters.knownknowns.presentation.feature.home.bottomsheet
 
-enum class Career(val label: String) {
+enum class WorkingExperience(val label: String) {
     STUDENT("대학생 · 취준생"),
     YEARS_1_TO_3("1 ~ 3년차"),
     YEARS_4_TO_7("4 ~ 7년차"),

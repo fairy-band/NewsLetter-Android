@@ -82,14 +82,14 @@ class HomeViewModel(
     }
 
     fun saveUserInfo(
-        position: List<String>,
-        career: String
+        preference: List<String>,
+        workingExperience: String
     ) {
         viewModelScope.launch {
             userRepository.putUserInfo(
                 UserInfo(
-                    position = "FRONTEND",
-                    career = "STUDENT"
+                    preference = "FRONTEND",
+                    workingExperience = "STUDENT"
                 ).toRequest()
             ).onSuccess {
                 Timber.tag("TAG").d("성공")
