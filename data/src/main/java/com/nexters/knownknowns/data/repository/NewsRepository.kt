@@ -1,6 +1,6 @@
 package com.nexters.knownknowns.data.repository
 
-import com.nexters.knownknowns.data.model.NewsResponse
+import com.nexters.knownknowns.data.model.response.NewsResponse
 import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {

@@ -3,6 +3,8 @@ package com.nexters.knownknowns
 import android.app.Application
 import com.google.firebase.installations.FirebaseInstallations
 import com.nexters.knownknowns.data.di.DataModule
+import com.nexters.knownknowns.data.di.RetrofitModule
+import com.nexters.knownknowns.data.di.ServiceModule
 import com.nexters.knownknowns.domain.di.DomainModule
 import com.nexters.knownknowns.presentation.di.PresentationModule
 import org.koin.android.ext.koin.androidContext
@@ -23,6 +25,8 @@ class KnownKnownsApplication : Application() {
                 DataModule().module,
                 DomainModule().module,
                 PresentationModule().module,
+                RetrofitModule().module,
+                ServiceModule().module
             )
         }
 
