@@ -125,8 +125,6 @@ private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
     colorType: String,
 ) {
-    // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
-//    val navController = LocalNavController.current
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
@@ -279,7 +277,7 @@ private fun Cards(
         }
     }
     val keywords = news.map { it.keyword }
-    val cardColors = remember(news) { getCardColors(colorType, keywords) }
+    val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
 
     Box(
         modifier = modifier,

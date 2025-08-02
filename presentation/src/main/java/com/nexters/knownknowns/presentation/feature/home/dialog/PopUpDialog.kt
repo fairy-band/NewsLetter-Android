@@ -54,7 +54,7 @@ internal fun PopUpDialog(
     colorType: String,
 ) {
     val keywords = cardItems.map { it.keyword }
-    val titleColors = remember(cardItems) { getCardTitleColors(colorType, keywords) }
+    val titleColors = remember(cardItems, colorType) { getCardTitleColors(colorType, keywords) }
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
