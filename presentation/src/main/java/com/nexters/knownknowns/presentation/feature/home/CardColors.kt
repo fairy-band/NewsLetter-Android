@@ -97,12 +97,13 @@ private fun getKeywordIndexMap(keywords: List<String>): Map<String, Int> {
  */
 fun generateCardColorA(keywords: List<String>): List<Color> {
     val colorIndexes = getTodayColorIndexes(keywords)
-    val keywordNumberMap = getKeywordIndexMap(keywords)
+    val keywordIndexMap = getKeywordIndexMap(keywords)
+    val visited = IntArray(6)
 
     return keywords.mapIndexed { index, keyword ->
-        val keywordIndex = keywordNumberMap[keyword] ?: 5
-        val todayColorIndex = colorIndexes[keywordIndex]
-        aColorSet[todayColorIndex][index % 3]
+        val keywordIndex = keywordIndexMap[keyword] ?: 5
+        val colorIndex = colorIndexes[keywordIndex]
+        aColorSet[colorIndex][visited[colorIndex]++ % 3]
     }
 }
 
@@ -112,11 +113,11 @@ fun generateCardColorA(keywords: List<String>): List<Color> {
  */
 fun generateCardTextColorA(keywords: List<String>): List<Color> {
     val colorIndexes = getTodayColorIndexes(keywords)
-    val keywordNumberMap = getKeywordIndexMap(keywords)
+    val keywordIndexMap = getKeywordIndexMap(keywords)
 
     return keywords.map { keyword ->
-        val keywordIndex = keywordNumberMap[keyword] ?: 5
-        val todayColorIndex = colorIndexes[keywordIndex]
-        cardTitleColors[todayColorIndex]
+        val keywordIndex = keywordIndexMap[keyword] ?: 5
+        val colorIndex = colorIndexes[keywordIndex]
+        cardTitleColors[colorIndex]
     }
 }
