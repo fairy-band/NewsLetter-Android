@@ -27,7 +27,7 @@ internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
         }
     }
 
-    override fun getCardColor(): Flow<String> = flow {
+    override fun getCardColorType(): Flow<String> = flow {
         emit(getString("card_color") ?: "B")
     }
 

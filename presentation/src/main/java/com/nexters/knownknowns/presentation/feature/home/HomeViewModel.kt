@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -48,16 +47,12 @@ class HomeViewModel(
             persistentListOf()
         )
 
-    val cardColors = remoteConfigRepository
-        .getCardColor()
-        .combine(news) { colorType, news  ->
-            val keywords = news.map { it.keyword }
-            getCardColors(colorType, keywords)
-        }
+    val cardColorType: StateFlow<String> = remoteConfigRepository
+        .getCardColorType()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            cardColorsB,
+            "B",
         )
 
     init {

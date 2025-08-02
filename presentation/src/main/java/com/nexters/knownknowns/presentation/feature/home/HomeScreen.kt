@@ -69,7 +69,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val cardColors by viewModel.cardColors.collectAsStateWithLifecycle()
+    val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var bottomSheetVisibility by remember { mutableStateOf(false) }
@@ -115,7 +115,7 @@ fun HomeScreen(
             viewModel.onNewsClicked()
         },
         news = news,
-        cardColors = cardColors,
+        colorType = colorType,
     )
 }
 
@@ -123,7 +123,7 @@ fun HomeScreen(
 private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
-    cardColors: List<Color>,
+    colorType: String,
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
@@ -169,7 +169,7 @@ private fun HomeScreen(
                     onClick = { index ->
                         cardIndex = index
                     },
-                    cardColors = cardColors,
+                    colorType = colorType,
                 )
             }
 
@@ -180,7 +180,7 @@ private fun HomeScreen(
                     onDismissRequest()
                 },
                 cardItems = news,
-                cardIndex = cardIndex ?: 0
+                cardIndex = cardIndex ?: 0,
             )
         }
     }
@@ -231,8 +231,8 @@ private fun Timer() {
 @Composable
 private fun Cards(
     news: ImmutableList<NewsFeed>,
-    cardColors: List<Color>,
     onClick: (Int) -> Unit,
+    colorType: String,
     modifier: Modifier = Modifier
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
@@ -277,6 +277,8 @@ private fun Cards(
             }
         }
     }
+    val keywords = news.map { it.keyword }
+    val cardColors = remember(news) { getCardColors(colorType, keywords) }
 
     Box(
         modifier = modifier,
@@ -430,7 +432,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
             ),
-            cardColors = cardColorsB,
+            colorType = "B",
         )
     }
 }

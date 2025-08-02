@@ -3,5 +3,5 @@ package com.nexters.knownknowns.data.repository
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteConfigRepository {
-    fun getCardColor(): Flow<String>
+    fun getCardColorType(): Flow<String>
 }
