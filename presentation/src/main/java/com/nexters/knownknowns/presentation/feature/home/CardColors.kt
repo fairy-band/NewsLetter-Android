@@ -8,28 +8,20 @@ import kotlin.random.Random
 private val soakColors = KnownKnownsColors()
 
 fun getCardColors(colorType: String, keywords: List<String>): List<Color> {
-    if (colorType == "A") {
-        return generateCardColorA(keywords)
-    } else {
-        return cardColorsB
-    }
+    return if (colorType == "A") generateCardColorA(keywords) else cardColorsB
 }
 
 fun getCardTextColors(colorType: String, keywords: List<String>): List<Color> {
-    if (colorType == "A") {
-        return generateCardTextColorA(keywords)
-    } else {
-        return cardColorsB
-    }
+    return if (colorType == "A") generateCardTextColorA(keywords) else cardColorsB
 }
 
 val cardColorsB = listOf(
+    soakColors.greenBackgroundPrimary,
+    soakColors.pinkBackgroundPrimary,
+    soakColors.lemonYellowBackgroundPrimary,
     soakColors.blueBackgroundPrimary,
     soakColors.orangeBackgroundPrimary,
-    soakColors.pinkBackgroundPrimary,
     soakColors.purpleBackgroundPrimary,
-    soakColors.greenBackgroundPrimary,
-    soakColors.lemonYellowBackgroundPrimary,
 )
 
 val aColorSet = listOf(
@@ -66,12 +58,12 @@ val aColorSet = listOf(
 )
 
 val cardTextColorsB = listOf(
+    soakColors.greenText,
+    soakColors.pinkText,
+    soakColors.lemonYellowText,
     soakColors.blueText,
     soakColors.orangeText,
-    soakColors.pinkText,
     soakColors.purpleText,
-    soakColors.greenText,
-    soakColors.lemonYellowText,
 )
 
 /**
