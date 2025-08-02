@@ -2,8 +2,6 @@ package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nexters.knownknowns.core.theme.cardColorsB
-import com.nexters.knownknowns.core.theme.getColors
 import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import com.nexters.knownknowns.data.repository.UserRepository
@@ -56,7 +54,7 @@ class HomeViewModel(
             if (it == "static") "B" else "A"
         }.combine(news) { colorType, news  ->
             val keywords = news.map { it.keyword }
-            getColors(colorType, keywords)
+            getCardColors(colorType, keywords)
         }
         .stateIn(
             viewModelScope,

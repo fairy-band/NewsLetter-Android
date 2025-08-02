@@ -48,7 +48,6 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import com.nexters.knownknowns.core.extension.bounceClick
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
-import com.nexters.knownknowns.core.theme.cardColorsB
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
