@@ -15,6 +15,14 @@ fun getCardColors(colorType: String, keywords: List<String>): List<Color> {
     }
 }
 
+fun getCardTextColors(colorType: String, keywords: List<String>): List<Color> {
+    if (colorType == "A") {
+        return generateCardTextColorA(keywords)
+    } else {
+        return cardColorsB
+    }
+}
+
 val cardColorsB = listOf(
     soakColors.blueBackgroundPrimary,
     soakColors.orangeBackgroundPrimary,
