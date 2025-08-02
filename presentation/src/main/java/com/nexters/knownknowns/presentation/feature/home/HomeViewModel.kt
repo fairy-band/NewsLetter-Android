@@ -119,21 +119,4 @@ class HomeViewModel(
 //            }
 //        }
     }
-
-// 예시 1
-// 일반적인 코루틴은 아래처럼 사용할 수 있다.
-//    fun fetchNews() {
-//        newsRepository
-//            .getNews()
-//            .onEach {
-//                _news.update { it }
-//            }
-//            .onCompletion {
-//                // 성공하든 실패하든 도달하는 곳
-//            }
-//            .catch {
-//                // 상위 스트림에서 발생한 에러 핸들링
-//            }
-//            .launchIn(viewModelScope)
-//    }
 }
