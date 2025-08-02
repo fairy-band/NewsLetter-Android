@@ -50,9 +50,7 @@ class HomeViewModel(
 
     val cardColors = remoteConfigRepository
         .getCardColor()
-        .map {
-            if (it == "static") "B" else "A"
-        }.combine(news) { colorType, news  ->
+        .combine(news) { colorType, news  ->
             val keywords = news.map { it.keyword }
             getCardColors(colorType, keywords)
         }
