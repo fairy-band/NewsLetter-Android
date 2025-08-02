@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,16 +42,23 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import com.nexters.knownknowns.core.extension.bounceClick
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
 import com.nexters.knownknowns.presentation.model.NewsFeed
+import com.nexters.knownknowns.presentation.navigation.Screen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.Duration
 import java.time.LocalDate
@@ -73,6 +81,17 @@ fun HomeScreen(
                     is HomeSideEffect.ShowBottomSheet -> {
                         bottomSheetVisibility = true
                     }
+                }
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { bottomSheetVisibility }
+            .collect { isHome ->
+                val screenName = if (isHome) Screen.Home.name else Screen.BottomSheetCustom.name
+                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                    param("platform", "Android")
                 }
             }
     }
@@ -107,6 +126,19 @@ private fun HomeScreen(
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
     var cardIndex: Int? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { cardIndex }
+            .map { it == null }
+            .distinctUntilChanged()
+            .collect { isHome ->
+                val screenName = if (isHome) Screen.Home.name else Screen.NewsLetterCarousel.name
+                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                    param("platform", "Android")
+                }
+            }
+    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box {
