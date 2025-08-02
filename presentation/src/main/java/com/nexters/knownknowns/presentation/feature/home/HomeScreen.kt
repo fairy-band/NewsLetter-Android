@@ -48,6 +48,7 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import com.nexters.knownknowns.core.extension.bounceClick
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
+import com.nexters.knownknowns.core.theme.cardColorsB
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialog
@@ -69,7 +70,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val colorType by viewModel.colorType.collectAsStateWithLifecycle()
+    val cardColors by viewModel.cardColors.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var bottomSheetVisibility by remember { mutableStateOf(false) }
@@ -114,7 +115,8 @@ fun HomeScreen(
         onDismissRequest = {
             viewModel.onNewsClicked()
         },
-        news = news
+        news = news,
+        cardColors = cardColors,
     )
 }
 
@@ -122,6 +124,7 @@ fun HomeScreen(
 private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
+    cardColors: List<Color>,
 ) {
     // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
 //    val navController = LocalNavController.current
@@ -166,7 +169,8 @@ private fun HomeScreen(
                     news = news,
                     onClick = { index ->
                         cardIndex = index
-                    }
+                    },
+                    cardColors = cardColors,
                 )
             }
 
@@ -228,17 +232,10 @@ private fun Timer() {
 @Composable
 private fun Cards(
     news: ImmutableList<NewsFeed>,
+    cardColors: List<Color>,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cardColors = listOf(
-        KnownKnownsTheme.colors.greenBackgroundPrimary,
-        KnownKnownsTheme.colors.pinkBackgroundPrimary,
-        KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
-        KnownKnownsTheme.colors.blueBackgroundPrimary,
-        KnownKnownsTheme.colors.orangeBackgroundPrimary,
-        KnownKnownsTheme.colors.purpleBackgroundPrimary,
-    )
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
     val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
@@ -433,7 +430,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com"
                 ),
-            )
+            ),
+            cardColors = cardColorsB,
         )
     }
 }

@@ -2,6 +2,8 @@ package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nexters.knownknowns.core.theme.cardColorsB
+import com.nexters.knownknowns.core.theme.getColors
 import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import com.nexters.knownknowns.data.repository.UserRepository
@@ -46,12 +48,18 @@ class HomeViewModel(
             SharingStarted.WhileSubscribed(5_000),
             persistentListOf()
         )
-    val colorType = remoteConfigRepository
+    val cardColors = remoteConfigRepository
         .getColor()
+        .map {
+            if (it == "static") "B" else "A"
+        }
+        .map { abType ->
+            getColors(abType, emptyList())
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            "static"
+            cardColorsB,
         )
 
     init {

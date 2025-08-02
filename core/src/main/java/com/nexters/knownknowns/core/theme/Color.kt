@@ -204,3 +204,45 @@ data class KnownKnownsColors(
     val lemonYellowBackgroundTertiary: Color = ColorPalette.lemonYellow400,
     val lemonYellowText: Color = ColorPalette.lemonYellow700
 )
+
+fun getColors(abType: String, keywords: List<String>): List<Color> {
+    if (abType == "A") {
+        return generateCardColorA(listOf("a", "b", "a", "a", "c", "b"))
+    } else {
+        return cardColorsB
+    }
+}
+
+val cardColorsB = listOf(
+    ColorPalette.blue300,
+    ColorPalette.orange400,
+    ColorPalette.pink300,
+    ColorPalette.purple200,
+    ColorPalette.green300,
+    ColorPalette.lemonYellow300,
+)
+
+val aColorSet = listOf(
+    listOf(ColorPalette.blue300, ColorPalette.blue200, ColorPalette.blue400),
+    listOf(ColorPalette.orange400, ColorPalette.orange300, ColorPalette.orange500),
+    listOf(ColorPalette.pink300, ColorPalette.pink200, ColorPalette.pink400),
+    listOf(ColorPalette.purple200, ColorPalette.purple100, ColorPalette.purple300),
+    listOf(ColorPalette.green300, ColorPalette.green200, ColorPalette.green400),
+    listOf(ColorPalette.lemonYellow300, ColorPalette.lemonYellow200, ColorPalette.lemonYellow400),
+)
+
+fun generateCardColorA(keywords: List<String>): List<Color> {
+    val randomColorSet = aColorSet.shuffled()
+    val keywordNumberMap = mutableMapOf<String, Int>()
+    var cnt = 0
+    for (keyword in keywords) {
+        if (keywordNumberMap[keyword] == null) {
+            keywordNumberMap[keyword] = cnt++
+        }
+    }
+
+    return keywords.mapIndexed { index, keyword ->
+        val keywordNumber = keywordNumberMap[keyword] ?: 5
+        randomColorSet[keywordNumber][index % 3]
+    }
+}
