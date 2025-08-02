@@ -187,7 +187,7 @@ data class KnownKnownsColors(
     val blueText: Color = ColorPalette.blue600,
     val orangeBackgroundPrimary: Color = ColorPalette.orange400,
     val orangeBackgroundSecondary: Color = ColorPalette.orange300,
-    val orangeBackgroundTertiary: Color = ColorPalette.orange600,
+    val orangeBackgroundTertiary: Color = ColorPalette.orange500,
     val orangeText: Color = ColorPalette.orange500,
     val pinkBackgroundPrimary: Color = ColorPalette.pink300,
     val pinkBackgroundSecondary: Color = ColorPalette.pink200,
