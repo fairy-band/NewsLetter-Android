@@ -181,6 +181,7 @@ private fun HomeScreen(
                 },
                 cardItems = news,
                 cardIndex = cardIndex ?: 0,
+                colorType = colorType,
             )
         }
     }
