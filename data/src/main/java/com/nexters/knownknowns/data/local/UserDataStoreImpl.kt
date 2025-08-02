@@ -15,7 +15,7 @@ data class ClickState(
 )
 
 @Single
-class DataStoreImpl(context: Context) : DataStore {
+class UserDataStoreImpl(context: Context) : UserDataStore {
     private val Context.dataStore by preferencesDataStore(name = "dataStore")
     private val dataStore = context.dataStore
 

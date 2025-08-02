@@ -37,7 +37,7 @@ class KnownKnownsApplication : Application() {
         printInstallationToken()
     }
 
-    fun printInstallationToken() {
+    private fun printInstallationToken() {
         if (!BuildConfig.DEBUG) return
 
         FirebaseInstallations.getInstance().getToken(true)
