@@ -3,6 +3,8 @@ package com.nexters.knownknowns.data.repositoryimpl
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.nexters.knownknowns.data.BuildConfig
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,6 +16,16 @@ import kotlin.coroutines.suspendCoroutine
 @Single
 internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
     private val remoteConfig = Firebase.remoteConfig
+
+    init {
+        if (BuildConfig.DEBUG) {
+            remoteConfig.setConfigSettingsAsync(
+                remoteConfigSettings {
+                    minimumFetchIntervalInSeconds = 0
+                }
+            )
+        }
+    }
 
     override fun getCardColor(): Flow<String> = flow {
         emit(getString("card_color") ?: "B")
