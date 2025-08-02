@@ -12,17 +12,8 @@ fun getCardColors(colorType: String, keywords: List<String>): List<Color> {
 }
 
 fun getCardTextColors(colorType: String, keywords: List<String>): List<Color> {
-    return if (colorType == "A") generateCardTextColorA(keywords) else cardColorsB
+    return if (colorType == "A") generateCardTextColorA(keywords) else cardTextColors
 }
-
-val cardColorsB = listOf(
-    soakColors.greenBackgroundPrimary,
-    soakColors.pinkBackgroundPrimary,
-    soakColors.lemonYellowBackgroundPrimary,
-    soakColors.blueBackgroundPrimary,
-    soakColors.orangeBackgroundPrimary,
-    soakColors.purpleBackgroundPrimary,
-)
 
 val aColorSet = listOf(
     listOf(
@@ -57,7 +48,16 @@ val aColorSet = listOf(
     ),
 )
 
-val cardTextColorsB = listOf(
+val cardColorsB = listOf(
+    soakColors.greenBackgroundPrimary,
+    soakColors.pinkBackgroundPrimary,
+    soakColors.lemonYellowBackgroundPrimary,
+    soakColors.blueBackgroundPrimary,
+    soakColors.orangeBackgroundPrimary,
+    soakColors.purpleBackgroundPrimary,
+)
+
+val cardTextColors = listOf(
     soakColors.greenText,
     soakColors.pinkText,
     soakColors.lemonYellowText,
@@ -97,7 +97,7 @@ fun generateCardTextColorA(keywords: List<String>): List<Color> {
     val today = LocalDate.now()
     val seed = today.year * 10000 + today.monthValue * 100 + today.dayOfMonth
 
-    val randomColorSet = cardTextColorsB.shuffled(Random(seed))
+    val randomColorSet = cardTextColors.shuffled(Random(seed))
     val keywordNumberMap = mutableMapOf<String, Int>()
     var cnt = 0
     for (keyword in keywords) {
