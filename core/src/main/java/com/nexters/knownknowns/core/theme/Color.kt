@@ -207,9 +207,9 @@ data class KnownKnownsColors(
     val lemonYellowText: Color = ColorPalette.lemonYellow700
 )
 
-fun getColors(abType: String, keywords: List<String>): List<Color> {
-    if (abType == "A") {
-        return generateCardColorA(listOf("a", "b", "a", "a", "c", "b"))
+fun getColors(colorType: String, keywords: List<String>): List<Color> {
+    if (colorType == "A") {
+        return generateCardColorA(keywords)
     } else {
         return cardColorsB
     }
