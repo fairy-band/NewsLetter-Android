@@ -17,6 +17,21 @@ fun getCardTitleColors(colorType: String, keywords: List<String>): List<Color> {
 
 private val aColorSet = listOf(
     listOf(
+        soakColors.greenBackgroundPrimary,
+        soakColors.greenBackgroundSecondary,
+        soakColors.greenBackgroundTertiary
+    ),
+    listOf(
+        soakColors.pinkBackgroundPrimary,
+        soakColors.pinkBackgroundSecondary,
+        soakColors.pinkBackgroundTertiary
+    ),
+    listOf(
+        soakColors.lemonYellowBackgroundPrimary,
+        soakColors.lemonYellowBackgroundSecondary,
+        soakColors.lemonYellowBackgroundTertiary
+    ),
+    listOf(
         soakColors.blueBackgroundPrimary,
         soakColors.blueBackgroundSecondary,
         soakColors.blueBackgroundTertiary
@@ -27,24 +42,9 @@ private val aColorSet = listOf(
         soakColors.orangeBackgroundTertiary
     ),
     listOf(
-        soakColors.pinkBackgroundPrimary,
-        soakColors.pinkBackgroundSecondary,
-        soakColors.pinkBackgroundTertiary
-    ),
-    listOf(
         soakColors.purpleBackgroundPrimary,
         soakColors.purpleBackgroundSecondary,
         soakColors.purpleBackgroundTertiary
-    ),
-    listOf(
-        soakColors.greenBackgroundPrimary,
-        soakColors.greenBackgroundSecondary,
-        soakColors.greenBackgroundTertiary
-    ),
-    listOf(
-        soakColors.lemonYellowBackgroundPrimary,
-        soakColors.lemonYellowBackgroundSecondary,
-        soakColors.lemonYellowBackgroundTertiary
     ),
 )
 
@@ -67,14 +67,19 @@ private val cardTitleColors = listOf(
 )
 
 /**
- * 같은 날이면 동일한 seed 값을 이용하여 여러 번 호출해도 동일한 결과가 나온다.
- * 따라서 오늘의 색깔을 별도로 저장하거나 전달할 필요가 없다.
+ * 오늘의 색상 순서를 만든다.
  */
-fun generateCardColorA(keywords: List<String>): List<Color> {
+private fun getTodayColorIndexes(keywords: List<String>): List<Int> {
     val today = LocalDate.now()
     val seed = today.year * 10000 + today.monthValue * 100 + today.dayOfMonth
 
-    val randomColorSet = aColorSet.shuffled(Random(seed))
+    return (0..5).shuffled(Random(seed))
+}
+
+/**
+ * 각각의 키워드를 몇 번째 색상에 매핑할 것인지 결정한다.
+ */
+private fun getKeywordIndexMap(keywords: List<String>): Map<String, Int> {
     val keywordNumberMap = mutableMapOf<String, Int>()
     var cnt = 0
     for (keyword in keywords) {
@@ -83,9 +88,21 @@ fun generateCardColorA(keywords: List<String>): List<Color> {
         }
     }
 
+    return keywordNumberMap
+}
+
+/**
+ * 같은 날이면 동일한 seed 값을 이용하여 여러 번 호출해도 동일한 결과가 나온다.
+ * 따라서 오늘의 색깔을 별도로 저장하거나 전달할 필요가 없다.
+ */
+fun generateCardColorA(keywords: List<String>): List<Color> {
+    val colorIndexes = getTodayColorIndexes(keywords)
+    val keywordNumberMap = getKeywordIndexMap(keywords)
+
     return keywords.mapIndexed { index, keyword ->
-        val keywordNumber = keywordNumberMap[keyword] ?: 5
-        randomColorSet[keywordNumber][index % 3]
+        val keywordIndex = keywordNumberMap[keyword] ?: 5
+        val todayColorIndex = colorIndexes[keywordIndex]
+        aColorSet[todayColorIndex][index % 3]
     }
 }
 
@@ -94,20 +111,12 @@ fun generateCardColorA(keywords: List<String>): List<Color> {
  * 따라서 오늘의 색깔을 별도로 저장하거나 전달할 필요가 없다.
  */
 fun generateCardTextColorA(keywords: List<String>): List<Color> {
-    val today = LocalDate.now()
-    val seed = today.year * 10000 + today.monthValue * 100 + today.dayOfMonth
-
-    val randomColorSet = cardTitleColors.shuffled(Random(seed))
-    val keywordNumberMap = mutableMapOf<String, Int>()
-    var cnt = 0
-    for (keyword in keywords) {
-        if (keywordNumberMap[keyword] == null) {
-            keywordNumberMap[keyword] = cnt++
-        }
-    }
+    val colorIndexes = getTodayColorIndexes(keywords)
+    val keywordNumberMap = getKeywordIndexMap(keywords)
 
     return keywords.map { keyword ->
-        val keywordNumber = keywordNumberMap[keyword] ?: 5
-        randomColorSet[keywordNumber]
+        val keywordIndex = keywordNumberMap[keyword] ?: 5
+        val todayColorIndex = colorIndexes[keywordIndex]
+        cardTitleColors[todayColorIndex]
     }
 }
