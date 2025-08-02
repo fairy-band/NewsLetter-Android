@@ -15,7 +15,7 @@ fun getCardTitleColors(colorType: String, keywords: List<String>): List<Color> {
     return if (colorType == "A") generateCardTextColorA(keywords) else cardTitleColors
 }
 
-val aColorSet = listOf(
+private val aColorSet = listOf(
     listOf(
         soakColors.blueBackgroundPrimary,
         soakColors.blueBackgroundSecondary,
@@ -48,7 +48,7 @@ val aColorSet = listOf(
     ),
 )
 
-val cardColorsB = listOf(
+private val cardColorsB = listOf(
     soakColors.greenBackgroundPrimary,
     soakColors.pinkBackgroundPrimary,
     soakColors.lemonYellowBackgroundPrimary,
@@ -57,7 +57,7 @@ val cardColorsB = listOf(
     soakColors.purpleBackgroundPrimary,
 )
 
-val cardTitleColors = listOf(
+private val cardTitleColors = listOf(
     soakColors.greenText,
     soakColors.pinkText,
     soakColors.lemonYellowText,
