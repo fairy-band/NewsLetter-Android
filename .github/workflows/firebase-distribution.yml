@@ -14,13 +14,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore local.properties
-        run: |
-          echo "${{ secrets.LOCAL_PROPERTIES_BASE64 }}" | base64 -d > local.properties
-
       - name: Distribute to Firebase
         uses: ./.github/actions/firebase-distribution
         with:
+          local-properties-b64: ${{ secrets.LOCAL_PROPERTIES_BASE64 }}
           debug-keystore-b64: ${{ secrets.DEBUG_KEYSTORE_64 }}
           firebase-service-account: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           google-services: ${{ secrets.GOOGLE_SERVICES }}

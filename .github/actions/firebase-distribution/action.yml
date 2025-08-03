@@ -2,6 +2,9 @@ name: Algosketch's Firebase Distribution
 description: 내가 만든 액션 ㅎㅎㅎㅎㅎ
 
 inputs:
+  local-properties-b64:
+    description: base64 encoded debug keystore
+    required: true
   debug-keystore-b64:
     description: base64 encoded debug keystore
     required: true
@@ -26,6 +29,7 @@ runs:
     - name: Restore needed files
       shell: bash
       run: |
+        echo "${{ inputs.local-properties-b64 }}" | base64 --decode > local.properties
         echo "${{ inputs.debug-keystore-b64 }}" | base64 --decode > debug.keystore
         echo '${{ inputs.firebase-service-account }}' > app/firebase-account.json
         echo '${{ inputs.google-services }}' > app/google-services.json
