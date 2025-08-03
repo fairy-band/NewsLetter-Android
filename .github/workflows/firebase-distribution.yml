@@ -3,7 +3,7 @@ name: Firebase App Distribution
 on:
   workflow_dispatch:
   pull_request:
-    types: [ closed ]
+    types: [ closed, synchronize ]
     branches:
       - develop
 
