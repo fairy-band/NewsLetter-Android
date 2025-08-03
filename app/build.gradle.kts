@@ -28,7 +28,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.nexters.knownknowns"
+        applicationId = "com.fairyband.soak"
         minSdk = 28
         targetSdk = 36
         versionCode = 2
