@@ -17,7 +17,7 @@ jobs:
       - name: Distribute to Firebase
         uses: ./.github/actions/firebase-distribution
         with:
-          local-properties-b64: ${{ secrets.LOCAL_PROPERTIES_BASE64 }}
+          local-properties-b64: ${{ secrets.LOCAL_PROPERTIES_64 }}
           debug-keystore-b64: ${{ secrets.DEBUG_KEYSTORE_64 }}
           firebase-service-account: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           google-services: ${{ secrets.GOOGLE_SERVICES }}
