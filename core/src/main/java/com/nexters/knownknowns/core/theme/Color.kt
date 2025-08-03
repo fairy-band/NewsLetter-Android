@@ -1,8 +1,6 @@
 package com.nexters.knownknowns.core.theme
 
 import androidx.compose.ui.graphics.Color
-import java.time.LocalDate
-import kotlin.random.Random
 
 /**
  * [ColorPalette]
