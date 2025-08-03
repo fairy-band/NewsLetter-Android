@@ -13,8 +13,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/firebase-distribution
+      - name: Distribute to Firebase
+        uses: ./.github/actions/firebase-distribution
         with:
           debug-keystore-b64: ${{ secrets.DEBUG_KEYSTORE_64 }}
           firebase-service-account: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           google-services: ${{ secrets.GOOGLE_SERVICES }}
+
+      - name: Notify to Discord
+        if: success()
+        run: |
+          curl -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "✅ Firebase Distribution 완료!\n앱이 성공적으로 업로드되었습니다.",
+              "username": "공주"
+            }'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
