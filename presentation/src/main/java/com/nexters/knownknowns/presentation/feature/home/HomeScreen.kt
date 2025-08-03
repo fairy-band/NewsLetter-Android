@@ -69,7 +69,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val colorType by viewModel.colorType.collectAsStateWithLifecycle()
+    val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var bottomSheetVisibility by remember { mutableStateOf(false) }
@@ -114,7 +114,8 @@ fun HomeScreen(
         onDismissRequest = {
             viewModel.onNewsClicked()
         },
-        news = news
+        news = news,
+        colorType = colorType,
     )
 }
 
@@ -122,9 +123,8 @@ fun HomeScreen(
 private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
+    colorType: String,
 ) {
-    // TODO: 이거 추가해서 내비게이션 하면 되는데, CompositionLocal이 프리뷰에 문제가 있어서 필요한 사람이 해결하겠지 ㅎㅎ
-//    val navController = LocalNavController.current
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
@@ -166,7 +166,8 @@ private fun HomeScreen(
                     news = news,
                     onClick = { index ->
                         cardIndex = index
-                    }
+                    },
+                    colorType = colorType,
                 )
             }
 
@@ -177,7 +178,8 @@ private fun HomeScreen(
                     onDismissRequest()
                 },
                 cardItems = news,
-                cardIndex = cardIndex ?: 0
+                cardIndex = cardIndex ?: 0,
+                colorType = colorType,
             )
         }
     }
@@ -229,16 +231,9 @@ private fun Timer() {
 private fun Cards(
     news: ImmutableList<NewsFeed>,
     onClick: (Int) -> Unit,
+    colorType: String,
     modifier: Modifier = Modifier
 ) {
-    val cardColors = listOf(
-        KnownKnownsTheme.colors.greenBackgroundPrimary,
-        KnownKnownsTheme.colors.pinkBackgroundPrimary,
-        KnownKnownsTheme.colors.lemonYellowBackgroundPrimary,
-        KnownKnownsTheme.colors.blueBackgroundPrimary,
-        KnownKnownsTheme.colors.orangeBackgroundPrimary,
-        KnownKnownsTheme.colors.purpleBackgroundPrimary,
-    )
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
     val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
@@ -281,6 +276,8 @@ private fun Cards(
             }
         }
     }
+    val keywords = news.map { it.keyword }
+    val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
 
     Box(
         modifier = modifier,
@@ -433,7 +430,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com"
                 ),
-            )
+            ),
+            colorType = "B",
         )
     }
 }

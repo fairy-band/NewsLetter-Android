@@ -20,6 +20,7 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,13 +29,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.nexters.knownknowns.core.extension.noRippleClickable
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
 import com.nexters.knownknowns.presentation.LocalNavController
 import com.nexters.knownknowns.presentation.R
 import com.nexters.knownknowns.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
+import com.nexters.knownknowns.presentation.feature.home.getCardTitleColors
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import com.nexters.knownknowns.presentation.navigation.Screen
 import kotlinx.collections.immutable.ImmutableList
@@ -51,7 +51,11 @@ internal fun PopUpDialog(
     onDismissRequest: () -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
+    colorType: String,
 ) {
+    val keywords = cardItems.map { it.keyword }
+    val titleColors = remember(cardItems, colorType) { getCardTitleColors(colorType, keywords) }
+
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
@@ -107,7 +111,7 @@ internal fun PopUpDialog(
                             summary = item.summary,
                             url = item.url
                         ),
-                        titleColor = KnownKnownsTheme.colors.statePositivePrimary, // TODO: 색상 분기처리하기 by 이유빈
+                        titleColor = titleColors[pageIndex],
                         onClick = {
                             navController.navigate(Screen.WebView(url = item.url))
                         },

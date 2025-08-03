@@ -14,7 +14,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.nexters.knownknowns.core.theme.KnownKnownsTheme
-import com.nexters.knownknowns.presentation.feature.detail.DetailScreen
 import com.nexters.knownknowns.presentation.feature.home.HomeScreen
 import com.nexters.knownknowns.presentation.feature.webview.WebViewScreen
 import com.nexters.knownknowns.presentation.navigation.NavController
@@ -52,10 +51,6 @@ class MainActivity : ComponentActivity() {
         return entryProvider {
             entry<Screen.Home> { main ->
                 HomeScreen()
-            }
-
-            entry<Screen.Detail> { detail ->
-                DetailScreen(title = detail.title)
             }
 
             entry<Screen.WebView> { webView ->

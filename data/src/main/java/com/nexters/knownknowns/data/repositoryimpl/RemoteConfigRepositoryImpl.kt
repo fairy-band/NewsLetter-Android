@@ -3,6 +3,8 @@ package com.nexters.knownknowns.data.repositoryimpl
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.nexters.knownknowns.data.BuildConfig
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,16 +13,22 @@ import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-/**
- * AB테스트를 위해 Remote Config 설정을 가져옵니다. 아래 코드는 예시이므로,
- * 실제 사용할 때에는 새롭게 AB테스트를 설정 후 아래 코드를 수정하여 사용하세요.
- */
 @Single
 internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
     private val remoteConfig = Firebase.remoteConfig
 
-    override fun getColor(): Flow<String> = flow {
-        emit(getString("color") ?: "static")
+    init {
+        if (BuildConfig.DEBUG) {
+            remoteConfig.setConfigSettingsAsync(
+                remoteConfigSettings {
+                    minimumFetchIntervalInSeconds = 0
+                }
+            )
+        }
+    }
+
+    override fun getCardColorType(): Flow<String> = flow {
+        emit(getString("card_color") ?: "B")
     }
 
     private suspend fun getString(key: String): String? = suspendCoroutine { continuation ->
