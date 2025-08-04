@@ -99,7 +99,7 @@ class HomeViewModel(
         viewModelScope.launch {
             userRepository.putUserInfo(
                 UserInfo(
-                    preference = preference[0],
+                    preference = preference,
                     workingExperience = workingExperience
                 ).toRequest()
             ).onSuccess {
