@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.presentation.model
+package com.nexters.knownknowns.domain.model
 
 import com.nexters.knownknowns.data.model.request.RegisterRequest
 import com.nexters.knownknowns.data.model.response.LoginResponse

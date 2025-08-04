@@ -6,7 +6,6 @@ import com.nexters.knownknowns.data.model.response.LoginResponse
 import com.nexters.knownknowns.data.model.response.RegisterResponse
 import com.nexters.knownknowns.data.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
 
 @Single
@@ -25,11 +24,13 @@ class AuthRepositoryImpl(
         authDataSource.setDeviceToken(token)
     }
 
-    override suspend fun registerUser(request: RegisterRequest): Flow<RegisterResponse> = flow {
-        emit(authDataSource.registerUser(request))
-    }
+    override suspend fun registerUser(request: RegisterRequest): Result<RegisterResponse> =
+        runCatching {
+            authDataSource.registerUser(request)
+        }
 
-    override suspend fun loginUser(deviceToken: String): Flow<LoginResponse> = flow {
-        emit(authDataSource.loginUser(deviceToken))
-    }
+    override suspend fun loginUser(deviceToken: String): Result<LoginResponse> =
+        runCatching {
+            authDataSource.loginUser(deviceToken)
+        }
 }
