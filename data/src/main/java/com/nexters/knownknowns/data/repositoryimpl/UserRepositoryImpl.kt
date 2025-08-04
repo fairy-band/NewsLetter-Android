@@ -7,6 +7,7 @@ import com.nexters.knownknowns.data.model.request.UserInfoRequest
 import com.nexters.knownknowns.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
 
 @Single
@@ -28,12 +29,14 @@ internal class UserRepositoryImpl(
         userDataSource.recordBottomSheetShown()
     }
 
-    override suspend fun putUserInfo(request: UserInfoRequest): Result<Unit> = runCatching {
+    override suspend fun putUserInfo(request: UserInfoRequest): Flow<Unit> = flow {
         val userId = authDataSource.getUserId().first()
 
-        userDataSource.putUserInfo(
-            userId = userId ?: 0L,
-            request = request
+        emit(
+            userDataSource.putUserInfo(
+                userId = userId ?: 0L,
+                request = request
+            )
         )
     }
 }

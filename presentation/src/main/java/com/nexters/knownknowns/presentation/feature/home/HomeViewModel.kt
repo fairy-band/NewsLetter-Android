@@ -102,22 +102,9 @@ class HomeViewModel(
                     preferences = preferences,
                     workingExperience = workingExperience
                 ).toRequest()
-            ).onSuccess {
-
-            }.onFailure(Timber::e)
+            ).catch {
+                Timber.e(it.message)
+            }.launchIn(this)
         }
-
-//        viewModelScope.launch {
-//            userRepository.putUserInfo(
-//                UserInfo(
-//                    position = "FRONTEND",
-//                    career = "STUDENT"
-//                ).toRequest()
-//            ).onCompletion {
-//                Timber.tag("TAG").d("성공")
-//            }.catch {
-//                Timber.tag("TAG").d("실패: ${it.message}")
-//            }
-//        }
     }
 }
