@@ -101,10 +101,10 @@ fun HomeScreen(
             onDismissRequest = {
                 bottomSheetVisibility = false
             },
-            onButtonClick = { position, career ->
+            onButtonClick = { preferences, workingExperience ->
                 viewModel.saveUserInfo(
-                    preferences = position,
-                    workingExperience = career
+                    preferences = preferences,
+                    workingExperience = workingExperience
                 )
             }
         )
