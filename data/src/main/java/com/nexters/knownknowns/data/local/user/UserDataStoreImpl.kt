@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.data.local
+package com.nexters.knownknowns.data.local.user
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
@@ -16,7 +16,7 @@ data class ClickState(
 
 @Single
 class UserDataStoreImpl(context: Context) : UserDataStore {
-    private val Context.dataStore by preferencesDataStore(name = "dataStore")
+    private val Context.dataStore by preferencesDataStore(name = "user data Store")
     private val dataStore = context.dataStore
 
     override val clickStateFlow: Flow<ClickState> = dataStore.data
