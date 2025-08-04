@@ -101,6 +101,7 @@ class HomeViewModel(
                 val id = response.toAuthInfo().id
 
                 authRepository.setUserId(id)
+                authRepository.setDeviceToken(uuid) // TODO: 로그인 구현 시 deviceToken 로직은 지워주세요.
             }.catch {
                 Timber.e(it)
             }.launchIn(this)
@@ -109,10 +110,10 @@ class HomeViewModel(
 
     private fun loginUser() {
         viewModelScope.launch {
-            val uuid = UUID.randomUUID().toString()
+            val deviceToken = authRepository.getDeviceToken().first()
 
             authRepository.loginUser(
-                deviceToken = uuid
+                deviceToken = deviceToken
             ).onEach { response ->
                 val id = response.toAuthInfo().id
 

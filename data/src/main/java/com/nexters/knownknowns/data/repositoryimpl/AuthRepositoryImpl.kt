@@ -19,6 +19,12 @@ class AuthRepositoryImpl(
         authDataSource.setUserId(id)
     }
 
+    override fun getDeviceToken(): Flow<String> = authDataSource.getDeviceToken()
+
+    override suspend fun setDeviceToken(token: String) {
+        authDataSource.setDeviceToken(token)
+    }
+
     override suspend fun registerUser(request: RegisterRequest): Flow<RegisterResponse> = flow {
         emit(authDataSource.registerUser(request))
     }

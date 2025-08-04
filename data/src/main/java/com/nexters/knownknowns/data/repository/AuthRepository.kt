@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     fun getUserId(): Flow<Long?>
     suspend fun setUserId(id: Long)
+    fun getDeviceToken(): Flow<String>
+    suspend fun setDeviceToken(token: String)
     suspend fun registerUser(request: RegisterRequest): Flow<RegisterResponse>
     suspend fun loginUser(deviceToken: String): Flow<LoginResponse>
 }

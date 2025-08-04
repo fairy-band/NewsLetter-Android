@@ -19,6 +19,12 @@ class AuthDataSource(
         authDataStore.setUserId(id)
     }
 
+    fun getDeviceToken(): Flow<String> = authDataStore.deviceToken
+
+    suspend fun setDeviceToken(token: String) {
+        authDataStore.setDeviceToken(token)
+    }
+
     suspend fun registerUser(request: RegisterRequest): RegisterResponse =
         authService.registerUser(
             body = request

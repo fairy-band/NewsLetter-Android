@@ -5,4 +5,6 @@ import kotlinx.coroutines.flow.Flow
 interface AuthDataStore {
     val userId: Flow<Long?>
     suspend fun setUserId(userId: Long)
+    val deviceToken: Flow<String>
+    suspend fun setDeviceToken(token: String)
 }

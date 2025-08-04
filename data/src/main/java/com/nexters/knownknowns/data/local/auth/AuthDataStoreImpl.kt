@@ -3,6 +3,7 @@ package com.nexters.knownknowns.data.local.auth
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,7 +24,18 @@ class AuthDataStoreImpl(context: Context) : AuthDataStore {
         }
     }
 
+    override val deviceToken: Flow<String> = dataStore.data.map { preferences ->
+        preferences[DEVICE_TOKEN].orEmpty()
+    }
+
+    override suspend fun setDeviceToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[DEVICE_TOKEN] = token
+        }
+    }
+
     companion object {
         private val USER_ID = longPreferencesKey("user_id")
+        private val DEVICE_TOKEN = stringPreferencesKey("device_token")
     }
 }
