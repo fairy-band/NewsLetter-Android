@@ -1,6 +1,7 @@
 package com.nexters.knownknowns.presentation.model
 
 import com.nexters.knownknowns.data.model.request.RegisterRequest
+import com.nexters.knownknowns.data.model.response.LoginResponse
 import com.nexters.knownknowns.data.model.response.RegisterResponse
 
 data class AuthInfo(
@@ -12,6 +13,10 @@ data class AuthInfo(
     )
 }
 
-fun RegisterResponse.toAuthInfo() : AuthInfo = AuthInfo(
+fun RegisterResponse.toAuthInfo(): AuthInfo = AuthInfo(
+    id = id
+)
+
+fun LoginResponse.toAuthInfo(): AuthInfo = AuthInfo(
     id = id
 )

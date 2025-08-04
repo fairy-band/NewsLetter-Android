@@ -2,6 +2,7 @@ package com.nexters.knownknowns.data.repositoryimpl
 
 import com.nexters.knownknowns.data.datasource.AuthDataSource
 import com.nexters.knownknowns.data.model.request.RegisterRequest
+import com.nexters.knownknowns.data.model.response.LoginResponse
 import com.nexters.knownknowns.data.model.response.RegisterResponse
 import com.nexters.knownknowns.data.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,10 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun registerUser(request: RegisterRequest): Flow<RegisterResponse> = flow {
-        emit(authDataSource.registerUser(request = request))
+        emit(authDataSource.registerUser(request))
+    }
+
+    override suspend fun loginUser(deviceToken: String): Flow<LoginResponse> = flow {
+        emit(authDataSource.loginUser(deviceToken))
     }
 }

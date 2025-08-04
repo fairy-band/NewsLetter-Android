@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -80,11 +81,12 @@ class HomeViewModel(
     }
 
     private fun registerOrLogin() {
-        authRepository.getUserId()
-            .onEach { userId ->
-                if (userId == null) registerUser()
-                else loginUser()
-            }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            val userId = authRepository.getUserId().first()
+
+            if (userId == null) registerUser()
+            else loginUser()
+        }
     }
 
     private fun registerUser() {
@@ -106,7 +108,19 @@ class HomeViewModel(
     }
 
     private fun loginUser() {
+        viewModelScope.launch {
+            val uuid = UUID.randomUUID().toString()
 
+            authRepository.loginUser(
+                deviceToken = uuid
+            ).onEach { response ->
+                val id = response.toAuthInfo().id
+
+                authRepository.setUserId(id)
+            }.catch {
+                Timber.e(it)
+            }.launchIn(this)
+        }
     }
 
     fun onNewsClicked() {
