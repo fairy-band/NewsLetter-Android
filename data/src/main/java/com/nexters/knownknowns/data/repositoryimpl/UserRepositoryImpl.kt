@@ -29,7 +29,7 @@ internal class UserRepositoryImpl(
         userDataSource.recordBottomSheetShown()
     }
 
-    override suspend fun putUserInfo(request: UserInfoRequest): Flow<Unit> = flow {
+    override fun putUserInfo(request: UserInfoRequest): Flow<Unit> = flow {
         val userId = authDataSource.getUserId().first()
 
         emit(

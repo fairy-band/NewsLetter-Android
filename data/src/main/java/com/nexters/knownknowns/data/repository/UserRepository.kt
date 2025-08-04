@@ -9,5 +9,5 @@ interface UserRepository {
     suspend fun incrementClickCount()
     suspend fun resetClickState()
     suspend fun recordBottomSheetShown()
-    suspend fun putUserInfo(request: UserInfoRequest): Flow<Unit>
+    fun putUserInfo(request: UserInfoRequest): Flow<Unit>
 }

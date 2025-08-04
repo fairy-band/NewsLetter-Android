@@ -96,15 +96,13 @@ class HomeViewModel(
         preferences: List<String>,
         workingExperience: String
     ) {
-        viewModelScope.launch {
-            userRepository.putUserInfo(
-                UserInfo(
-                    preferences = preferences,
-                    workingExperience = workingExperience
-                ).toRequest()
-            ).catch {
-                Timber.e(it.message)
-            }.launchIn(this)
-        }
+        userRepository.putUserInfo(
+            UserInfo(
+                preferences = preferences,
+                workingExperience = workingExperience
+            ).toRequest()
+        ).catch {
+            Timber.e(it.message)
+        }.launchIn(viewModelScope)
     }
 }
