@@ -13,6 +13,7 @@ class AuthRepositoryImpl(
     private val authDataSource: AuthDataSource
 ) : AuthRepository {
     override fun getUserId(): Flow<Long?> = authDataSource.getUserId()
+
     override suspend fun setUserId(id: Long) {
         authDataSource.setUserId(id)
     }
