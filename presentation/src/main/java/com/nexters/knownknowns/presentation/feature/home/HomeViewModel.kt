@@ -2,12 +2,15 @@ package com.nexters.knownknowns.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nexters.knownknowns.data.repository.AuthRepository
 import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import com.nexters.knownknowns.data.repository.UserRepository
 import com.nexters.knownknowns.domain.usecase.BottomSheetUseCase
+import com.nexters.knownknowns.presentation.model.AuthInfo
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import com.nexters.knownknowns.presentation.model.UserInfo
+import com.nexters.knownknowns.presentation.model.toAuthInfo
 import com.nexters.knownknowns.presentation.model.toNewsFeed
 import com.nexters.knownknowns.presentation.model.toRequest
 import kotlinx.collections.immutable.ImmutableList
@@ -17,17 +20,22 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import timber.log.Timber
+import java.util.UUID
 
 @KoinViewModel
 class HomeViewModel(
     private val newsRepository: NewsRepository,
     private val userRepository: UserRepository,
+    private val authRepository: AuthRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
@@ -57,6 +65,7 @@ class HomeViewModel(
 
     init {
         observeBottomSheetTrigger()
+        registerOrLogin()
     }
 
     private fun observeBottomSheetTrigger() {
@@ -68,6 +77,36 @@ class HomeViewModel(
                     onBottomSheetShown()
                 }
         }
+    }
+
+    private fun registerOrLogin() {
+        authRepository.getUserId()
+            .onEach { userId ->
+                if (userId == null) registerUser()
+                else loginUser()
+            }.launchIn(viewModelScope)
+    }
+
+    private fun registerUser() {
+        viewModelScope.launch {
+            val uuid = UUID.randomUUID().toString()
+
+            authRepository.registerUser(
+                AuthInfo(
+                    deviceToken = uuid
+                ).toRequest()
+            ).onEach { response ->
+                val id = response.toAuthInfo().id
+
+                authRepository.setUserId(id)
+            }.catch {
+                Timber.e(it)
+            }.launchIn(this)
+        }
+    }
+
+    private fun loginUser() {
+
     }
 
     fun onNewsClicked() {
