@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserInfoRequest(
-    @SerialName("preference")
-    val preference: List<String>,
+    @SerialName("preferences")
+    val preferences: List<String>,
     @SerialName("workingExperience")
     val workingExperience: String,
 )

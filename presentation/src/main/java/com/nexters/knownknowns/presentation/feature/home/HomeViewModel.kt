@@ -93,13 +93,13 @@ class HomeViewModel(
     }
 
     fun saveUserInfo(
-        preference: List<String>,
+        preferences: List<String>,
         workingExperience: String
     ) {
         viewModelScope.launch {
             userRepository.putUserInfo(
                 UserInfo(
-                    preference = preference,
+                    preferences = preferences,
                     workingExperience = workingExperience
                 ).toRequest()
             ).onSuccess {
