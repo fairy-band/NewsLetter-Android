@@ -1,6 +1,6 @@
 package com.nexters.knownknowns.data.repository
 
-import com.nexters.knownknowns.data.local.ClickState
+import com.nexters.knownknowns.data.local.user.ClickState
 import com.nexters.knownknowns.data.model.request.UserInfoRequest
 import kotlinx.coroutines.flow.Flow
 

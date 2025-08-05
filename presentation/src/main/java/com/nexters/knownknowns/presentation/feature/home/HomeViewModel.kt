@@ -6,6 +6,7 @@ import com.nexters.knownknowns.data.repository.NewsRepository
 import com.nexters.knownknowns.data.repository.RemoteConfigRepository
 import com.nexters.knownknowns.data.repository.UserRepository
 import com.nexters.knownknowns.domain.usecase.BottomSheetUseCase
+import com.nexters.knownknowns.domain.usecase.RegisterOrLoginUseCase
 import com.nexters.knownknowns.presentation.model.NewsFeed
 import com.nexters.knownknowns.presentation.model.UserInfo
 import com.nexters.knownknowns.presentation.model.toNewsFeed
@@ -28,6 +29,7 @@ import timber.log.Timber
 class HomeViewModel(
     private val newsRepository: NewsRepository,
     private val userRepository: UserRepository,
+    private val registerOrLoginUseCase: RegisterOrLoginUseCase,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
@@ -57,6 +59,7 @@ class HomeViewModel(
 
     init {
         observeBottomSheetTrigger()
+        registerOrLogin()
     }
 
     private fun observeBottomSheetTrigger() {
@@ -67,6 +70,13 @@ class HomeViewModel(
                     _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
                     onBottomSheetShown()
                 }
+        }
+    }
+
+    private fun registerOrLogin() {
+        viewModelScope.launch {
+            registerOrLoginUseCase()
+                .onFailure(Timber::e)
         }
     }
 

@@ -1,32 +1,31 @@
 package com.nexters.knownknowns.data.repositoryimpl
 
 import com.nexters.knownknowns.data.datasource.UserDataSource
-import com.nexters.knownknowns.data.local.ClickState
-import com.nexters.knownknowns.data.local.DataStore
+import com.nexters.knownknowns.data.local.user.ClickState
+import com.nexters.knownknowns.data.local.user.UserDataStore
 import com.nexters.knownknowns.data.model.request.UserInfoRequest
 import com.nexters.knownknowns.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
 
 @Single
 internal class UserRepositoryImpl(
-    private val dataStore: DataStore,
+    private val userDataStore: UserDataStore,
     private val userDataSource: UserDataSource
 ) : UserRepository {
     override val clickStateFlow: Flow<ClickState>
-        get() = dataStore.clickStateFlow
+        get() = userDataStore.clickStateFlow
 
     override suspend fun incrementClickCount() {
-        dataStore.incrementClickCount()
+        userDataStore.incrementClickCount()
     }
 
     override suspend fun resetClickState() {
-        dataStore.resetClickState()
+        userDataStore.resetClickState()
     }
 
     override suspend fun recordBottomSheetShown() {
-        dataStore.recordBottomSheetShown()
+        userDataStore.recordBottomSheetShown()
     }
 
     override suspend fun putUserInfo(request: UserInfoRequest): Result<Unit> = runCatching {

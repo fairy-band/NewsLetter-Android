@@ -1,4 +1,4 @@
-package com.nexters.knownknowns.data.local
+package com.nexters.knownknowns.data.local.user
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
@@ -15,11 +15,11 @@ data class ClickState(
 )
 
 @Single
-class DataStoreImpl(context: Context) : DataStore {
-    private val Context.dataStore by preferencesDataStore(name = "dataStore")
+class UserDataStore(context: Context) {
+    private val Context.dataStore by preferencesDataStore(name = "user data Store")
     private val dataStore = context.dataStore
 
-    override val clickStateFlow: Flow<ClickState> = dataStore.data
+    val clickStateFlow: Flow<ClickState> = dataStore.data
         .map { preferences ->
             ClickState(
                 count = preferences[CLICK_COUNT] ?: 0,
@@ -27,20 +27,20 @@ class DataStoreImpl(context: Context) : DataStore {
             )
         }
 
-    override suspend fun recordBottomSheetShown() {
+    suspend fun recordBottomSheetShown() {
         dataStore.edit { preferences ->
             preferences[LAST_SHOWN_TIMESTAMP] = System.currentTimeMillis()
         }
     }
 
-    override suspend fun incrementClickCount() {
+    suspend fun incrementClickCount() {
         dataStore.edit { preferences ->
             val current = preferences[CLICK_COUNT] ?: 0
             preferences[CLICK_COUNT] = current + 1
         }
     }
 
-    override suspend fun resetClickState() {
+    suspend fun resetClickState() {
         dataStore.edit { preferences ->
             preferences[CLICK_COUNT] = 0
             preferences[LAST_SHOWN_TIMESTAMP] = 0L
