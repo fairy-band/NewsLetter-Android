@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -93,31 +95,16 @@ class HomeViewModel(
     }
 
     fun saveUserInfo(
-        preference: List<String>,
+        preferences: List<String>,
         workingExperience: String
     ) {
-        viewModelScope.launch {
-            userRepository.putUserInfo(
-                UserInfo(
-                    preference = preference[0],
-                    workingExperience = workingExperience
-                ).toRequest()
-            ).onSuccess {
-
-            }.onFailure(Timber::e)
-        }
-
-//        viewModelScope.launch {
-//            userRepository.putUserInfo(
-//                UserInfo(
-//                    position = "FRONTEND",
-//                    career = "STUDENT"
-//                ).toRequest()
-//            ).onCompletion {
-//                Timber.tag("TAG").d("성공")
-//            }.catch {
-//                Timber.tag("TAG").d("실패: ${it.message}")
-//            }
-//        }
+        userRepository.putUserInfo(
+            UserInfo(
+                preferences = preferences,
+                workingExperience = workingExperience
+            ).toRequest()
+        ).catch {
+            Timber.e(it.message)
+        }.launchIn(viewModelScope)
     }
 }

@@ -8,7 +8,7 @@ import retrofit2.http.Path
 interface UserService {
     @PUT("api/users/{userId}")
     suspend fun putUserInfo(
-        @Path(value = "userId") userId: Int,
+        @Path(value = "userId") userId: Long,
         @Body body: UserInfoRequest,
     )
 }
