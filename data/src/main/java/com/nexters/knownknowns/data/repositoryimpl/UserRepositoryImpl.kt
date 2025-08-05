@@ -6,8 +6,7 @@ import com.nexters.knownknowns.data.local.user.ClickState
 import com.nexters.knownknowns.data.model.request.UserInfoRequest
 import com.nexters.knownknowns.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 @Single
@@ -29,14 +28,11 @@ internal class UserRepositoryImpl(
         userDataSource.recordBottomSheetShown()
     }
 
-    override fun putUserInfo(request: UserInfoRequest): Flow<Unit> = flow {
-        val userId = authDataSource.getUserId().first()
-
-        emit(
+    override fun putUserInfo(request: UserInfoRequest): Flow<Unit> =
+        authDataSource.getUserId().map { userId ->
             userDataSource.putUserInfo(
                 userId = userId ?: 0L,
                 request = request
             )
-        )
-    }
+        }
 }
