@@ -12,7 +12,7 @@ val properties = Properties().apply {
 }
 
 android {
-    namespace = "com.nexters.knownknowns.data"
+    namespace = "com.fairyband.soak.data"
     compileSdk = 36
 
     defaultConfig {

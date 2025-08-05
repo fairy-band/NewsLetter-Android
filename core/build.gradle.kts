@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nexters.knownknowns.core"
+    namespace = "com.fairyband.soak.core"
     compileSdk = 36
 
     defaultConfig {

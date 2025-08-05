@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Known Knowns"
+rootProject.name = "Soak"
 include(":app")
 include(":core")
 include(":data")

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nexters.knownknowns.presentation"
+    namespace = "com.fairyband.soak.presentation"
     compileSdk = 36
 
     defaultConfig {
