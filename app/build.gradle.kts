@@ -15,7 +15,7 @@ val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
-    namespace = "com.nexters.knownknowns"
+    namespace = "com.fairyband.soak"
     compileSdk = 36
 
     signingConfigs {
