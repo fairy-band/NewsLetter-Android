@@ -7,7 +7,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,7 +20,7 @@ fun BaseBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = KnownKnownsTheme.colors.backgroundSurface,
+        containerColor = SoakTheme.colors.backgroundSurface,
         dragHandle = dragHandle,
         shape = RoundedCornerShape(12.dp)
     ) {

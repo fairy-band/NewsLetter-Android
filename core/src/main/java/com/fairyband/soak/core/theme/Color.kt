@@ -120,10 +120,10 @@ private object ColorPalette {
 }
 
 /**
- * [KnownKnownsColors]
+ * [SoakColors]
  * 임의로 수정하여 사용할 수 없고, 각 목적에 맞는 컬러를 정의합니다.
  */
-data class KnownKnownsColors(
+data class SoakColors(
     // Background
     val backgroundBase: Color = ColorPalette.white,
     val backgroundSurface: Color = ColorPalette.white,

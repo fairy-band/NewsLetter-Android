@@ -1,11 +1,11 @@
 package com.fairyband.soak.presentation.feature.home
 
 import androidx.compose.ui.graphics.Color
-import com.fairyband.soak.core.theme.KnownKnownsColors
+import com.fairyband.soak.core.theme.SoakColors
 import java.time.LocalDate
 import kotlin.random.Random
 
-private val soakColors = KnownKnownsColors()
+private val soakColors = SoakColors()
 
 fun getCardColors(colorType: String, keywords: List<String>): List<Color> {
     return if (colorType == "A") generateCardColorA(keywords) else cardColorsB

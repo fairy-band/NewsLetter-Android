@@ -47,7 +47,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import com.fairyband.soak.core.extension.bounceClick
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -157,8 +157,8 @@ private fun HomeScreen(
                         today.monthValue.toString().padStart(2, '0'),
                         today.dayOfMonth.toString().padStart(2, '0')
                     ),
-                    style = KnownKnownsTheme.typography.title.copy(textAlign = TextAlign.Center),
-                    color = KnownKnownsTheme.colors.textStrong,
+                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                    color = SoakTheme.colors.textStrong,
                 )
                 Timer()
                 Spacer(modifier = Modifier.weight(1f))
@@ -206,13 +206,13 @@ private fun Timer() {
         horizontalArrangement = Arrangement.spacedBy(1.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        val numberStyle = KnownKnownsTheme.typography.body16.copy(
+        val numberStyle = SoakTheme.typography.body16.copy(
             fontWeight = FontWeight.SemiBold,
-            color = KnownKnownsTheme.colors.stateNegativePrimary
+            color = SoakTheme.colors.stateNegativePrimary
         )
-        val colonStyle = KnownKnownsTheme.typography.body15.copy(
+        val colonStyle = SoakTheme.typography.body15.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.stateNegativePrimary
+            color = SoakTheme.colors.stateNegativePrimary
         )
 
         val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
@@ -239,29 +239,29 @@ private fun Cards(
     val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
     val keywordVisibilities = listOf(true, true, true, false, false, false)
     val textStyles = listOf(
-        KnownKnownsTheme.typography.body18.copy(
+        SoakTheme.typography.body18.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.textStrong
+            color = SoakTheme.colors.textStrong
         ),
-        KnownKnownsTheme.typography.body18.copy(
+        SoakTheme.typography.body18.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.textStrong
+            color = SoakTheme.colors.textStrong
         ),
-        KnownKnownsTheme.typography.body16.copy(
+        SoakTheme.typography.body16.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.textStrong
+            color = SoakTheme.colors.textStrong
         ),
-        KnownKnownsTheme.typography.body15.copy(
+        SoakTheme.typography.body15.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.textStrong
+            color = SoakTheme.colors.textStrong
         ),
-        KnownKnownsTheme.typography.body14.copy(
+        SoakTheme.typography.body14.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.textStrong
+            color = SoakTheme.colors.textStrong
         ),
-        KnownKnownsTheme.typography.body13.copy(
+        SoakTheme.typography.body13.copy(
             fontWeight = FontWeight.Bold,
-            color = KnownKnownsTheme.colors.textStrong
+            color = SoakTheme.colors.textStrong
         )
     )
     val cardHeights = remember { mutableStateListOf(0, 0, 0, 0, 0, 0) }
@@ -351,9 +351,9 @@ private fun Card(
                 ) {
                     Text(
                         feed.keyword,
-                        style = KnownKnownsTheme.typography.body13.copy(
+                        style = SoakTheme.typography.body13.copy(
                             fontWeight = FontWeight.Medium,
-                            color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                            color = SoakTheme.colors.textStrong.copy(alpha = 0.5f)
                         )
                     )
                     Box(
@@ -364,9 +364,9 @@ private fun Card(
                     )
                     Text(
                         text = feed.letter,
-                        style = KnownKnownsTheme.typography.body13.copy(
+                        style = SoakTheme.typography.body13.copy(
                             fontWeight = FontWeight.Medium,
-                            color = KnownKnownsTheme.colors.textStrong.copy(alpha = 0.5f)
+                            color = SoakTheme.colors.textStrong.copy(alpha = 0.5f)
                         )
                     )
                 }
@@ -378,7 +378,7 @@ private fun Card(
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    KnownKnownsTheme {
+    SoakTheme {
         HomeScreen(
             onDismissRequest = {},
             news = persistentListOf(

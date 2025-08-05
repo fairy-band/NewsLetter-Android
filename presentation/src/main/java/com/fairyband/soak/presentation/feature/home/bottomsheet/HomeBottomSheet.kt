@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.bottomsheet.BaseBottomSheet
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.extension.noRippleClickable
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,15 +62,15 @@ internal fun HomeBottomSheet(
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = stringResource(id = R.string.home_bottomsheet_title),
-                color = KnownKnownsTheme.colors.textStrong,
-                style = KnownKnownsTheme.typography.head22.copy(fontWeight = FontWeight.Bold),
+                color = SoakTheme.colors.textStrong,
+                style = SoakTheme.typography.head22.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(id = R.string.home_bottomsheet_position),
-                color = KnownKnownsTheme.colors.textSecondary,
-                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
+                color = SoakTheme.colors.textSecondary,
+                style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
             )
             Spacer(modifier = Modifier.height(12.dp))
             PositionList(
@@ -83,8 +83,8 @@ internal fun HomeBottomSheet(
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = stringResource(id = R.string.home_bottomsheet_career),
-                color = KnownKnownsTheme.colors.textSecondary,
-                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
+                color = SoakTheme.colors.textSecondary,
+                style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold)
             )
             Spacer(modifier = Modifier.height(12.dp))
             CareerList(
@@ -103,14 +103,14 @@ internal fun HomeBottomSheet(
                         selectedWorkingExperience?.stringValue.orEmpty(),
                     )
                 },
-                containerColor = KnownKnownsTheme.colors.fillPrimaryInverse,
-                contentColor = KnownKnownsTheme.colors.textStrongInverse,
+                containerColor = SoakTheme.colors.fillPrimaryInverse,
+                contentColor = SoakTheme.colors.textStrongInverse,
                 shape = CircleShape,
                 isEnabled = isButtonEnabled
             ) {
                 Text(
                     text = stringResource(id = R.string.home_bottomsheet_button),
-                    style = KnownKnownsTheme.typography.body16.copy(fontWeight = FontWeight.SemiBold)
+                    style = SoakTheme.typography.body16.copy(fontWeight = FontWeight.SemiBold)
                 )
             }
             Spacer(modifier = Modifier.height(37.dp))
@@ -136,7 +136,7 @@ private fun PositionList(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
-                        color = if (isSelected) KnownKnownsTheme.colors.borderStrong else KnownKnownsTheme.colors.borderPrimary,
+                        color = if (isSelected) SoakTheme.colors.borderStrong else SoakTheme.colors.borderPrimary,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(start = 10.dp, end = 12.dp)
@@ -152,8 +152,8 @@ private fun PositionList(
                 )
                 Text(
                     text = position.label,
-                    style = KnownKnownsTheme.typography.body15.copy(fontWeight = FontWeight.Medium),
-                    color = KnownKnownsTheme.colors.textPrimary
+                    style = SoakTheme.typography.body15.copy(fontWeight = FontWeight.Medium),
+                    color = SoakTheme.colors.textPrimary
                 )
             }
         }
@@ -178,7 +178,7 @@ private fun CareerList(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
-                        color = if (isSelected) KnownKnownsTheme.colors.borderStrong else KnownKnownsTheme.colors.borderPrimary,
+                        color = if (isSelected) SoakTheme.colors.borderStrong else SoakTheme.colors.borderPrimary,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(start = 10.dp, end = 12.dp)
@@ -189,8 +189,8 @@ private fun CareerList(
             ) {
                 Text(
                     text = career.label,
-                    style = KnownKnownsTheme.typography.body15.copy(fontWeight = FontWeight.Medium),
-                    color = KnownKnownsTheme.colors.textPrimary
+                    style = SoakTheme.typography.body15.copy(fontWeight = FontWeight.Medium),
+                    color = SoakTheme.colors.textPrimary
                 )
             }
         }
@@ -203,7 +203,7 @@ private fun DragHandle(
 ) {
     Surface(
         modifier = modifier.padding(top = 12.dp, bottom = 8.dp),
-        color = KnownKnownsTheme.colors.fillPrimary,
+        color = SoakTheme.colors.fillPrimary,
         shape = MaterialTheme.shapes.extraLarge,
     ) {
         Box(Modifier.size(width = 40.dp, height = 4.dp))

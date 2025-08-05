@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
@@ -153,7 +153,7 @@ private fun Indicator(
                     .clip(CircleShape)
                     .size(8.dp)
                     .background(
-                        KnownKnownsTheme.colors.backgroundBase.copy(alpha = if (isSelected) 1f else 0.3f)
+                        SoakTheme.colors.backgroundBase.copy(alpha = if (isSelected) 1f else 0.3f)
                     )
             )
         }

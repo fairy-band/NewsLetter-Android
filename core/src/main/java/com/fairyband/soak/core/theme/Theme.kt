@@ -7,33 +7,33 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-val LocalKnownKnownsColors = staticCompositionLocalOf<KnownKnownsColors> {
-    error("No KnownKnownsColors provided")
+val LocalSoakColors = staticCompositionLocalOf<SoakColors> {
+    error("No SoakColors provided")
 }
 
-private val LocalKnownKnownsTypography = staticCompositionLocalOf<KnownKnownsTypography> {
-    error("No LocalKnownKnownsTypography provided")
+private val LocalSoakTypography = staticCompositionLocalOf<SoakTypography> {
+    error("No LocalSoakTypography provided")
 }
 
-object KnownKnownsTheme {
-    val colors: KnownKnownsColors
+object SoakTheme {
+    val colors: SoakColors
         @Composable
         @ReadOnlyComposable
-        get() = LocalKnownKnownsColors.current
+        get() = LocalSoakColors.current
 
-    val typography: KnownKnownsTypography
+    val typography: SoakTypography
         @Composable
         @ReadOnlyComposable
-        get() = LocalKnownKnownsTypography.current
+        get() = LocalSoakTypography.current
 }
 
 @Composable
-fun KnownKnownsTheme(
+fun SoakTheme(
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalKnownKnownsColors provides KnownKnownsColors(),
-        LocalKnownKnownsTypography provides KnownKnownsTypography(),
+        LocalSoakColors provides SoakColors(),
+        LocalSoakTypography provides SoakTypography(),
     ) {
         MaterialTheme(
             content = content,

@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.button.BaseButton
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
@@ -43,7 +43,7 @@ internal fun PopUpItem(
     Column(
         modifier = modifier
             .background(
-                color = KnownKnownsTheme.colors.backgroundBase,
+                color = SoakTheme.colors.backgroundBase,
                 shape = RoundedCornerShape(16.dp),
             )
             .fillMaxWidth()
@@ -53,7 +53,7 @@ internal fun PopUpItem(
 
         Text(
             text = newsFeed.title,
-            style = KnownKnownsTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
+            style = SoakTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
             color = titleColor,
             maxLines = TITLE_MAX_LINE,
             onTextLayout = { textLayout ->
@@ -67,7 +67,7 @@ internal fun PopUpItem(
         ) {
             Text(
                 text = newsFeed.keyword,
-                style = KnownKnownsTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
+                style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
                 color = titleColor
             )
             Spacer(modifier = Modifier.width(6.dp))
@@ -78,15 +78,15 @@ internal fun PopUpItem(
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = newsFeed.letter,
-                style = KnownKnownsTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
+                style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
                 color = titleColor
             )
         }
         Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
         Text(
             text = newsFeed.summary,
-            style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
-            color = KnownKnownsTheme.colors.textPrimary,
+            style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
+            color = SoakTheme.colors.textPrimary,
             maxLines = SUMMARY_MAX_LINE,
             minLines = SUMMARY_MAX_LINE,
             overflow = TextOverflow.Ellipsis
@@ -97,11 +97,11 @@ internal fun PopUpItem(
             onClick = onClick,
             shape = CircleShape,
             borderWidth = 1.dp,
-            borderColor = KnownKnownsTheme.colors.borderSecondary
+            borderColor = SoakTheme.colors.borderSecondary
         ) {
             Text(
                 text = stringResource(id = R.string.home_popup_button_text),
-                style = KnownKnownsTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+                style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
             )
         }
     }
@@ -110,7 +110,7 @@ internal fun PopUpItem(
 @Preview(showBackground = true)
 @Composable
 private fun PopUpItemPreview() {
-    KnownKnownsTheme {
+    SoakTheme {
         PopUpItem(
             newsFeed = NewsFeed(
                 id = "1",
@@ -120,7 +120,7 @@ private fun PopUpItemPreview() {
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 url = ""
             ),
-            titleColor = KnownKnownsTheme.colors.statePositivePrimary,
+            titleColor = SoakTheme.colors.statePositivePrimary,
             onClick = {},
         )
     }

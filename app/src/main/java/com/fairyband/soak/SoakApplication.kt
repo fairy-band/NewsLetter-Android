@@ -13,14 +13,14 @@ import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
 import timber.log.Timber
 
-class KnownKnownsApplication : Application() {
+class SoakApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
         startKoin {
             androidLogger()
-            androidContext(this@KnownKnownsApplication)
+            androidContext(this@SoakApplication)
             modules(
                 DataModule().module,
                 DomainModule().module,

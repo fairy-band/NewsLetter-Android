@@ -13,7 +13,7 @@ import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.feature.home.HomeScreen
 import com.fairyband.soak.presentation.feature.webview.WebViewScreen
 import com.fairyband.soak.presentation.navigation.NavController
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            KnownKnownsTheme {
+            SoakTheme {
                 val navController = rememberNavController()
 
                 CompositionLocalProvider(LocalNavController provides navController) {

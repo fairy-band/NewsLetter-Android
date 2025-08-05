@@ -21,7 +21,7 @@ val jalnanGothicFamily = FontFamily(
     Font(R.font.jalnan_gothic, FontWeight.Normal),
 )
 
-data class KnownKnownsTypography(
+data class SoakTypography(
     val title: TextStyle = createTextStyle(
         fontFamily = jalnanGothicFamily,
         fontSize = 32.sp,

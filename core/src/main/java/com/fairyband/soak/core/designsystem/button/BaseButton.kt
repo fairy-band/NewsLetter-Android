@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.fairyband.soak.core.theme.KnownKnownsTheme
+import com.fairyband.soak.core.theme.SoakTheme
 
 @Composable
 fun BaseButton(
@@ -21,11 +21,11 @@ fun BaseButton(
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
     borderWidth: Dp = 0.dp,
-    borderColor: Color = KnownKnownsTheme.colors.borderPrimary,
-    containerColor: Color = KnownKnownsTheme.colors.backgroundSurface,
-    contentColor: Color = KnownKnownsTheme.colors.textPrimary,
-    disabledContainerColor: Color = KnownKnownsTheme.colors.fillDisabled,
-    disabledContentColor: Color = KnownKnownsTheme.colors.textDisabled,
+    borderColor: Color = SoakTheme.colors.borderPrimary,
+    containerColor: Color = SoakTheme.colors.backgroundSurface,
+    contentColor: Color = SoakTheme.colors.textPrimary,
+    disabledContainerColor: Color = SoakTheme.colors.fillDisabled,
+    disabledContentColor: Color = SoakTheme.colors.textDisabled,
     content: @Composable () -> Unit,
 ) {
     Button(
