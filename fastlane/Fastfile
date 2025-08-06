@@ -21,6 +21,7 @@ platform :android do
     gradle(task: "bundle", build_type: "Release")
     upload_to_play_store(
       track: "internal",
+      release_status: "draft", # 앱 출시 전에는 draft로만 업로드할 수 있다.
       aab: "app/build/outputs/bundle/release/app-release.aab",
     )
   end
