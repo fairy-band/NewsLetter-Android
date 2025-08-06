@@ -36,4 +36,4 @@ jobs:
 
       - name: Deploy via Fastlane
         run: |
-          fastlane android internal_test version_code:${{ github.event.inputs.version_code }} version_name:${{ github.event.inputs.version_name }}
+          fastlane android deploy version_code:${{ github.event.inputs.version_code }} version_name:${{ github.event.inputs.version_name }}
