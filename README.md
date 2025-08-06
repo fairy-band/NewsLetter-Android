@@ -9,6 +9,7 @@
 ./gradlew assembleDebug appDistributionUploadDebug # Debug APK 를 Firebase Distribution에 배포한다.
 ./gradlew assembleRelease # Release APK
 ./gradlew bundleRelease # Release AAB
+fastlane android deploy # Release AAB # Play 스토어 내부 테스트에 배포한다.
 ```
 
 릴리즈 빌드 시 keystore.properties 및 jks 파일을 미리 설정해야 합니다. /app/build.gradle.kts 의 `signingConfigs`를 참고하세요.
