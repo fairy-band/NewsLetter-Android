@@ -31,8 +31,8 @@ android {
         applicationId = "com.fairyband.soak"
         minSdk = 28
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.1.0"
+        versionCode = project.findProperty("VERSION_CODE")?.toString()?.toInt() ?: 3
+        versionName = project.findProperty("VERSION_NAME")?.toString() ?: "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
