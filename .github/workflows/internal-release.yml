@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "${{ secrets.LOCAL_PROPERTIES_64 }}" | base64 --decode > local.properties
           echo "${{ secrets.KEYSTORE_PROPERTIES }}" > keystore.properties
-          echo "${{ secrets.KEYSTORE_64 }}" | base64 --decode > app/newsletter.jks
+          echo "${{ secrets.RELEASE_KEYSTORE_64 }}" | base64 --decode > app/newsletter.jks
           echo '${{ secrets.SOAK_SERVICE_ACCOUNT_JSON }}' > fastlane/soak-service-account.json
           echo '${{ secrets.GOOGLE_SERVICES }}' > app/google-services.json
 
