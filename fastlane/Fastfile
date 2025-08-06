@@ -17,8 +17,18 @@ default_platform(:android)
 
 platform :android do
   desc "Build release and Deploy"
-  lane :deploy do
-    gradle(task: "bundle", build_type: "Release")
+  lane :deploy do |options|
+    version_code = options[:version_code]
+    version_name = options[:version_name]
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      properties: {
+        "VERSION_CODE" => version_code,
+        "VERSION_NAME" => version_name
+      }
+    )
     upload_to_play_store(
       track: "internal",
       release_status: "draft", # 앱 출시 전에는 draft로만 업로드할 수 있다.
