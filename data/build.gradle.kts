@@ -23,7 +23,7 @@ android {
     }
 
     buildTypes {
-        debug {
+        defaultConfig {
             buildConfigField(
                 "String",
                 "BASE_URL",
