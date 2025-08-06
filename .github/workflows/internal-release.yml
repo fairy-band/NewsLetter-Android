@@ -1,0 +1,39 @@
+name: Deploy Internal Tester
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: 'Version Code'
+        required: true
+      version_name:
+        description: 'Version Name'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+
+      - name: Install fastlane
+        run: bundle install
+
+      # 근데 local.properties는 왜 쓸데 없이 인코딩했었지?
+      - name: Restore local files
+        run: |
+          echo "${{ secrets.LOCAL_PROPERTIES_64 }}" | base64 --decode > local.properties
+          echo "${{ secrets.KEYSTORE_PROPERTIES }}" > keystore.properties
+          echo "${{ secrets.KEYSTORE_64 }}" | base64 --decode > app/newsletter.jks
+          echo "${{ secrets.SOAK_SERVICE_ACCOUNT_JSON }}" > fastlane/soak-service-account.json
+
+      - name: Deploy via Fastlane
+        run: |
+          fastlane android internal_test version_code:${{ github.event.inputs.version_code }} version_name:${{ github.event.inputs.version_name }}
