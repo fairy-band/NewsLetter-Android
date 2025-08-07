@@ -31,8 +31,8 @@ android {
         applicationId = "com.fairyband.soak"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.0"
+        versionCode = project.findProperty("VERSION_CODE")?.toString()?.toInt() ?: 3
+        versionName = project.findProperty("VERSION_NAME")?.toString() ?: "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +45,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isDebuggable = true

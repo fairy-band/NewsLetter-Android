@@ -1,0 +1,38 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Build release and Deploy"
+  lane :deploy do |options|
+    version_code = options[:version_code]
+    version_name = options[:version_name]
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      properties: {
+        "VERSION_CODE" => version_code,
+        "VERSION_NAME" => version_name
+      }
+    )
+    upload_to_play_store(
+      track: "internal",
+      release_status: "draft", # 앱 출시 전에는 draft로만 업로드할 수 있다.
+      aab: "app/build/outputs/bundle/release/app-release.aab",
+    )
+  end
+end
