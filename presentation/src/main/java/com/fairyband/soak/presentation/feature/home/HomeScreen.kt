@@ -47,6 +47,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import com.fairyband.soak.core.extension.bounceClick
+import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
@@ -116,6 +117,7 @@ fun HomeScreen(
         },
         news = news,
         colorType = colorType,
+        onClickTitle = viewModel::increment
     )
 }
 
@@ -124,6 +126,7 @@ private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
     colorType: String,
+    onClickTitle: () -> Unit,
 ) {
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
@@ -150,7 +153,8 @@ private fun HomeScreen(
                 Text(
                     modifier = Modifier
                         .padding(top = 44.dp)
-                        .padding(horizontal = 20.dp),
+                        .padding(horizontal = 20.dp)
+                        .noRippleClickable { onClickTitle() },
                     text = stringResource(
                         R.string.home_title,
                         today.year,
@@ -380,6 +384,7 @@ private fun Card(
 private fun HomeScreenPreview() {
     SoakTheme {
         HomeScreen(
+            onClickTitle = {},
             onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(

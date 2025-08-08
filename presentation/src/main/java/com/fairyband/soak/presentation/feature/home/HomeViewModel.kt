@@ -15,10 +15,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -51,8 +53,16 @@ class HomeViewModel(
             persistentListOf()
         )
 
+    private val _counter = MutableStateFlow(0)
+    val switchColor = _counter.map { (it / 10) % 2 == 1 }
+
     val cardColorType: StateFlow<String> = remoteConfigRepository
         .getCardColorType()
+        .combine(switchColor) { colorType, switch ->
+            if (!switch) return@combine colorType
+
+            if (colorType == "A") "B" else "A"
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -106,5 +116,9 @@ class HomeViewModel(
         ).catch {
             Timber.e(it.message)
         }.launchIn(viewModelScope)
+    }
+
+    fun increment() {
+        _counter.value++
     }
 }
