@@ -107,7 +107,7 @@ fun HomeScreen(
                     preferences = preferences,
                     workingExperience = workingExperience
                 )
-                buttonClickEvent(jobGroud = preferences, careerLevel = workingExperience)
+                buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
             }
         )
     }
@@ -393,12 +393,12 @@ private fun Card(
     }
 }
 
-private fun buttonClickEvent(jobGroud: List<String>, careerLevel: String) {
+private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
     Firebase.analytics.logEvent("click") {
         param("navigation", Screen.BottomSheetCustom.name)
         param("object_type", "button")
-        param("job_group", jobGroud.joinToString(separator = ","))
+        param("job_group", jobGroup.joinToString(separator = ","))
         param("career_level", careerLevel)
     }
 }
