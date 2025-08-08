@@ -107,7 +107,6 @@ internal fun PopUpDialog(
                             param("object_type", "newsletter")
                             param("object_id", item.id)
                             param("card_index", page.toLong())
-
                         }
                     }
             }
