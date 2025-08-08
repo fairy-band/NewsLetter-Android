@@ -20,7 +20,9 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +39,11 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.C
 import com.fairyband.soak.presentation.feature.home.getCardTitleColors
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.Screen
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 internal object PopUpDialogDefaults {
     const val SUMMARY_MAX_LINE = 8
@@ -88,6 +94,24 @@ internal fun PopUpDialog(
                 initialPage = cardIndex
             )
 
+            LaunchedEffect(Unit) {
+                snapshotFlow { pagerState.currentPage }
+                    .distinctUntilChanged()
+                    .collect { page ->
+                        val item = cardItems[page]
+
+                        // 뉴스레터 캐러셀 카드 노출
+                        Firebase.analytics.logEvent("impression") {
+                            param("navigation", Screen.NewsLetterCarousel.name)
+                            param("object_section", "newsletter_card")
+                            param("object_type", "newsletter")
+                            param("object_id", item.id)
+                            param("card_index", page.toLong())
+
+                        }
+                    }
+            }
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -114,6 +138,7 @@ internal fun PopUpDialog(
                         titleColor = titleColors[pageIndex],
                         onClick = {
                             navController.navigate(Screen.WebView(url = item.url))
+                            webClickEvent(id = item.id, page = pageIndex.toLong())
                         },
                     )
                 }
@@ -132,7 +157,6 @@ internal fun PopUpDialog(
             }
         }
     }
-
 }
 
 @Composable
@@ -157,5 +181,16 @@ private fun Indicator(
                     )
             )
         }
+    }
+}
+
+private fun webClickEvent(id: String, page: Long) {
+    // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
+    Firebase.analytics.logEvent("click") {
+        param("navigation", Screen.NewsLetterCarousel.name)
+        param("object_section", "newsletter_card")
+        param("object_type", "button")
+        param("object_id", id)
+        param("card_index", page)
     }
 }
