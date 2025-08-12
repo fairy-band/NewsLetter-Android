@@ -16,12 +16,12 @@ internal class UserRepositoryImpl(
 ) : UserRepository {
     override val clickStateFlow: Flow<ClickState> = userDataSource.clickStateFlow
 
-    override suspend fun resetClickState() {
-        userDataSource.resetClickState()
-    }
-
     override suspend fun isOnceShown() {
         userDataSource.isOnceShown()
+    }
+
+    override suspend fun resetClickState() {
+        userDataSource.resetClickState()
     }
 
     override suspend fun recordBottomSheetShown() {
