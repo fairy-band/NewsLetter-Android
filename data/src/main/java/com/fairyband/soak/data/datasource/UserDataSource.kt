@@ -47,4 +47,8 @@ internal class UserDataSource(
     suspend fun visitApp() {
         userDataStore.updateLastVisitedDate()
     }
+
+    suspend fun disableNotificationSetting() {
+        userDataStore.updateLastNotificationSettingDate()
+    }
 }
