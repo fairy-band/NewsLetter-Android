@@ -1,12 +1,7 @@
 package com.fairyband.soak.presentation.feature.home.bottomsheet
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
-import android.content.Intent
 import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -21,11 +16,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +27,8 @@ import com.fairyband.soak.core.designsystem.bottomsheet.BaseBottomSheet
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.extensions.findActivity
+import com.fairyband.soak.presentation.extensions.openAppNotificationSettings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +48,7 @@ internal fun NotificationBottomSheet(
             activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) == false
 
         if (shouldOpenSetting) {
-            openAppNotificationSettings(context)
+            context.openAppNotificationSettings(context)
         }
     }
 
@@ -116,16 +108,4 @@ private fun DragHandle(
     ) {
         Box(Modifier.size(width = 40.dp, height = 4.dp))
     }
-}
-
-private fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
-
-private fun openAppNotificationSettings(context: Context) {
-    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-    context.startActivity(intent)
 }
