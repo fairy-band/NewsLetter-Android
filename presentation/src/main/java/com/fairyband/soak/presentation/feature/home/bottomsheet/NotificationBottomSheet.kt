@@ -1,5 +1,14 @@
 package com.fairyband.soak.presentation.feature.home.bottomsheet
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,13 +45,23 @@ internal fun NotificationBottomSheet(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val selectedPreferences = remember { mutableStateListOf<Preference>() }
-    var selectedWorkingExperience by remember { mutableStateOf<WorkingExperience?>(null) }
-    val isButtonEnabled = selectedWorkingExperience != null && selectedPreferences.isNotEmpty()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val context = LocalContext.current
+    val activity = context.findActivity()
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@rememberLauncherForActivityResult
+
+        val shouldOpenSetting =
+            activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) == false
+
+        if (shouldOpenSetting) {
+            openAppNotificationSettings(context)
+        }
+    }
 
     BaseBottomSheet(
-        sheetState = sheetState,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         onDismissRequest = onDismissRequest,
         dragHandle = { DragHandle() }
     ) {
@@ -67,13 +87,13 @@ internal fun NotificationBottomSheet(
             BaseButton(
                 paddingVertical = 16.dp,
                 onClick = {
-                    onDismissRequest()
                     onButtonClick()
+                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    onDismissRequest()
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
                 shape = CircleShape,
-                isEnabled = isButtonEnabled
             ) {
                 Text(
                     text = stringResource(id = R.string.home_notification_setting_button),
@@ -96,4 +116,16 @@ private fun DragHandle(
     ) {
         Box(Modifier.size(width = 40.dp, height = 4.dp))
     }
+}
+
+private fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+private fun openAppNotificationSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+    context.startActivity(intent)
 }

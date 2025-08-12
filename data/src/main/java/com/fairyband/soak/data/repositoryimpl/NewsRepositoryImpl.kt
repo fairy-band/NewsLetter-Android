@@ -16,7 +16,7 @@ class NewsRepositoryImpl(
 ) : NewsRepository {
     override fun getNews(publishedDate: String?): Flow<List<NewsResponse>> = flow {
         val userId =
-            authDataSource.getUserId().first() ?: throw IllegalStateException("userId를 가져오지 못 했어요.")
+            authDataSource.getUserId().first() ?: 26// throw IllegalStateException("userId를 가져오지 못 했어요.")
 
         val response =
             newsLetterDataSource.getContents(userId = userId, publishedDate = publishedDate)
