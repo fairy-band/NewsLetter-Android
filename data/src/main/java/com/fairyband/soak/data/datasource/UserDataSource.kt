@@ -25,10 +25,6 @@ internal class UserDataSource(
     val clickStateFlow: Flow<ClickState>
         get() = userDataStore.clickStateFlow
 
-    suspend fun incrementClickCount() {
-        userDataStore.incrementClickCount()
-    }
-
     suspend fun resetClickState() {
         userDataStore.resetClickState()
     }

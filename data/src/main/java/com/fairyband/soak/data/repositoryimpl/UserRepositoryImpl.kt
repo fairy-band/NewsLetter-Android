@@ -16,10 +16,6 @@ internal class UserRepositoryImpl(
 ) : UserRepository {
     override val clickStateFlow: Flow<ClickState> = userDataSource.clickStateFlow
 
-    override suspend fun incrementClickCount() {
-        userDataSource.incrementClickCount()
-    }
-
     override suspend fun resetClickState() {
         userDataSource.resetClickState()
     }

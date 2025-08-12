@@ -23,17 +23,12 @@ class BottomSheetUseCase(
                 return@map false
 
             } else {
-                clickState.count == TRIGGER_COUNT
+                !clickState.isOnceShown
             }
         }
         .distinctUntilChanged()
 
-    suspend fun onNewsClicked() {
-        userRepository.incrementClickCount()
-    }
-
     companion object {
         private const val SUPPRESSION_DAYS = 7L
-        private const val TRIGGER_COUNT = 3
     }
 }
