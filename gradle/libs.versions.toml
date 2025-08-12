@@ -37,6 +37,7 @@ kotlinxSerializationJson = "1.9.0"
 # google
 google-services = "4.4.3"
 firebaseBom = "33.16.0"
+crashlytics = "3.0.5"
 flowlayout = "0.36.0"
 
 # coroutine
@@ -94,6 +95,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # google
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-crashlytics = {module ="com.google.firebase:firebase-crashlytics-ndk"}
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "flowlayout" }
 
 # logging
@@ -126,3 +128,4 @@ google-service = { id = "com.google.gms.google-services", version.ref = "google-
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 firebase-distribution = { id = "com.google.firebase.appdistribution", version.ref = "firebase-distribution" }
+firebase-crashlytics = {id = "com.google.firebase.crashlytics", version.ref = "crashlytics"}
