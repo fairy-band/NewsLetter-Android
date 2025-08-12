@@ -25,6 +25,10 @@ internal class UserDataSource(
     val clickStateFlow: Flow<ClickState>
         get() = userDataStore.clickStateFlow
 
+    suspend fun isOnceShown() {
+        userDataStore.isOnceShown()
+    }
+
     suspend fun resetClickState() {
         userDataStore.resetClickState()
     }

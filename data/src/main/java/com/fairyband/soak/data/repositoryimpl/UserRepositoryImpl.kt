@@ -20,6 +20,10 @@ internal class UserRepositoryImpl(
         userDataSource.resetClickState()
     }
 
+    override suspend fun isOnceShown() {
+        userDataSource.isOnceShown()
+    }
+
     override suspend fun recordBottomSheetShown() {
         userDataSource.recordBottomSheetShown()
     }

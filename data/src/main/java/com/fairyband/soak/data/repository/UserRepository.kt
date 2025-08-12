@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserRepository {
     val clickStateFlow: Flow<ClickState>
     suspend fun resetClickState()
+    suspend fun isOnceShown()
     suspend fun recordBottomSheetShown()
     fun putUserInfo(request: UserInfoRequest): Flow<Unit>
 }

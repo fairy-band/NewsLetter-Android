@@ -20,6 +20,7 @@ class BottomSheetUseCase(
                 val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
                 if (timeSinceLastShown > sevenDaysInMillis) userRepository.resetClickState()
+
                 return@map false
 
             } else {
@@ -27,6 +28,10 @@ class BottomSheetUseCase(
             }
         }
         .distinctUntilChanged()
+
+    suspend fun onBottomSheetButtonClick() {
+        userRepository.isOnceShown()
+    }
 
     companion object {
         private const val SUPPRESSION_DAYS = 7L
