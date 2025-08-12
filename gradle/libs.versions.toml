@@ -73,6 +73,7 @@ androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-p
 
 # di
 firebase-config-ktx = { module = "com.google.firebase:firebase-config-ktx" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinCore" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCore" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
