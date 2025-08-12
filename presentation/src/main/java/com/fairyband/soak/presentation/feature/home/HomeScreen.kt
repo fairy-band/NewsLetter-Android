@@ -42,17 +42,18 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
+import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.Screen
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
@@ -73,6 +74,8 @@ fun HomeScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var bottomSheetVisibility by remember { mutableStateOf(false) }
+    val showNotificationBottomSheet by
+        viewModel.shouldShowNotificationSetting.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
         viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
@@ -96,7 +99,16 @@ fun HomeScreen(
             }
     }
 
-    if (bottomSheetVisibility) {
+    if (showNotificationBottomSheet) {
+        NotificationBottomSheet(
+            onDismissRequest = viewModel::disableNotificationSetting,
+            onButtonClick = {
+
+            }
+        )
+    }
+
+    if (!showNotificationBottomSheet && bottomSheetVisibility) {
         HomeBottomSheet(
             onDismissRequest = {
                 bottomSheetVisibility = false

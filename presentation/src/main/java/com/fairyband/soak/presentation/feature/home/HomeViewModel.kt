@@ -29,7 +29,7 @@ import timber.log.Timber
 
 @KoinViewModel
 class HomeViewModel(
-    private val newsRepository: NewsRepository,
+    newsRepository: NewsRepository,
     private val userRepository: UserRepository,
     private val registerOrLoginUseCase: RegisterOrLoginUseCase,
     private val bottomSheetUseCase: BottomSheetUseCase,
@@ -59,7 +59,16 @@ class HomeViewModel(
             "B",
         )
 
+    val shouldShowNotificationSetting = userRepository
+        .shouldShowNotificationSetting
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            false
+        )
+
     init {
+        visitApp()
         observeBottomSheetTrigger()
         registerOrLogin()
     }
@@ -106,5 +115,13 @@ class HomeViewModel(
         ).catch {
             Timber.e(it.message)
         }.launchIn(viewModelScope)
+    }
+
+    fun disableNotificationSetting() = viewModelScope.launch {
+        userRepository.disableNotificationSetting()
+    }
+
+    private fun visitApp() = viewModelScope.launch {
+        userRepository.visitApp()
     }
 }

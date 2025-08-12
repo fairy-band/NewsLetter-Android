@@ -32,7 +32,7 @@ import com.fairyband.soak.presentation.R
 @Composable
 internal fun NotificationBottomSheet(
     onDismissRequest: () -> Unit,
-    onButtonClick: (List<String>, String) -> Unit,
+    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val selectedPreferences = remember { mutableStateListOf<Preference>() }
@@ -68,7 +68,7 @@ internal fun NotificationBottomSheet(
                 paddingVertical = 16.dp,
                 onClick = {
                     onDismissRequest()
-
+                    onButtonClick()
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
