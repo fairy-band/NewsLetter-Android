@@ -41,7 +41,7 @@ class UserDataStore(context: Context) {
     }
 
     companion object {
-        private val IS_ONCE_SHOWN = booleanPreferencesKey("is_bottomsheet_shown")
+        private val IS_ONCE_SHOWN = booleanPreferencesKey("is_once_shown")
         private val LAST_SHOWN_TIMESTAMP = longPreferencesKey("last_shown_timestamp")
     }
 }
