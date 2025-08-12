@@ -1,6 +1,6 @@
 package com.fairyband.soak.data.datasource
 
-import com.fairyband.soak.data.local.user.ClickState
+import com.fairyband.soak.data.local.user.BottomSheetState
 import com.fairyband.soak.data.local.user.UserDataStore
 import com.fairyband.soak.data.model.request.UserInfoRequest
 import com.fairyband.soak.data.remote.service.UserService
@@ -22,8 +22,8 @@ internal class UserDataSource(
         )
     }
 
-    val clickStateFlow: Flow<ClickState>
-        get() = userDataStore.clickStateFlow
+    val bottomSheetFlow: Flow<BottomSheetState>
+        get() = userDataStore.bottomSheetFlow
 
     suspend fun isOnceShown() {
         userDataStore.isOnceShown()

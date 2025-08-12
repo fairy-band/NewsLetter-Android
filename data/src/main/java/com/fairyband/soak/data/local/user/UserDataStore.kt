@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
-data class ClickState(
+data class BottomSheetState(
     val isOnceShown: Boolean,
     val lastShownTimestamp: Long
 )
@@ -19,9 +19,9 @@ class UserDataStore(context: Context) {
     private val Context.dataStore by preferencesDataStore(name = "user data Store")
     private val dataStore = context.dataStore
 
-    val clickStateFlow: Flow<ClickState> = dataStore.data
+    val bottomSheetFlow: Flow<BottomSheetState> = dataStore.data
         .map { preferences ->
-            ClickState(
+            BottomSheetState(
                 isOnceShown = preferences[IS_ONCE_SHOWN] ?: false,
                 lastShownTimestamp = preferences[LAST_SHOWN_TIMESTAMP] ?: 0L
             )
