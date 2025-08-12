@@ -125,6 +125,7 @@ fun HomeScreen(
     HomeScreen(
         onDismissRequest = {
             viewModel.onNewsClicked()
+            viewModel.onCardShown()
         },
         news = news,
         colorType = colorType,

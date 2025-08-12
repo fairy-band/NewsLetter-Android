@@ -6,7 +6,6 @@ import com.fairyband.soak.data.local.user.ClickState
 import com.fairyband.soak.data.model.request.UserInfoRequest
 import com.fairyband.soak.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 import java.time.LocalDate
@@ -17,10 +16,10 @@ internal class UserRepositoryImpl(
     private val userDataSource: UserDataSource,
 ) : UserRepository {
     override val clickStateFlow: Flow<ClickState> = userDataSource.clickStateFlow
-    override val shouldShowNotificationSetting: Flow<Boolean> = userDataSource
-        .streak
-        .combine(userDataSource.notificationSettingDateFlow) { streak, shownDate ->
-            streak >= 2 && LocalDate.now() >= shownDate.plusDays(3)
+    override val streak: Flow<Int> = userDataSource.streak
+    override val notificationEnabled: Flow<Boolean> =
+        userDataSource.notificationSettingDateFlow.map { shownDate ->
+            LocalDate.now() >= shownDate.plusDays(3)
         }
 
     override suspend fun incrementClickCount() {

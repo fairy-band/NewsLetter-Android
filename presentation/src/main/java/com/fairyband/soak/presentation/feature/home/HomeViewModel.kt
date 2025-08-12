@@ -15,17 +15,22 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import timber.log.Timber
+import java.time.LocalDate
 
 @KoinViewModel
 class HomeViewModel(
@@ -37,6 +42,25 @@ class HomeViewModel(
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    private val _cardShown = MutableStateFlow(false)
+    private val cardShown: StateFlow<Boolean> = _cardShown.asStateFlow()
+    private val notificationEnabled = userRepository.notificationEnabled
+    val shouldShowNotificationSetting: StateFlow<Boolean> = userRepository
+        .streak
+        .combine(cardShown) { streak, cardShown ->
+            // 방금 캐로셀을 닫았거나, 방문 일수가 2일 이상이면 바텀 시트를 노출한다.
+            streak >= 2 || cardShown
+        }
+        .combine(notificationEnabled) { shouldShow, enabled ->
+            // 하지만 알림 세팅이 비활성화 되어 있다면 노출하지 않는다.
+            shouldShow && enabled
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            false
+        )
 
     val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
         .getNews()
@@ -57,14 +81,6 @@ class HomeViewModel(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             "B",
-        )
-
-    val shouldShowNotificationSetting = userRepository
-        .shouldShowNotificationSetting
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            false
         )
 
     init {
@@ -119,6 +135,11 @@ class HomeViewModel(
 
     fun disableNotificationSetting() = viewModelScope.launch {
         userRepository.disableNotificationSetting()
+    }
+
+    // TODO: merge할 때 onNewsClicked와 합칠 수 있는지 검토하기
+    fun onCardShown() {
+        _cardShown.update { true }
     }
 
     private fun visitApp() = viewModelScope.launch {
