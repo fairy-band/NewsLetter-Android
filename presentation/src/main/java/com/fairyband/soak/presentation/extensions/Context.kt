@@ -12,8 +12,9 @@ fun Context.findActivity(): Activity? = when (this) {
     else -> null
 }
 
-fun Context.openAppNotificationSettings(context: Context) {
+fun Context.openAppNotificationSettings() {
     val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-    context.startActivity(intent)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+
+    startActivity(intent)
 }

@@ -48,7 +48,7 @@ internal fun NotificationBottomSheet(
             activity?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) == false
 
         if (shouldOpenSetting) {
-            context.openAppNotificationSettings(context)
+            context.openAppNotificationSettings()
         }
     }
 
@@ -79,9 +79,9 @@ internal fun NotificationBottomSheet(
             BaseButton(
                 paddingVertical = 16.dp,
                 onClick = {
+                    onDismissRequest()
                     onButtonClick()
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    onDismissRequest()
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
