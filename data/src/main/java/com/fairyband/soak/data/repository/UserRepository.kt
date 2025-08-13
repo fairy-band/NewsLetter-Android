@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserRepository {
     val bottomSheetFlow: Flow<BottomSheetState>
     suspend fun isOnceShown()
-    suspend fun resetClickState()
+    suspend fun resetState()
     suspend fun recordBottomSheetShown()
     fun putUserInfo(request: UserInfoRequest): Flow<Unit>
 }

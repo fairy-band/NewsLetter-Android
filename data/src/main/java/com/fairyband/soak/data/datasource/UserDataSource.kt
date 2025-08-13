@@ -29,8 +29,8 @@ internal class UserDataSource(
         userDataStore.isOnceShown()
     }
 
-    suspend fun resetClickState() {
-        userDataStore.resetClickState()
+    suspend fun resetState() {
+        userDataStore.resetState()
     }
 
     suspend fun recordBottomSheetShown() {

@@ -19,7 +19,7 @@ class BottomSheetUseCase(
                 val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
                 val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
-                if (timeSinceLastShown > sevenDaysInMillis) userRepository.resetClickState()
+                if (timeSinceLastShown > sevenDaysInMillis) userRepository.resetState()
 
                 return@map false
 

@@ -39,7 +39,7 @@ class UserDataStore(context: Context) {
         }
     }
 
-    suspend fun resetClickState() {
+    suspend fun resetState() {
         dataStore.edit { preferences ->
             preferences[IS_ONCE_SHOWN] = false
             preferences[LAST_SHOWN_TIMESTAMP] = 0L
