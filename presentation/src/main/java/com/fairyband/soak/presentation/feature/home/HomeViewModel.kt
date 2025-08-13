@@ -82,12 +82,6 @@ class HomeViewModel(
         }
     }
 
-    fun onNewsClicked() {
-        viewModelScope.launch {
-            bottomSheetUseCase.onNewsClicked()
-        }
-    }
-
     private fun onBottomSheetShown() {
         viewModelScope.launch {
             userRepository.recordBottomSheetShown()

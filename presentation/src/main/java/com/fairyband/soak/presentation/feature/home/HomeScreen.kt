@@ -107,15 +107,13 @@ fun HomeScreen(
                     preferences = preferences,
                     workingExperience = workingExperience
                 )
+
                 buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
             }
         )
     }
 
     HomeScreen(
-        onDismissRequest = {
-            viewModel.onNewsClicked()
-        },
         news = news,
         colorType = colorType,
     )
@@ -123,7 +121,6 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreen(
-    onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
     colorType: String,
 ) {
@@ -193,7 +190,6 @@ private fun HomeScreen(
                 visibility = cardIndex != null,
                 onDismissRequest = {
                     cardIndex = null
-                    onDismissRequest()
                 },
                 cardItems = news,
                 cardIndex = cardIndex ?: 0,
@@ -408,7 +404,6 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 private fun HomeScreenPreview() {
     SoakTheme {
         HomeScreen(
-            onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
                     id = "1",

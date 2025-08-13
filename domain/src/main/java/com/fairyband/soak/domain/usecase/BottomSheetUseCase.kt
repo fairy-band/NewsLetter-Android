@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 class BottomSheetUseCase(
     private val userRepository: UserRepository,
 ) {
-    val shouldShowBottomSheet: Flow<Boolean> = userRepository.clickStateFlow
+    val shouldShowBottomSheet: Flow<Boolean> = userRepository.bottomSheetFlow
         .map { clickState ->
             val lastShown = clickState.lastShownTimestamp
 
@@ -19,21 +19,17 @@ class BottomSheetUseCase(
                 val sevenDaysInMillis = TimeUnit.DAYS.toMillis(SUPPRESSION_DAYS)
                 val timeSinceLastShown = System.currentTimeMillis() - lastShown
 
-                if (timeSinceLastShown > sevenDaysInMillis) userRepository.resetClickState()
+                if (timeSinceLastShown > sevenDaysInMillis) userRepository.resetState()
+
                 return@map false
 
             } else {
-                clickState.count == TRIGGER_COUNT
+                true
             }
         }
         .distinctUntilChanged()
 
-    suspend fun onNewsClicked() {
-        userRepository.incrementClickCount()
-    }
-
     companion object {
         private const val SUPPRESSION_DAYS = 7L
-        private const val TRIGGER_COUNT = 3
     }
 }

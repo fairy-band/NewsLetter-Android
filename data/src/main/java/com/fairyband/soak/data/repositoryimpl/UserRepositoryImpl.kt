@@ -2,7 +2,7 @@ package com.fairyband.soak.data.repositoryimpl
 
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.UserDataSource
-import com.fairyband.soak.data.local.user.ClickState
+import com.fairyband.soak.data.local.user.BottomSheetState
 import com.fairyband.soak.data.model.request.UserInfoRequest
 import com.fairyband.soak.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,14 +14,10 @@ internal class UserRepositoryImpl(
     private val authDataSource: AuthDataSource,
     private val userDataSource: UserDataSource,
 ) : UserRepository {
-    override val clickStateFlow: Flow<ClickState> = userDataSource.clickStateFlow
+    override val bottomSheetFlow: Flow<BottomSheetState> = userDataSource.bottomSheetFlow
 
-    override suspend fun incrementClickCount() {
-        userDataSource.incrementClickCount()
-    }
-
-    override suspend fun resetClickState() {
-        userDataSource.resetClickState()
+    override suspend fun resetState() {
+        userDataSource.resetState()
     }
 
     override suspend fun recordBottomSheetShown() {
