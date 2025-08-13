@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -39,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -69,13 +71,16 @@ import java.time.LocalDateTime
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
+
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    var hasNotificationPermission by remember { mutableStateOf(false) }
     var bottomSheetVisibility by remember { mutableStateOf(false) }
     val showNotificationBottomSheet by
-        viewModel.shouldShowNotificationSetting.collectAsStateWithLifecycle()
+    viewModel.shouldShowNotificationSetting.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
         viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
@@ -99,7 +104,12 @@ fun HomeScreen(
             }
     }
 
-    if (showNotificationBottomSheet) {
+    LaunchedEffect(showNotificationBottomSheet) {
+        hasNotificationPermission =
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+
+    if (showNotificationBottomSheet && !hasNotificationPermission) {
         NotificationBottomSheet(
             onDismissRequest = viewModel::disableNotificationSetting,
         )
