@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.google.service)
     alias(libs.plugins.firebase.distribution)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -85,6 +86,7 @@ dependencies {
     // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     // di
     implementation(libs.koin.annotations)

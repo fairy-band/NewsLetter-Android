@@ -97,9 +97,10 @@ fun HomeScreen(
         snapshotFlow { bottomSheetVisibility }
             .collect { isHome ->
                 val screenName = if (isHome) Screen.Home.name else Screen.BottomSheetCustom.name
+
+                // 앱 메인 페이지 진입 & 맞춤정보 바텀시트 노출
                 Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
-                    param("platform", "Android")
                 }
             }
     }
@@ -125,13 +126,14 @@ fun HomeScreen(
                     preferences = preferences,
                     workingExperience = workingExperience
                 )
+
+                buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
             }
         )
     }
 
     HomeScreen(
         onDismissRequest = {
-            viewModel.onNewsClicked()
             viewModel.onCardShown()
         },
         news = news,
@@ -153,11 +155,27 @@ private fun HomeScreen(
             .distinctUntilChanged()
             .collect { isHome ->
                 val screenName = if (isHome) Screen.Home.name else Screen.NewsLetterCarousel.name
+
+                // 앱 메인 페이지 진입 & 뉴스레터 캐러셀 진입
                 Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
-                    param("platform", "Android")
                 }
             }
+    }
+
+    LaunchedEffect(cardIndex, news) {
+        cardIndex?.let {
+            // 뉴스레터 클릭
+            Firebase.analytics.logEvent("click") {
+                val objectId = news.getOrNull(it)?.id.orEmpty()
+
+                param("navigation", Screen.Home.name)
+                param("object_section", "newsletter_list")
+                param("object_type", "newsletter")
+                param("object_id", objectId)
+                param("list_index", it.toLong())
+            }
+        }
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -392,6 +410,16 @@ private fun Card(
                 }
             }
         }
+    }
+}
+
+private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
+    // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
+    Firebase.analytics.logEvent("click") {
+        param("navigation", Screen.BottomSheetCustom.name)
+        param("object_type", "button")
+        param("job_group", jobGroup.joinToString(separator = ","))
+        param("career_level", careerLevel)
     }
 }
 

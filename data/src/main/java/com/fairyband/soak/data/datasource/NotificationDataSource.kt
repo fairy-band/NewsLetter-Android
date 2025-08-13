@@ -2,9 +2,9 @@ package com.fairyband.soak.data.datasource
 
 import com.fairyband.soak.data.model.request.FcmRegisterRequest
 import com.fairyband.soak.data.remote.service.NotificationService
-import org.koin.core.annotation.Singleton
+import org.koin.core.annotation.Single
 
-@Singleton
+@Single
 class NotificationDataSource(
     private val notificationService: NotificationService
 ) {

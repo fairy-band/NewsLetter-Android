@@ -1,6 +1,6 @@
 package com.fairyband.soak.data.datasource
 
-import com.fairyband.soak.data.local.user.ClickState
+import com.fairyband.soak.data.local.user.BottomSheetState
 import com.fairyband.soak.data.local.user.UserDataStore
 import com.fairyband.soak.data.model.request.UserInfoRequest
 import com.fairyband.soak.data.remote.service.UserService
@@ -13,9 +13,6 @@ class UserDataSource(
     private val userDataStore: UserDataStore,
     private val userService: UserService,
 ) {
-    val clickStateFlow: Flow<ClickState>
-        get() = userDataStore.clickStateFlow
-
     val streak: Flow<Int>
         get() = userDataStore.streakFlow
 
@@ -32,12 +29,11 @@ class UserDataSource(
         )
     }
 
-    suspend fun incrementClickCount() {
-        userDataStore.incrementClickCount()
-    }
+    val bottomSheetFlow: Flow<BottomSheetState>
+        get() = userDataStore.bottomSheetFlow
 
-    suspend fun resetClickState() {
-        userDataStore.resetClickState()
+    suspend fun resetState() {
+        userDataStore.resetState()
     }
 
     suspend fun recordBottomSheetShown() {

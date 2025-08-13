@@ -107,12 +107,6 @@ class HomeViewModel(
         }
     }
 
-    fun onNewsClicked() {
-        viewModelScope.launch {
-            bottomSheetUseCase.onNewsClicked()
-        }
-    }
-
     private fun onBottomSheetShown() {
         viewModelScope.launch {
             userRepository.recordBottomSheetShown()
@@ -137,7 +131,6 @@ class HomeViewModel(
         userRepository.disableNotificationSetting()
     }
 
-    // TODO: merge할 때 onNewsClicked와 합칠 수 있는지 검토하기
     fun onCardShown() {
         _cardShown.update { true }
     }
