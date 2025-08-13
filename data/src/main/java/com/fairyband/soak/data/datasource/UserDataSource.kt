@@ -9,7 +9,7 @@ import org.koin.core.annotation.Single
 import java.time.LocalDate
 
 @Single
-internal class UserDataSource(
+class UserDataSource(
     private val userDataStore: UserDataStore,
     private val userService: UserService,
 ) {
