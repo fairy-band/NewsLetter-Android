@@ -16,10 +16,6 @@ internal class UserRepositoryImpl(
 ) : UserRepository {
     override val bottomSheetFlow: Flow<BottomSheetState> = userDataSource.bottomSheetFlow
 
-    override suspend fun setAsShownOnce() {
-        userDataSource.setAsShownOnce()
-    }
-
     override suspend fun resetState() {
         userDataSource.resetState()
     }

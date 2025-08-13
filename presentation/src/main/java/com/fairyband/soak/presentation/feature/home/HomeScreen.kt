@@ -109,8 +109,6 @@ fun HomeScreen(
                 )
 
                 buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
-
-                viewModel.onBottomSheetButtonClick()
             }
         )
     }

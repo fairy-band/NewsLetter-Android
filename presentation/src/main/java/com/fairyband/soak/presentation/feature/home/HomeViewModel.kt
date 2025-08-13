@@ -82,12 +82,6 @@ class HomeViewModel(
         }
     }
 
-    fun onBottomSheetButtonClick() {
-        viewModelScope.launch {
-            bottomSheetUseCase.onBottomSheetButtonClick()
-        }
-    }
-
     private fun onBottomSheetShown() {
         viewModelScope.launch {
             userRepository.recordBottomSheetShown()

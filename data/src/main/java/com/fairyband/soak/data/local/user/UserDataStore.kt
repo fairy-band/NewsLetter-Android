@@ -1,7 +1,6 @@
 package com.fairyband.soak.data.local.user
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -10,7 +9,6 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 data class BottomSheetState(
-    val isOnceShown: Boolean,
     val lastShownTimestamp: Long
 )
 
@@ -22,7 +20,6 @@ class UserDataStore(context: Context) {
     val bottomSheetFlow: Flow<BottomSheetState> = dataStore.data
         .map { preferences ->
             BottomSheetState(
-                isOnceShown = preferences[IS_ONCE_SHOWN] ?: false,
                 lastShownTimestamp = preferences[LAST_SHOWN_TIMESTAMP] ?: 0L
             )
         }
@@ -33,21 +30,13 @@ class UserDataStore(context: Context) {
         }
     }
 
-    suspend fun setAsShownOnce() {
-        dataStore.edit { preferences ->
-            preferences[IS_ONCE_SHOWN] = true
-        }
-    }
-
     suspend fun resetState() {
         dataStore.edit { preferences ->
-            preferences[IS_ONCE_SHOWN] = false
             preferences[LAST_SHOWN_TIMESTAMP] = 0L
         }
     }
 
     companion object {
-        private val IS_ONCE_SHOWN = booleanPreferencesKey("is_once_shown")
         private val LAST_SHOWN_TIMESTAMP = longPreferencesKey("last_shown_timestamp")
     }
 }

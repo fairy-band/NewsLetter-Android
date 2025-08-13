@@ -24,14 +24,10 @@ class BottomSheetUseCase(
                 return@map false
 
             } else {
-                !clickState.isOnceShown
+                true
             }
         }
         .distinctUntilChanged()
-
-    suspend fun onBottomSheetButtonClick() {
-        userRepository.setAsShownOnce()
-    }
 
     companion object {
         private const val SUPPRESSION_DAYS = 7L
