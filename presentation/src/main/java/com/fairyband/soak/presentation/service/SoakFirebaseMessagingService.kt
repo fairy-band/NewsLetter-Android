@@ -14,7 +14,8 @@ import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 class SoakFirebaseMessagingService : FirebaseMessagingService() {
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val job = SupervisorJob()
+    private val serviceScope = CoroutineScope(job + Dispatchers.IO)
     private val notificationRepository: NotificationRepository by inject()
 
     override fun onNewToken(token: String) {
@@ -57,5 +58,10 @@ class SoakFirebaseMessagingService : FirebaseMessagingService() {
             .setAutoCancel(true)
 
         manager?.notify(System.currentTimeMillis().toInt(), builder.build())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 }
