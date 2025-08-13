@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.service
 
 import android.app.NotificationManager
 import androidx.core.content.getSystemService
+import com.fairyband.soak.presentation.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import timber.log.Timber
@@ -39,7 +40,7 @@ class SoakFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         val builder = androidx.core.app.NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.symbol)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
