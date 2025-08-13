@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class FcmRegisterRequest(
     val deviceToken: String,
     val fcmToken: String,
-    val deviceType: String = "ANDROID",
+    val deviceType: String,
 )

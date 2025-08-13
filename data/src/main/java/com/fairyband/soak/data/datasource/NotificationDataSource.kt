@@ -16,6 +16,7 @@ class NotificationDataSource(
             request = FcmRegisterRequest(
                 deviceToken = deviceToken,
                 fcmToken = fcmToken,
+                deviceType = "ANDROID"
             )
         )
     }
