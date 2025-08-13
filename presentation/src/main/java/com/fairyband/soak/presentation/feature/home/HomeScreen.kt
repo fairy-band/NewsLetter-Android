@@ -102,9 +102,6 @@ fun HomeScreen(
     if (showNotificationBottomSheet) {
         NotificationBottomSheet(
             onDismissRequest = viewModel::disableNotificationSetting,
-            onButtonClick = {
-
-            }
         )
     }
 

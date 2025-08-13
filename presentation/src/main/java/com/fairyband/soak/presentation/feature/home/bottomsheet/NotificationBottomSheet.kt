@@ -34,7 +34,6 @@ import com.fairyband.soak.presentation.extensions.openAppNotificationSettings
 @Composable
 internal fun NotificationBottomSheet(
     onDismissRequest: () -> Unit,
-    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -80,7 +79,6 @@ internal fun NotificationBottomSheet(
                 paddingVertical = 16.dp,
                 onClick = {
                     onDismissRequest()
-                    onButtonClick()
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
