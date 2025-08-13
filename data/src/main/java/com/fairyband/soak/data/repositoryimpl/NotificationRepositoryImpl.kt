@@ -3,7 +3,6 @@ package com.fairyband.soak.data.repositoryimpl
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.NotificationDataSource
 import com.fairyband.soak.data.repository.NotificationRepository
-import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Single
 
 @Single
@@ -12,7 +11,7 @@ class NotificationRepositoryImpl(
     private val authDataSource: AuthDataSource,
 ) : NotificationRepository {
     override suspend fun registerFcmToken(fcmToken: String) {
-        val deviceToken = authDataSource.getDeviceToken().first()
+        val deviceToken = authDataSource.getDeviceToken()
         notificationDataSource.registerFcmToken(deviceToken = deviceToken, fcmToken = fcmToken)
     }
 }

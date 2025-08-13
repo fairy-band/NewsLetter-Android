@@ -6,6 +6,7 @@ import com.fairyband.soak.data.model.response.LoginResponse
 import com.fairyband.soak.data.model.response.RegisterResponse
 import com.fairyband.soak.data.remote.service.AuthService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Single
 
 @Single
@@ -13,13 +14,15 @@ class AuthDataSource(
     private val authDataStore: AuthDataStore,
     private val authService: AuthService,
 ) {
-    fun getUserId(): Flow<Long?> = authDataStore.userId
+    suspend fun getUserId(): Long {
+        return authDataStore.userId.first() ?: loginUser().id
+    }
 
     private suspend fun setUserId(id: Long) {
         authDataStore.setUserId(id)
     }
 
-    fun getDeviceToken(): Flow<String> = authDataStore.deviceToken
+    suspend fun getDeviceToken(): String = authDataStore.deviceToken.first()
 
     suspend fun registerUser(request: RegisterRequest): RegisterResponse =
         authService.registerUser(
@@ -28,10 +31,11 @@ class AuthDataSource(
             setUserId(id)
         }
 
-    suspend fun loginUser(deviceToken: String): LoginResponse =
-        authService.loginUser(
-            deviceToken = deviceToken
+    suspend fun loginUser(): LoginResponse {
+        return authService.loginUser(
+            deviceToken = getDeviceToken()
         ).apply {
             setUserId(id)
         }
+    }
 }

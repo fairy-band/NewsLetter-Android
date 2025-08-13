@@ -16,9 +16,9 @@ import timber.log.Timber.Forest.e
 class AuthRepositoryImpl(
     private val authDataSource: AuthDataSource,
 ) : AuthRepository {
-    override fun getUserId(): Flow<Long?> = authDataSource.getUserId()
+    override suspend fun getUserId(): Long = authDataSource.getUserId()
 
-    private suspend fun getDeviceToken(): String = authDataSource.getDeviceToken().first()
+    private suspend fun getDeviceToken(): String = authDataSource.getDeviceToken()
 
     override suspend fun registerUser(): Result<RegisterResponse> =
         runCatching {
@@ -28,6 +28,6 @@ class AuthRepositoryImpl(
 
     override suspend fun loginUser(): Result<LoginResponse> =
         runCatching {
-            authDataSource.loginUser(getDeviceToken())
+            authDataSource.loginUser()
         }.onFailure(Timber::e)
 }

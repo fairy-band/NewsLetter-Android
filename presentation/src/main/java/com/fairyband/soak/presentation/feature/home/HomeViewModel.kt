@@ -2,11 +2,11 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fairyband.soak.data.repository.AuthRepository
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.fairyband.soak.data.repository.UserRepository
 import com.fairyband.soak.domain.usecase.BottomSheetUseCase
-import com.fairyband.soak.domain.usecase.RegisterOrLoginUseCase
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.model.UserInfo
 import com.fairyband.soak.presentation.model.toNewsFeed
@@ -35,8 +35,8 @@ import java.time.LocalDate
 @KoinViewModel
 class HomeViewModel(
     newsRepository: NewsRepository,
+    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val registerOrLoginUseCase: RegisterOrLoginUseCase,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
@@ -102,7 +102,7 @@ class HomeViewModel(
 
     private fun registerOrLogin() {
         viewModelScope.launch {
-            registerOrLoginUseCase()
+            authRepository.loginUser()
                 .onFailure(Timber::e)
         }
     }
