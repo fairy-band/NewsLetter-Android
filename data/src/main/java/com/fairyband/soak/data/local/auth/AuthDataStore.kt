@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
+import java.util.UUID
 
 @Single
 class AuthDataStore(context: Context) {
@@ -24,8 +25,13 @@ class AuthDataStore(context: Context) {
         }
     }
 
+    // TODO: 로그인 구현 시 deviceToken 로직은 지워주세요.
     val deviceToken: Flow<String> = dataStore.data.map { preferences ->
-        preferences[DEVICE_TOKEN].orEmpty()
+        preferences[DEVICE_TOKEN] ?: run {
+            val uuid = UUID.randomUUID().toString()
+            setDeviceToken(uuid)
+            uuid
+        }
     }
 
     suspend fun setDeviceToken(token: String) {

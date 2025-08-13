@@ -20,17 +20,10 @@ class RegisterOrLoginUseCase(
     }
 
     private suspend fun registerUser() {
-        val uuid = UUID.randomUUID().toString()
-
-        authRepository.registerUser(
-            AuthInfo(
-                deviceToken = uuid
-            ).toRequest()
-        ).onSuccess { response ->
+        authRepository.registerUser().onSuccess { response ->
             val id = response.toAuthInfo().id
 
             authRepository.setUserId(id)
-            authRepository.setDeviceToken(uuid) // TODO: 로그인 구현 시 deviceToken 로직은 지워주세요.
         }.onFailure(Timber::e)
     }
 
