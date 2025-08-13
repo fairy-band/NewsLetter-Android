@@ -9,6 +9,8 @@ import com.fairyband.soak.data.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Single
+import timber.log.Timber
+import timber.log.Timber.Forest.e
 
 @Single
 class AuthRepositoryImpl(
@@ -16,21 +18,16 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
     override fun getUserId(): Flow<Long?> = authDataSource.getUserId()
 
-    override suspend fun setUserId(id: Long) {
-        authDataSource.setUserId(id)
-    }
-
-    override fun getDeviceToken(): Flow<String> = authDataSource.getDeviceToken()
+    private suspend fun getDeviceToken(): String = authDataSource.getDeviceToken().first()
 
     override suspend fun registerUser(): Result<RegisterResponse> =
         runCatching {
-            val deviceToken = getDeviceToken().first()
-            val request = RegisterRequest(deviceToken = deviceToken)
+            val request = RegisterRequest(deviceToken = getDeviceToken())
             authDataSource.registerUser(request)
-        }
+        }.onFailure(Timber::e)
 
-    override suspend fun loginUser(deviceToken: String): Result<LoginResponse> =
+    override suspend fun loginUser(): Result<LoginResponse> =
         runCatching {
-            authDataSource.loginUser(deviceToken)
-        }
+            authDataSource.loginUser(getDeviceToken())
+        }.onFailure(Timber::e)
 }

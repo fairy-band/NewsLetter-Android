@@ -15,27 +15,7 @@ class RegisterOrLoginUseCase(
     suspend operator fun invoke(): Result<Unit> = runCatching {
         val userId = authRepository.getUserId().first()
 
-        if (userId == null) registerUser()
-        else loginUser()
-    }
-
-    private suspend fun registerUser() {
-        authRepository.registerUser().onSuccess { response ->
-            val id = response.toAuthInfo().id
-
-            authRepository.setUserId(id)
-        }.onFailure(Timber::e)
-    }
-
-    private suspend fun loginUser() {
-        val deviceToken = authRepository.getDeviceToken().first()
-
-        authRepository.loginUser(
-            deviceToken = deviceToken
-        ).onSuccess { response ->
-            val id = response.toAuthInfo().id
-
-            authRepository.setUserId(id)
-        }.onFailure(Timber::e)
+        if (userId == null) authRepository.registerUser()
+        else authRepository.loginUser()
     }
 }

@@ -15,7 +15,7 @@ class AuthDataSource(
 ) {
     fun getUserId(): Flow<Long?> = authDataStore.userId
 
-    suspend fun setUserId(id: Long) {
+    private suspend fun setUserId(id: Long) {
         authDataStore.setUserId(id)
     }
 
@@ -24,10 +24,14 @@ class AuthDataSource(
     suspend fun registerUser(request: RegisterRequest): RegisterResponse =
         authService.registerUser(
             body = request
-        )
+        ).apply {
+            setUserId(id)
+        }
 
     suspend fun loginUser(deviceToken: String): LoginResponse =
         authService.loginUser(
             deviceToken = deviceToken
-        )
+        ).apply {
+            setUserId(id)
+        }
 }
