@@ -30,7 +30,7 @@ class BottomSheetUseCase(
         .distinctUntilChanged()
 
     suspend fun onBottomSheetButtonClick() {
-        userRepository.isOnceShown()
+        userRepository.setAsShownOnce()
     }
 
     companion object {

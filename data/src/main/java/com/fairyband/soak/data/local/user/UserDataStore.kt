@@ -33,7 +33,7 @@ class UserDataStore(context: Context) {
         }
     }
 
-    suspend fun isOnceShown() {
+    suspend fun setAsShownOnce() {
         dataStore.edit { preferences ->
             preferences[IS_ONCE_SHOWN] = true
         }

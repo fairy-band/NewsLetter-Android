@@ -25,8 +25,8 @@ internal class UserDataSource(
     val bottomSheetFlow: Flow<BottomSheetState>
         get() = userDataStore.bottomSheetFlow
 
-    suspend fun isOnceShown() {
-        userDataStore.isOnceShown()
+    suspend fun setAsShownOnce() {
+        userDataStore.setAsShownOnce()
     }
 
     suspend fun resetState() {
