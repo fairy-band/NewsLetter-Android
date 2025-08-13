@@ -30,14 +30,12 @@ class SoakFirebaseMessagingService : FirebaseMessagingService() {
         val channelId = "default_channel"
         val manager = getSystemService<NotificationManager>()
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            val channel = android.app.NotificationChannel(
-                channelId,
-                "Default Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            manager?.createNotificationChannel(channel)
-        }
+        val channel = android.app.NotificationChannel(
+            channelId,
+            "Default Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        manager?.createNotificationChannel(channel)
 
         val builder = androidx.core.app.NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.symbol)
