@@ -1,6 +1,7 @@
 package com.fairyband.soak.presentation.service
 
 import android.app.NotificationManager
+import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import com.fairyband.soak.data.repository.NotificationRepository
 import com.fairyband.soak.presentation.R
@@ -51,7 +52,7 @@ class SoakFirebaseMessagingService : FirebaseMessagingService() {
         )
         manager?.createNotificationChannel(channel)
 
-        val builder = androidx.core.app.NotificationCompat.Builder(this, channelId)
+        val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.symbol)
             .setContentTitle(title)
             .setContentText(body)

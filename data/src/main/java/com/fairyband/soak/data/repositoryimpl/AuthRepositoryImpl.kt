@@ -1,16 +1,12 @@
 package com.fairyband.soak.data.repositoryimpl
 
 import com.fairyband.soak.data.datasource.AuthDataSource
-import com.fairyband.soak.data.local.user.UserDataStore
 import com.fairyband.soak.data.model.request.RegisterRequest
 import com.fairyband.soak.data.model.response.LoginResponse
 import com.fairyband.soak.data.model.response.RegisterResponse
 import com.fairyband.soak.data.repository.AuthRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Single
 import timber.log.Timber
-import timber.log.Timber.Forest.e
 
 @Single
 class AuthRepositoryImpl(

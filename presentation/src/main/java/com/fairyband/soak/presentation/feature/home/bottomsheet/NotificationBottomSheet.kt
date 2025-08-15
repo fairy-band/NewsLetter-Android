@@ -25,10 +25,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.bottomsheet.BaseBottomSheet
 import com.fairyband.soak.core.designsystem.button.BaseButton
+import com.fairyband.soak.core.extension.findActivity
+import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.extensions.findActivity
-import com.fairyband.soak.presentation.extensions.openAppNotificationSettings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
