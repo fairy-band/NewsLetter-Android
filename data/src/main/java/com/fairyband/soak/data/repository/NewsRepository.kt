@@ -7,7 +7,6 @@ import java.time.LocalDate
 
 interface NewsRepository {
     fun getNews(
-        userId: Long,
         publishedDate: String? = LocalDate.now().toPattern("yyyy-MM-dd")
     ): Flow<List<NewsResponse>>
 }

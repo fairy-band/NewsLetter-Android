@@ -77,6 +77,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.accompanist.flowlayout)
+    implementation(libs.firebase.messaging)
 
     // coroutine
     implementation(libs.kotlinx.coroutines.android)
