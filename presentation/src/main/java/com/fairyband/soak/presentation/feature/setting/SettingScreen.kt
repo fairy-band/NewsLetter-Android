@@ -42,8 +42,6 @@ internal fun SettingScreen() {
                 color = SoakTheme.colors.textTertiary,
             )
             Spacer(modifier = Modifier.height(24.dp))
-            SettingArrow(title = stringResource(R.string.setting_info_title))
-            Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(title = stringResource(R.string.setting_info_user))
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(title = stringResource(R.string.setting_info_alarm))
