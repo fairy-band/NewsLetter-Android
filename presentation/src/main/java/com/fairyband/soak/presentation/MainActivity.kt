@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
             entry<Screen.SettingService> { args ->
                 SettingServiceScreen(
-                    paddingValues = args.paddingValues
+                    paddingValues = args.paddingValues,
                 )
             }
 

@@ -42,7 +42,9 @@ internal fun SettingScreen(
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_setting_leading),
             contentDescription = "back button",
-            modifier = Modifier.padding(start = 6.dp)
+            modifier = Modifier
+                .padding(start = 6.dp)
+                .noRippleClickable(navController::pop)
         )
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)

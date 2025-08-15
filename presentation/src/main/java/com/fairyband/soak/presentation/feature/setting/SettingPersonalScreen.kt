@@ -16,13 +16,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 
 @Composable
 internal fun SettingPersonalScreen(
     paddingValues: PaddingValues,
 ) {
+    val navController = LocalNavController.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,6 +37,7 @@ internal fun SettingPersonalScreen(
             contentDescription = "back button",
             modifier = Modifier
                 .padding(start = 6.dp)
+                .noRippleClickable(navController::pop)
         )
         Column(
             modifier = Modifier
