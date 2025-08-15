@@ -181,7 +181,9 @@ private fun HomeScreen(
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box {
             Column(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val today = LocalDate.now()
