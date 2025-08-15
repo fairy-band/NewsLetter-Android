@@ -22,6 +22,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
@@ -102,14 +103,14 @@ internal fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_policy_service),
-                modifier = Modifier.clickable {
+                modifier = Modifier.noRippleClickable {
                     navController.navigate(Screen.SettingService(paddingValues))
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_policy_personal),
-                modifier = Modifier.clickable {
+                modifier = Modifier.noRippleClickable {
                     navController.navigate(Screen.SettingPersonal(paddingValues))
                 }
             )

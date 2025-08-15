@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
+import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
@@ -198,7 +199,7 @@ private fun HomeScreen(
                         end = 8.dp
                     )
                     .align(Alignment.End)
-                    .clickable {
+                    .noRippleClickable {
                         navController.navigate(Screen.Setting(paddingValues = innerPadding))
                     }
             )
