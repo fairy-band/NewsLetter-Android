@@ -1,7 +1,6 @@
 package com.fairyband.soak.presentation.feature.setting
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,14 +29,60 @@ import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.navigation.Screen
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun SettingScreen(
     paddingValues: PaddingValues,
+    viewModel: ServiceViewModel = koinViewModel()
 ) {
     val navController = LocalNavController.current
+    var bottomSheetVisibility by remember { mutableStateOf(false) }
 
+    if (bottomSheetVisibility) {
+        HomeBottomSheet(
+            onDismissRequest = {
+                bottomSheetVisibility = false
+            },
+            onButtonClick = { preferences, workingExperience ->
+                viewModel.saveUserInfo(
+                    preferences = preferences,
+                    workingExperience = workingExperience
+                )
+
+                buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
+            }
+        )
+    }
+
+    SettingScreen(
+        paddingValues = paddingValues,
+        onInfoUserClick = {
+            bottomSheetVisibility = true
+        },
+        onBackClick = (navController::pop),
+        onServiceClick = {
+            navController.navigate(Screen.SettingService(paddingValues))
+        },
+        onPersonalClick = {
+            navController.navigate(Screen.SettingPersonal(paddingValues))
+        }
+    )
+}
+
+@Composable
+private fun SettingScreen(
+    paddingValues: PaddingValues,
+    onInfoUserClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onServiceClick: () -> Unit,
+    onPersonalClick: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +93,7 @@ internal fun SettingScreen(
             contentDescription = "back button",
             modifier = Modifier
                 .padding(start = 6.dp)
-                .noRippleClickable(navController::pop)
+                .noRippleClickable(onBackClick)
         )
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -56,7 +105,10 @@ internal fun SettingScreen(
                 color = SoakTheme.colors.textTertiary,
             )
             Spacer(modifier = Modifier.height(24.dp))
-            SettingArrow(title = stringResource(R.string.setting_info_user))
+            SettingArrow(
+                title = stringResource(R.string.setting_info_user),
+                modifier = Modifier.noRippleClickable(onInfoUserClick)
+            )
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(title = stringResource(R.string.setting_info_alarm))
             Spacer(modifier = Modifier.height(24.dp))
@@ -105,16 +157,12 @@ internal fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_policy_service),
-                modifier = Modifier.noRippleClickable {
-                    navController.navigate(Screen.SettingService(paddingValues))
-                }
+                modifier = Modifier.noRippleClickable(onServiceClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_policy_personal),
-                modifier = Modifier.noRippleClickable {
-                    navController.navigate(Screen.SettingPersonal(paddingValues))
-                }
+                modifier = Modifier.noRippleClickable(onPersonalClick)
             )
         }
     }
@@ -163,12 +211,26 @@ private fun SettingText(
     }
 }
 
+private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
+    // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
+    Firebase.analytics.logEvent("click") {
+        param("navigation", Screen.BottomSheetCustom.name)
+        param("object_type", "button")
+        param("job_group", jobGroup.joinToString(separator = ","))
+        param("career_level", careerLevel)
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun SettingScreenPreview() {
     SoakTheme {
         SettingScreen(
-            paddingValues = PaddingValues()
+            paddingValues = PaddingValues(),
+            onInfoUserClick = {},
+            onBackClick = {},
+            onServiceClick = {},
+            onPersonalClick = {}
         )
     }
 }

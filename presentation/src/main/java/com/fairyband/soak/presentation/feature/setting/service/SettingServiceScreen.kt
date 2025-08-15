@@ -1,4 +1,4 @@
-package com.fairyband.soak.presentation.feature.setting
+package com.fairyband.soak.presentation.feature.setting.service
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -22,31 +22,31 @@ import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 
 @Composable
-internal fun SettingPersonalScreen(
+internal fun SettingServiceScreen(
     paddingValues: PaddingValues,
 ) {
     val navController = LocalNavController.current
 
     Column(
-        modifier = Modifier
+        modifier = Modifier.Companion
             .fillMaxSize()
             .padding(paddingValues)
     ) {
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_setting_leading),
+            imageVector = ImageVector.Companion.vectorResource(id = R.drawable.ic_setting_leading),
             contentDescription = "back button",
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .padding(start = 6.dp)
                 .noRippleClickable(navController::pop)
         )
         Column(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = stringResource(R.string.setting_personal),
-                style = SoakTheme.typography.body16.copy(fontWeight = FontWeight.Normal),
+                text = stringResource(R.string.setting_service),
+                style = SoakTheme.typography.body16.copy(fontWeight = FontWeight.Companion.Normal),
                 color = SoakTheme.colors.textSecondary
             )
         }
@@ -55,10 +55,10 @@ internal fun SettingPersonalScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun SettingPersonalScreenPreview() {
+private fun SettingServiceScreenPreview() {
     SoakTheme {
-        SettingPersonalScreen(
-            paddingValues = PaddingValues()
+        SettingServiceScreen(
+            paddingValues = PaddingValues(),
         )
     }
 }
