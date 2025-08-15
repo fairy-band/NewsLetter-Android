@@ -187,44 +187,46 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            val today = LocalDate.now()
-            Text(
-                modifier = Modifier
-                    .padding(top = 44.dp)
-                    .padding(horizontal = 20.dp),
-                text = stringResource(
-                    R.string.home_title,
-                    today.year,
-                    today.monthValue.toString().padStart(2, '0'),
-                    today.dayOfMonth.toString().padStart(2, '0')
-                ),
-                style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
-                color = SoakTheme.colors.textStrong,
-            )
-            Timer()
-            Spacer(modifier = Modifier.weight(1f))
-            Box(
-                contentAlignment = Alignment.BottomCenter,
+        Box {
+            Column(
+                modifier = Modifier.padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer),
-                    contentDescription = "home drawer image",
-                    contentScale = ContentScale.FillWidth,
+                val today = LocalDate.now()
+                Text(
                     modifier = Modifier
-                        .width(screenWidth)
-                        .offset(y = 60.dp)
+                        .padding(top = 44.dp)
+                        .padding(horizontal = 20.dp),
+                    text = stringResource(
+                        R.string.home_title,
+                        today.year,
+                        today.monthValue.toString().padStart(2, '0'),
+                        today.dayOfMonth.toString().padStart(2, '0')
+                    ),
+                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                    color = SoakTheme.colors.textStrong,
                 )
-                Cards(
-                    news = news,
-                    onClick = { index ->
-                        cardIndex = index
-                    },
-                    colorType = colorType,
-                )
+                Timer()
+                Spacer(modifier = Modifier.weight(1f))
+                Box(
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer),
+                        contentDescription = "home drawer image",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .width(screenWidth)
+                            .offset(y = 60.dp)
+                    )
+                    Cards(
+                        news = news,
+                        onClick = { index ->
+                            cardIndex = index
+                        },
+                        colorType = colorType,
+                    )
+                }
             }
         }
 
