@@ -2,7 +2,8 @@ package com.fairyband.soak.presentation.feature.setting
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,14 +20,19 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 
 @Composable
-internal fun SettingServiceScreen() {
+internal fun SettingServiceScreen(
+    paddingValues: PaddingValues,
+) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
     ) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_setting_leading),
             contentDescription = "back button",
-            modifier = Modifier.padding(start = 6.dp)
+            modifier = Modifier
+                .padding(start = 6.dp)
         )
         Column(
             modifier = Modifier
@@ -46,7 +52,8 @@ internal fun SettingServiceScreen() {
 @Composable
 private fun SettingServiceScreenPreview() {
     SoakTheme {
-        SettingServiceScreen()
+        SettingServiceScreen(
+            paddingValues = PaddingValues()
+        )
     }
 }
-

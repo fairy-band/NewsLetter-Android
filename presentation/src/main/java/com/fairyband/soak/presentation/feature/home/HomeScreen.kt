@@ -199,7 +199,7 @@ private fun HomeScreen(
                     )
                     .align(Alignment.End)
                     .clickable {
-                        navController.navigate(Screen.Setting)
+                        navController.navigate(Screen.Setting(paddingValues = innerPadding))
                     }
             )
             val today = LocalDate.now()

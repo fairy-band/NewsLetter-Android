@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
@@ -18,10 +19,14 @@ sealed class Screen(val name: String) : NavKey {
     ) : Screen("webview")
 
     @Serializable
-    data object Setting : Screen("setting")
+    data class Setting(
+        val paddingValues: PaddingValues
+    ) : Screen("setting")
 
     @Serializable
-    data object SettingService : Screen("setting_service")
+    data class SettingService(
+        val paddingValues: PaddingValues
+    ) : Screen("setting_service")
 
     // 실제 화면은 아니지만, GA 로그를 찍기 위해 관리하는 객체들. 그러나 나중에 백스택으로 관리 가능할지 검토할 수 있음.
     data object NewsLetterCarousel : Screen("newsletter_carousel")

@@ -59,12 +59,16 @@ class MainActivity : ComponentActivity() {
                 WebViewScreen(url = webView.url)
             }
 
-            entry<Screen.Setting> {
-                SettingScreen()
+            entry<Screen.Setting> { args ->
+                SettingScreen(
+                    paddingValues = args.paddingValues
+                )
             }
 
-            entry<Screen.SettingService> {
-                SettingServiceScreen()
+            entry<Screen.SettingService> { args ->
+                SettingServiceScreen(
+                    paddingValues = args.paddingValues
+                )
             }
         }
     }

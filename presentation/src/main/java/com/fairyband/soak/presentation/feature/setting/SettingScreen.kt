@@ -4,8 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,11 +28,15 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.navigation.Screen
 
 @Composable
-internal fun SettingScreen() {
+internal fun SettingScreen(
+    paddingValues: PaddingValues,
+) {
     val navController = LocalNavController.current
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
     ) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_setting_leading),
@@ -97,7 +103,7 @@ internal fun SettingScreen() {
             SettingArrow(
                 title = stringResource(R.string.setting_policy_service),
                 modifier = Modifier.clickable {
-                    navController.navigate(Screen.SettingService)
+                    navController.navigate(Screen.SettingService(paddingValues))
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -153,6 +159,8 @@ private fun SettingText(
 @Composable
 private fun SettingScreenPreview() {
     SoakTheme {
-        SettingScreen()
+        SettingScreen(
+            paddingValues = PaddingValues()
+        )
     }
 }
