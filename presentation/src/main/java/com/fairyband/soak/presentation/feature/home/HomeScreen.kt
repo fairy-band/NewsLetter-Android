@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
@@ -151,6 +153,7 @@ private fun HomeScreen(
     colorType: String,
 ) {
     var cardIndex: Int? by remember { mutableStateOf(null) }
+    val navController = LocalNavController.current
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -195,6 +198,9 @@ private fun HomeScreen(
                         end = 8.dp
                     )
                     .align(Alignment.End)
+                    .clickable {
+                        navController.navigate(Screen.Setting)
+                    }
             )
             val today = LocalDate.now()
             Text(
