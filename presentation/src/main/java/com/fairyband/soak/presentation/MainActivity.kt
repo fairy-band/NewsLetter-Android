@@ -16,6 +16,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.feature.home.HomeScreen
 import com.fairyband.soak.presentation.feature.setting.SettingScreen
+import com.fairyband.soak.presentation.feature.setting.SettingServiceScreen
 import com.fairyband.soak.presentation.feature.webview.WebViewScreen
 import com.fairyband.soak.presentation.navigation.NavController
 import com.fairyband.soak.presentation.navigation.Screen
@@ -60,6 +61,10 @@ class MainActivity : ComponentActivity() {
 
             entry<Screen.Setting> {
                 SettingScreen()
+            }
+
+            entry<Screen.SettingService> {
+                SettingServiceScreen()
             }
         }
     }

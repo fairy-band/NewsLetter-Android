@@ -20,6 +20,9 @@ sealed class Screen(val name: String) : NavKey {
     @Serializable
     data object Setting : Screen("setting")
 
+    @Serializable
+    data object SettingService : Screen("setting_service")
+
     // 실제 화면은 아니지만, GA 로그를 찍기 위해 관리하는 객체들. 그러나 나중에 백스택으로 관리 가능할지 검토할 수 있음.
     data object NewsLetterCarousel : Screen("newsletter_carousel")
     data object BottomSheetNotification : Screen("bottom_sheet_notification")

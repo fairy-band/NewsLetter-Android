@@ -1,6 +1,7 @@
 package com.fairyband.soak.presentation.feature.setting
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,10 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.navigation.Screen
 
 @Composable
 internal fun SettingScreen() {
+    val navController = LocalNavController.current
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -89,7 +94,12 @@ internal fun SettingScreen() {
                 color = SoakTheme.colors.textTertiary,
             )
             Spacer(modifier = Modifier.height(24.dp))
-            SettingArrow(title = stringResource(R.string.setting_policy_service))
+            SettingArrow(
+                title = stringResource(R.string.setting_policy_service),
+                modifier = Modifier.clickable {
+                    navController.navigate(Screen.SettingService)
+                }
+            )
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(title = stringResource(R.string.setting_policy_personal))
         }
