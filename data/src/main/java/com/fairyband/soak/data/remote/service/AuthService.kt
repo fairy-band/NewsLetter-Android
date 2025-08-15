@@ -2,7 +2,6 @@ package com.fairyband.soak.data.remote.service
 
 import com.fairyband.soak.data.model.request.RegisterRequest
 import com.fairyband.soak.data.model.response.LoginResponse
-import com.fairyband.soak.data.model.response.RegisterResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -12,7 +11,7 @@ interface AuthService {
     @POST("api/users/register")
     suspend fun registerUser(
         @Body body: RegisterRequest
-    ): RegisterResponse
+    ): LoginResponse
 
     @GET("api/users/login")
     suspend fun loginUser(
