@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,10 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -179,35 +182,43 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box {
-            Column(
-                modifier = Modifier.padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val today = LocalDate.now()
-                Text(
-                    modifier = Modifier
-                        .padding(top = 44.dp)
-                        .padding(horizontal = 20.dp),
-                    text = stringResource(
-                        R.string.home_title,
-                        today.year,
-                        today.monthValue.toString().padStart(2, '0'),
-                        today.dayOfMonth.toString().padStart(2, '0')
-                    ),
-                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
-                    color = SoakTheme.colors.textStrong,
-                )
-                Timer()
-                Spacer(modifier = Modifier.weight(1f))
-                Cards(
-                    news = news,
-                    onClick = { index ->
-                        cardIndex = index
-                    },
-                    colorType = colorType,
-                )
-            }
+        Column(
+            modifier = Modifier.padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
+                contentDescription = "setting button",
+                modifier = Modifier
+                    .padding(
+                        top = 8.dp,
+                        end = 8.dp
+                    )
+                    .align(Alignment.End)
+            )
+            val today = LocalDate.now()
+            Text(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .padding(horizontal = 20.dp),
+                text = stringResource(
+                    R.string.home_title,
+                    today.year,
+                    today.monthValue.toString().padStart(2, '0'),
+                    today.dayOfMonth.toString().padStart(2, '0')
+                ),
+                style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                color = SoakTheme.colors.textStrong,
+            )
+            Timer()
+            Spacer(modifier = Modifier.weight(1f))
+            Cards(
+                news = news,
+                onClick = { index ->
+                    cardIndex = index
+                },
+                colorType = colorType,
+            )
 
             PopUpDialog(
                 visibility = cardIndex != null,
