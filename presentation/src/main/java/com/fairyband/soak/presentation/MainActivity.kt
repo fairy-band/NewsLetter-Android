@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.feature.home.HomeScreen
+import com.fairyband.soak.presentation.feature.setting.SettingPersonalScreen
 import com.fairyband.soak.presentation.feature.setting.SettingScreen
 import com.fairyband.soak.presentation.feature.setting.SettingServiceScreen
 import com.fairyband.soak.presentation.feature.webview.WebViewScreen
@@ -67,6 +68,12 @@ class MainActivity : ComponentActivity() {
 
             entry<Screen.SettingService> { args ->
                 SettingServiceScreen(
+                    paddingValues = args.paddingValues
+                )
+            }
+
+            entry<Screen.SettingPersonal> { args ->
+                SettingPersonalScreen(
                     paddingValues = args.paddingValues
                 )
             }

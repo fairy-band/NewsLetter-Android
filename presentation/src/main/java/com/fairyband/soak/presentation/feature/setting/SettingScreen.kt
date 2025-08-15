@@ -107,7 +107,12 @@ internal fun SettingScreen(
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))
-            SettingArrow(title = stringResource(R.string.setting_policy_personal))
+            SettingArrow(
+                title = stringResource(R.string.setting_policy_personal),
+                modifier = Modifier.clickable {
+                    navController.navigate(Screen.SettingPersonal(paddingValues))
+                }
+            )
         }
     }
 }

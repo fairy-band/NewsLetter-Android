@@ -40,7 +40,7 @@ internal fun SettingPersonalScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = stringResource(R.string.setting_service),
+                text = stringResource(R.string.setting_personal),
                 style = SoakTheme.typography.body16.copy(fontWeight = FontWeight.Normal),
                 color = SoakTheme.colors.textSecondary
             )
