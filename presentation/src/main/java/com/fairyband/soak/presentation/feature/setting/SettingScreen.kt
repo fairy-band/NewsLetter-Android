@@ -20,12 +20,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
+import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
@@ -43,6 +45,7 @@ internal fun SettingScreen(
 ) {
     val navController = LocalNavController.current
     var bottomSheetVisibility by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     if (bottomSheetVisibility) {
         HomeBottomSheet(
@@ -65,13 +68,14 @@ internal fun SettingScreen(
         onInfoUserClick = {
             bottomSheetVisibility = true
         },
+        onAlarmClick = (context::openAppNotificationSettings),
         onBackClick = (navController::pop),
         onServiceClick = {
             navController.navigate(Screen.SettingService(paddingValues))
         },
         onPersonalClick = {
             navController.navigate(Screen.SettingPersonal(paddingValues))
-        }
+        },
     )
 }
 
@@ -79,6 +83,7 @@ internal fun SettingScreen(
 private fun SettingScreen(
     paddingValues: PaddingValues,
     onInfoUserClick: () -> Unit,
+    onAlarmClick: () -> Unit,
     onBackClick: () -> Unit,
     onServiceClick: () -> Unit,
     onPersonalClick: () -> Unit,
@@ -110,7 +115,10 @@ private fun SettingScreen(
                 modifier = Modifier.noRippleClickable(onInfoUserClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
-            SettingArrow(title = stringResource(R.string.setting_info_alarm))
+            SettingArrow(
+                title = stringResource(R.string.setting_info_alarm),
+                modifier = Modifier.noRippleClickable(onAlarmClick)
+            )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
                 color = SoakTheme.colors.borderPrimary,
@@ -228,6 +236,7 @@ private fun SettingScreenPreview() {
         SettingScreen(
             paddingValues = PaddingValues(),
             onInfoUserClick = {},
+            onAlarmClick = {},
             onBackClick = {},
             onServiceClick = {},
             onPersonalClick = {}
