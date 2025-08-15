@@ -13,11 +13,9 @@ class UserDataSource(
     private val userDataStore: UserDataStore,
     private val userService: UserService,
 ) {
-    val streak: Flow<Int>
-        get() = userDataStore.streakFlow
-
-    val notificationSettingDateFlow: Flow<LocalDate>
-        get() = userDataStore.notificationSettingDateFlow
+    val streak: Flow<Int> = userDataStore.streakFlow
+    val notificationSettingDateFlow: Flow<LocalDate> = userDataStore.notificationSettingDateFlow
+    val bottomSheetFlow: Flow<BottomSheetState> = userDataStore.bottomSheetFlow
 
     suspend fun putUserInfo(
         userId: Long,
@@ -28,9 +26,6 @@ class UserDataSource(
             body = request
         )
     }
-
-    val bottomSheetFlow: Flow<BottomSheetState>
-        get() = userDataStore.bottomSheetFlow
 
     suspend fun resetState() {
         userDataStore.resetState()
