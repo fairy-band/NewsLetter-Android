@@ -19,6 +19,7 @@
     <string name="setting_version_current">현재버전</string>
     <string name="setting_support_title">고객지원</string>
     <string name="setting_support_contact">문의하기</string>
+    <string name="setting_support_email">soak@gmail.com</string>
     <string name="setting_policy_title">약관 및 정책</string>
     <string name="setting_policy_service">서비스 이용약관</string>
     <string name="setting_policy_personal">개인정보 취급 방침</string>
