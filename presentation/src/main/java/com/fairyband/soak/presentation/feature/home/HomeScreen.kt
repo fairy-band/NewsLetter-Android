@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,10 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -149,6 +155,8 @@ private fun HomeScreen(
 ) {
     var cardIndex: Int? by remember { mutableStateOf(null) }
 
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
             .map { it == null }
@@ -179,27 +187,37 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box {
-            Column(
-                modifier = Modifier.padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
+        Column(
+            modifier = Modifier.padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            val today = LocalDate.now()
+            Text(
+                modifier = Modifier
+                    .padding(top = 44.dp)
+                    .padding(horizontal = 20.dp),
+                text = stringResource(
+                    R.string.home_title,
+                    today.year,
+                    today.monthValue.toString().padStart(2, '0'),
+                    today.dayOfMonth.toString().padStart(2, '0')
+                ),
+                style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                color = SoakTheme.colors.textStrong,
+            )
+            Timer()
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                contentAlignment = Alignment.BottomCenter,
             ) {
-                val today = LocalDate.now()
-                Text(
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer),
+                    contentDescription = "home drawer image",
+                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier
-                        .padding(top = 44.dp)
-                        .padding(horizontal = 20.dp),
-                    text = stringResource(
-                        R.string.home_title,
-                        today.year,
-                        today.monthValue.toString().padStart(2, '0'),
-                        today.dayOfMonth.toString().padStart(2, '0')
-                    ),
-                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
-                    color = SoakTheme.colors.textStrong,
+                        .width(screenWidth)
+                        .offset(y = 60.dp)
                 )
-                Timer()
-                Spacer(modifier = Modifier.weight(1f))
                 Cards(
                     news = news,
                     onClick = { index ->
@@ -208,18 +226,18 @@ private fun HomeScreen(
                     colorType = colorType,
                 )
             }
-
-            PopUpDialog(
-                visibility = cardIndex != null,
-                onDismissRequest = {
-                    cardIndex = null
-                    onDismissRequest()
-                },
-                cardItems = news,
-                cardIndex = cardIndex ?: 0,
-                colorType = colorType,
-            )
         }
+
+        PopUpDialog(
+            visibility = cardIndex != null,
+            onDismissRequest = {
+                cardIndex = null
+                onDismissRequest()
+            },
+            cardItems = news,
+            cardIndex = cardIndex ?: 0,
+            colorType = colorType,
+        )
     }
 }
 
