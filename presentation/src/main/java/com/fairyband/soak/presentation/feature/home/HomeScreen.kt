@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -337,6 +338,7 @@ private fun Cards(
                 bottomPadding = bottomPaddings[index],
                 textStyle = textStyles[index],
                 showKeyword = keywordVisibilities[index],
+                visibleHeight = if (index < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[index] = height },
                 onClick = { onClick(index) },
             )
@@ -356,6 +358,7 @@ private fun Card(
     cardColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    visibleHeight: Int? = null,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
 ) {
@@ -369,8 +372,14 @@ private fun Card(
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
     ) {
+        val columnModifier = if (visibleHeight == null) {
+            Modifier
+        } else {
+            Modifier.heightIn(visibleHeight.dp)
+        }
+
         Column(
-            modifier = Modifier
+            modifier = columnModifier
                 .fillMaxWidth()
                 .onGloballyPositioned { layoutCoordinates ->
                     onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
@@ -383,7 +392,7 @@ private fun Card(
                 style = textStyle,
                 onTextLayout = { textLayoutResult ->
                     lineCount = textLayoutResult.lineCount
-                }
+                },
             )
             if (showKeyword || lineCount == 1) {
                 Row(
