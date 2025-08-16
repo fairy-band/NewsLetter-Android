@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -199,7 +200,10 @@ private fun HomeScreen(
                         today.monthValue.toString().padStart(2, '0'),
                         today.dayOfMonth.toString().padStart(2, '0')
                     ),
-                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                    style = SoakTheme.typography.title.copy(
+                        textAlign = TextAlign.Center,
+                        fontSize = 24.sp,
+                    ),
                     color = SoakTheme.colors.textStrong,
                 )
                 Timer()
@@ -248,6 +252,7 @@ private fun Timer() {
         horizontalArrangement = Arrangement.spacedBy(1.dp),
         verticalAlignment = Alignment.Top,
     ) {
+        val suffixString = stringResource(R.string.home_limited_time_notice)
         val numberStyle = SoakTheme.typography.body16.copy(
             fontWeight = FontWeight.SemiBold,
             color = SoakTheme.colors.stateNegativePrimary
@@ -266,6 +271,14 @@ private fun Timer() {
         Text(mm, style = numberStyle)
         Text(":", style = colonStyle)
         Text(ss, style = numberStyle)
+        Text(
+            modifier = Modifier.padding(start = 2.dp),
+            text = suffixString,
+            style = SoakTheme.typography.body15.copy(
+                fontWeight = FontWeight.Medium,
+                color = SoakTheme.colors.textSecondary,
+            )
+        )
     }
 }
 
