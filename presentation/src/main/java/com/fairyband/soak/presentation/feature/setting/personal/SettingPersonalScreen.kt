@@ -2,9 +2,10 @@ package com.fairyband.soak.presentation.feature.setting.personal
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -22,15 +23,14 @@ import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 
 @Composable
-internal fun SettingPersonalScreen(
-    paddingValues: PaddingValues,
-) {
+internal fun SettingPersonalScreen() {
     val navController = LocalNavController.current
 
     Column(
         modifier = Modifier.Companion
             .fillMaxSize()
-            .padding(paddingValues)
+            .navigationBarsPadding()
+            .statusBarsPadding()
     ) {
         Image(
             imageVector = ImageVector.Companion.vectorResource(id = R.drawable.ic_setting_leading),
@@ -57,8 +57,6 @@ internal fun SettingPersonalScreen(
 @Composable
 private fun SettingPersonalScreenPreview() {
     SoakTheme {
-        SettingPersonalScreen(
-            paddingValues = PaddingValues()
-        )
+        SettingPersonalScreen()
     }
 }

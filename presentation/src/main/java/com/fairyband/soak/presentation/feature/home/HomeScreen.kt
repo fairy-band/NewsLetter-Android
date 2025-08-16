@@ -199,7 +199,7 @@ private fun HomeScreen(
                     )
                     .align(Alignment.End)
                     .noRippleClickable {
-                        navController.navigate(Screen.Setting(paddingValues = innerPadding))
+                        navController.navigate(Screen.Setting)
                     }
             )
             val today = LocalDate.now()

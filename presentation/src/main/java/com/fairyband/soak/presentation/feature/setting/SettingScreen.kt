@@ -3,13 +3,14 @@ package com.fairyband.soak.presentation.feature.setting
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +41,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun SettingScreen(
-    paddingValues: PaddingValues,
     viewModel: ServiceViewModel = koinViewModel()
 ) {
     val navController = LocalNavController.current
@@ -64,24 +64,22 @@ internal fun SettingScreen(
     }
 
     SettingScreen(
-        paddingValues = paddingValues,
         onInfoUserClick = {
             bottomSheetVisibility = true
         },
         onAlarmClick = (context::openAppNotificationSettings),
         onBackClick = (navController::pop),
         onServiceClick = {
-            navController.navigate(Screen.SettingService(paddingValues))
+            navController.navigate(Screen.SettingService)
         },
         onPersonalClick = {
-            navController.navigate(Screen.SettingPersonal(paddingValues))
+            navController.navigate(Screen.SettingPersonal)
         },
     )
 }
 
 @Composable
 private fun SettingScreen(
-    paddingValues: PaddingValues,
     onInfoUserClick: () -> Unit,
     onAlarmClick: () -> Unit,
     onBackClick: () -> Unit,
@@ -91,7 +89,8 @@ private fun SettingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
+            .navigationBarsPadding()
+            .statusBarsPadding()
     ) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_setting_leading),
@@ -234,7 +233,6 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 private fun SettingScreenPreview() {
     SoakTheme {
         SettingScreen(
-            paddingValues = PaddingValues(),
             onInfoUserClick = {},
             onAlarmClick = {},
             onBackClick = {},
