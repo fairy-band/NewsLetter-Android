@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
@@ -132,7 +133,7 @@ private fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingText(
                 title = stringResource(R.string.setting_version_current),
-                subText = "1.0.1.329"
+                subText = BuildConfig.VERSION_NAME
             )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
