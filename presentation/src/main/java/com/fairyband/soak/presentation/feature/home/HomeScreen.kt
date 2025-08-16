@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -51,6 +54,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
+import com.fairyband.soak.core.extension.findActivity
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
@@ -73,6 +77,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
@@ -138,12 +143,24 @@ fun HomeScreen(
         )
     }
 
+    val activity = LocalContext.current.findActivity()
+    var isFold = true
+
+    if (activity != null) {
+        val windowSizeClass = calculateWindowSizeClass(activity = activity)
+        val devicePosture = rememberHomeState()
+        val widthSizeClass = windowSizeClass.widthSizeClass
+
+        isFold = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isHalf
+    }
+
     HomeScreen(
         onDismissRequest = {
             viewModel.onCardShown()
         },
         news = news,
         colorType = colorType,
+        isFold = isFold,
     )
 }
 
@@ -152,10 +169,9 @@ private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
     colorType: String,
+    isFold: Boolean,
 ) {
     var cardIndex: Int? by remember { mutableStateOf(null) }
-
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -187,37 +203,57 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box {
-            Column(
-                modifier = Modifier.padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val today = LocalDate.now()
-                Text(
-                    modifier = Modifier
-                        .padding(top = 44.dp)
-                        .padding(horizontal = 20.dp),
-                    text = stringResource(
-                        R.string.home_title,
-                        today.year,
-                        today.monthValue.toString().padStart(2, '0'),
-                        today.dayOfMonth.toString().padStart(2, '0')
-                    ),
-                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
-                    color = SoakTheme.colors.textStrong,
-                )
-                Timer()
-                Spacer(modifier = Modifier.weight(1f))
+        Column(
+            modifier = Modifier.padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            val today = LocalDate.now()
+            Text(
+                modifier = Modifier
+                    .padding(top = 44.dp)
+                    .padding(horizontal = 20.dp),
+                text = stringResource(
+                    R.string.home_title,
+                    today.year,
+                    today.monthValue.toString().padStart(2, '0'),
+                    today.dayOfMonth.toString().padStart(2, '0')
+                ),
+                style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                color = SoakTheme.colors.textStrong,
+            )
+            Timer()
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (isFold) {
+                Box(
+                    contentAlignment = Alignment.BottomCenter,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
+                        contentDescription = "home drawer image",
+                        modifier = Modifier.offset(y = 35.dp)
+                    )
+                    Cards(
+                        news = news,
+                        onClick = { index ->
+                            cardIndex = index
+                        },
+                        colorType = colorType,
+                        modifier = Modifier.fillMaxWidth(0.5f)
+                    )
+                }
+            } else {
                 Box(
                     contentAlignment = Alignment.BottomCenter,
                 ) {
+                    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
                         contentDescription = "home drawer image",
-                        contentScale = ContentScale.FillWidth,
-                        modifier = Modifier
-                            .width(screenWidth)
-                            .offset(y = 60.dp)
+                        contentScale = ContentScale.FillHeight,
+                        modifier = Modifier.width(screenWidth)
                     )
                     Cards(
                         news = news,
@@ -228,19 +264,20 @@ private fun HomeScreen(
                     )
                 }
             }
-        }
 
-        PopUpDialog(
-            visibility = cardIndex != null,
-            onDismissRequest = {
-                cardIndex = null
-                onDismissRequest()
-            },
-            cardItems = news,
-            cardIndex = cardIndex ?: 0,
-            colorType = colorType,
-        )
+        }
     }
+
+    PopUpDialog(
+        visibility = cardIndex != null,
+        onDismissRequest = {
+            cardIndex = null
+            onDismissRequest()
+        },
+        cardItems = news,
+        cardIndex = cardIndex ?: 0,
+        colorType = colorType,
+    )
 }
 
 @Composable
@@ -500,6 +537,7 @@ private fun HomeScreenPreview() {
                 ),
             ),
             colorType = "B",
+            isFold = false,
         )
     }
 }

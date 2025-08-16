@@ -84,4 +84,8 @@ dependencies {
 
     // log
     implementation(libs.timber)
+
+    // window
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.window.size)
 }
