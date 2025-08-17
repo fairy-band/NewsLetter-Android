@@ -61,8 +61,9 @@ import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.findActivity
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.IMAGE_HEIGHT
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.IMAGE_TO_CARD_MARGIN
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -180,7 +181,7 @@ private fun HomeScreen(
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
     val drawerOffset = if (cardsHeight > 0.dp) {
-        IMAGE_HEIGHT - (cardsHeight + IMAGE_TO_CARD_MARGIN)
+        DRAWER_HEIGHT - (cardsHeight + DRAWER_TO_CARD_MARGIN)
     } else {
         0.dp
     }
@@ -254,7 +255,7 @@ private fun HomeScreen(
                                 .offset(y = drawerOffset)
                                 .drawBehind {
                                     drawRect(
-                                        color = Color(0xFF99C9FF),
+                                        color = DRAWER_COLOR,
                                         topLeft = Offset(x = 0f, y = size.height - 2f),
                                         size = Size(width = size.width, height = size.height)
                                     )
@@ -280,7 +281,15 @@ private fun HomeScreen(
                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
                             contentDescription = "home drawer image",
                             contentScale = ContentScale.FillHeight,
-                            modifier = Modifier.offset(y = drawerOffset)
+                            modifier = Modifier
+                                .offset(y = drawerOffset)
+                                .drawBehind {
+                                    drawRect(
+                                        color = DRAWER_COLOR,
+                                        topLeft = Offset(x = 0f, y = size.height - 2f),
+                                        size = Size(width = size.width, height = size.height)
+                                    )
+                                },
                         )
                         Cards(
                             news = news,
@@ -536,8 +545,9 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 }
 
 private object HomeDefaults {
-    val IMAGE_HEIGHT = 527.dp
-    val IMAGE_TO_CARD_MARGIN = 25.dp
+    val DRAWER_HEIGHT = 527.dp
+    val DRAWER_TO_CARD_MARGIN = 25.dp
+    val DRAWER_COLOR = Color(0xFF99C9FF)
 }
 
 @Preview(showBackground = true)
