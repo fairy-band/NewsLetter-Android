@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -57,6 +55,8 @@ import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.findActivity
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.IMAGE_HEIGHT
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.IMAGE_TO_CARD_MARGIN
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -68,6 +68,7 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
@@ -172,6 +173,12 @@ private fun HomeScreen(
     isFold: Boolean,
 ) {
     var cardIndex: Int? by remember { mutableStateOf(null) }
+    var cardsHeight by remember { mutableStateOf(0.dp) }
+    val drawerOffset = if (cardsHeight > 0.dp) {
+        IMAGE_HEIGHT - (cardsHeight + IMAGE_TO_CARD_MARGIN)
+    } else {
+        0.dp
+    }
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -232,7 +239,7 @@ private fun HomeScreen(
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
                         contentDescription = "home drawer image",
-                        modifier = Modifier.offset(y = 35.dp)
+                        modifier = Modifier.offset(y = drawerOffset)
                     )
                     Cards(
                         news = news,
@@ -240,6 +247,9 @@ private fun HomeScreen(
                             cardIndex = index
                         },
                         colorType = colorType,
+                        onCardsHeight = { height ->
+                            cardsHeight = height.dp
+                        },
                         modifier = Modifier.fillMaxWidth(0.5f)
                     )
                 }
@@ -247,13 +257,11 @@ private fun HomeScreen(
                 Box(
                     contentAlignment = Alignment.BottomCenter,
                 ) {
-                    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
                         contentDescription = "home drawer image",
                         contentScale = ContentScale.FillHeight,
-                        modifier = Modifier.width(screenWidth)
+                        modifier = Modifier.offset(y = drawerOffset)
                     )
                     Cards(
                         news = news,
@@ -261,6 +269,9 @@ private fun HomeScreen(
                             cardIndex = index
                         },
                         colorType = colorType,
+                        onCardsHeight = { height ->
+                            cardsHeight = height.dp
+                        },
                     )
                 }
             }
@@ -327,6 +338,7 @@ private fun Cards(
     news: ImmutableList<NewsFeed>,
     onClick: (Int) -> Unit,
     colorType: String,
+    onCardsHeight: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
@@ -373,6 +385,12 @@ private fun Cards(
     }
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
+
+    LaunchedEffect(cardOffsets) {
+        if (news.isEmpty()) return@LaunchedEffect
+
+        onCardsHeight(cardOffsets[news.size - 1])
+    }
 
     Box(
         modifier = modifier,
@@ -478,6 +496,11 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
         param("job_group", jobGroup.joinToString(separator = ","))
         param("career_level", careerLevel)
     }
+}
+
+private object HomeDefaults {
+    val IMAGE_HEIGHT = 527.dp
+    val IMAGE_TO_CARD_MARGIN = 25.dp
 }
 
 @Preview(showBackground = true)
