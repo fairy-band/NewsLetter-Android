@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -147,7 +150,7 @@ private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
     colorType: String,
 ) {
-    var cardIndex: Int? by remember { mutableStateOf(null) }
+    var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -181,7 +184,9 @@ private fun HomeScreen(
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box {
             Column(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val today = LocalDate.now()
@@ -195,7 +200,10 @@ private fun HomeScreen(
                         today.monthValue.toString().padStart(2, '0'),
                         today.dayOfMonth.toString().padStart(2, '0')
                     ),
-                    style = SoakTheme.typography.title.copy(textAlign = TextAlign.Center),
+                    style = SoakTheme.typography.title.copy(
+                        textAlign = TextAlign.Center,
+                        fontSize = 24.sp,
+                    ),
                     color = SoakTheme.colors.textStrong,
                 )
                 Timer()
@@ -244,6 +252,7 @@ private fun Timer() {
         horizontalArrangement = Arrangement.spacedBy(1.dp),
         verticalAlignment = Alignment.Top,
     ) {
+        val suffixString = stringResource(R.string.home_limited_time_notice)
         val numberStyle = SoakTheme.typography.body16.copy(
             fontWeight = FontWeight.SemiBold,
             color = SoakTheme.colors.stateNegativePrimary
@@ -262,6 +271,14 @@ private fun Timer() {
         Text(mm, style = numberStyle)
         Text(":", style = colonStyle)
         Text(ss, style = numberStyle)
+        Text(
+            modifier = Modifier.padding(start = 2.dp),
+            text = suffixString,
+            style = SoakTheme.typography.body15.copy(
+                fontWeight = FontWeight.Medium,
+                color = SoakTheme.colors.textSecondary,
+            )
+        )
     }
 }
 
@@ -334,6 +351,7 @@ private fun Cards(
                 bottomPadding = bottomPaddings[index],
                 textStyle = textStyles[index],
                 showKeyword = keywordVisibilities[index],
+                visibleHeight = if (index < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[index] = height },
                 onClick = { onClick(index) },
             )
@@ -353,6 +371,7 @@ private fun Card(
     cardColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    visibleHeight: Int? = null,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
 ) {
@@ -366,8 +385,14 @@ private fun Card(
             .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(color = cardColor)
     ) {
+        val columnModifier = if (visibleHeight == null) {
+            Modifier
+        } else {
+            Modifier.heightIn(visibleHeight.dp)
+        }
+
         Column(
-            modifier = Modifier
+            modifier = columnModifier
                 .fillMaxWidth()
                 .onGloballyPositioned { layoutCoordinates ->
                     onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
@@ -380,7 +405,7 @@ private fun Card(
                 style = textStyle,
                 onTextLayout = { textLayoutResult ->
                     lineCount = textLayoutResult.lineCount
-                }
+                },
             )
             if (showKeyword || lineCount == 1) {
                 Row(
