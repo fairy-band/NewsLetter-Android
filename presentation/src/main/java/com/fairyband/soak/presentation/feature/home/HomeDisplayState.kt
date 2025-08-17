@@ -11,7 +11,7 @@ import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 
 data class HomeDisplayState(
-    val isHalf: Boolean = false,
+    val isNormal: Boolean = false,
     val isFlat: Boolean = false
 )
 
@@ -32,7 +32,7 @@ fun rememberHomeState(): State<HomeDisplayState> {
                         foldingFeature == null -> postureState.value = HomeDisplayState()
 
                         isHalfOpen(foldingFeature) -> postureState.value =
-                            HomeDisplayState(isHalf = true, isFlat = true)
+                            HomeDisplayState(isNormal = true, isFlat = true)
 
                         isFlat(foldingFeature) -> postureState.value = HomeDisplayState(isFlat = true)
                     }
