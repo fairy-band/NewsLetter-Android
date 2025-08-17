@@ -10,6 +10,7 @@
     <string name="home_notification_setting_title">가장 먼저 새로운 소식을 받아보세요</string>
     <string name="home_notification_setting_description">매일 유용한 뉴스레터를 보내드려요.</string>
     <string name="home_notification_setting_button">알림 받기</string>
+    <string name="home_limited_time_notice">동안 볼 수 있어요</string>
 
     <!--setting-->
     <string name="setting_info_title">내정보</string>
