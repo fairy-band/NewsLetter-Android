@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.home.dialog
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -59,6 +60,10 @@ internal fun PopUpDialog(
     cardIndex: Int,
     colorType: String,
 ) {
+    BackHandler(visibility) {
+        onDismissRequest()
+    }
+
     val keywords = cardItems.map { it.keyword }
     val titleColors = remember(cardItems, colorType) { getCardTitleColors(colorType, keywords) }
 
