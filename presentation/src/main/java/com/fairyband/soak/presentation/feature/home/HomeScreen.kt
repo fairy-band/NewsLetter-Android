@@ -32,6 +32,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -152,7 +155,7 @@ fun HomeScreen(
         val devicePosture = rememberHomeState()
         val widthSizeClass = windowSizeClass.widthSizeClass
 
-        isFold = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isHalf
+        isFold = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isNormal
     }
 
     HomeScreen(
@@ -239,7 +242,15 @@ private fun HomeScreen(
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
                         contentDescription = "home drawer image",
-                        modifier = Modifier.offset(y = drawerOffset)
+                        modifier = Modifier
+                            .offset(y = drawerOffset)
+                            .drawBehind {
+                                drawRect(
+                                    color = Color(0xFF99C9FF),
+                                    topLeft = Offset(x = 0f, y = size.height - 2f),
+                                    size = Size(width = size.width, height = size.height)
+                                )
+                            },
                     )
                     Cards(
                         news = news,
