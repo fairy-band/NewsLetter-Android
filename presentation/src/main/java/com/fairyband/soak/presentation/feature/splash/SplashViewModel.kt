@@ -7,6 +7,7 @@ import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -36,7 +37,7 @@ class SplashViewModel(
             fetchRemoteConfigs()
         }
 
-        listOf(login, fetchRemoteConfig).joinAll()
+        listOf(login, fetchRemoteConfig).awaitAll()
 
         _shouldGoHome.update { true }
     }
