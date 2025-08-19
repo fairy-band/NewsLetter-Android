@@ -42,7 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun SettingScreen(
-    viewModel: ServiceViewModel = koinViewModel()
+    viewModel: SettingViewModel = koinViewModel()
 ) {
     val navController = LocalNavController.current
     var bottomSheetVisibility by remember { mutableStateOf(false) }

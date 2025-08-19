@@ -11,7 +11,7 @@ import org.koin.android.annotation.KoinViewModel
 import timber.log.Timber
 
 @KoinViewModel
-class ServiceViewModel(
+class SettingViewModel(
     private val userRepository: UserRepository,
 ): ViewModel() {
     fun saveUserInfo(
