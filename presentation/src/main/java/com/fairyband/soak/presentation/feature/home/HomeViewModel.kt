@@ -86,7 +86,6 @@ class HomeViewModel(
     init {
         visitApp()
         observeBottomSheetTrigger()
-        registerOrLogin()
     }
 
     private fun observeBottomSheetTrigger() {
@@ -97,13 +96,6 @@ class HomeViewModel(
                     _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
                     onBottomSheetShown()
                 }
-        }
-    }
-
-    private fun registerOrLogin() {
-        viewModelScope.launch {
-            authRepository.loginUser()
-                .onFailure(Timber::e)
         }
     }
 
