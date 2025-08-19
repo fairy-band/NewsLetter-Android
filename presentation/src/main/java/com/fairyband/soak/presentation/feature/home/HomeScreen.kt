@@ -59,7 +59,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.findActivity
+import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
@@ -185,6 +187,7 @@ private fun HomeScreen(
     } else {
         0.dp
     }
+    val navController = LocalNavController.current
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -216,108 +219,119 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
+                contentDescription = "setting button",
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val today = LocalDate.now()
-                Text(
-                    modifier = Modifier
-                        .padding(top = 44.dp)
-                        .padding(horizontal = 20.dp),
-                    text = stringResource(
-                        R.string.home_title,
-                        today.year,
-                        today.monthValue.toString().padStart(2, '0'),
-                        today.dayOfMonth.toString().padStart(2, '0')
-                    ),
-                    style = SoakTheme.typography.title.copy(
-                        textAlign = TextAlign.Center,
-                        fontSize = 24.sp,
-                    ),
-                    color = SoakTheme.colors.textStrong,
-                )
-                Timer()
-                Spacer(modifier = Modifier.weight(1f))
+                    .padding(
+                        top = 8.dp,
+                        end = 8.dp
+                    )
+                    .align(Alignment.End)
+                    .noRippleClickable {
+                        navController.navigate(Screen.Setting)
+                    }
+            )
+            val today = LocalDate.now()
+            Text(
+                modifier = Modifier
+                    .padding(top = 44.dp)
+                    .padding(horizontal = 20.dp),
+                text = stringResource(
+                    R.string.home_title,
+                    today.year,
+                    today.monthValue.toString().padStart(2, '0'),
+                    today.dayOfMonth.toString().padStart(2, '0')
+                ),
+                style = SoakTheme.typography.title.copy(
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                ),
+                color = SoakTheme.colors.textStrong,
+            )
+            Timer()
+            Spacer(modifier = Modifier.weight(1f))
 
-                if (isWide) {
-                    Box(
-                        contentAlignment = Alignment.BottomCenter,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                            contentDescription = "home drawer image",
-                            modifier = Modifier
-                                .offset(y = drawerOffset)
-                                .drawBehind {
-                                    drawRect(
-                                        color = DRAWER_COLOR,
-                                        topLeft = Offset(x = 0f, y = size.height - 2f),
-                                        size = Size(width = size.width, height = size.height)
-                                    )
-                                },
-                        )
-                        Cards(
-                            news = news,
-                            onClick = { index ->
-                                cardIndex = index
+            if (isWide) {
+                Box(
+                    contentAlignment = Alignment.BottomCenter,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
+                        contentDescription = "home drawer image",
+                        modifier = Modifier
+                            .offset(y = drawerOffset)
+                            .drawBehind {
+                                drawRect(
+                                    color = DRAWER_COLOR,
+                                    topLeft = Offset(x = 0f, y = size.height - 2f),
+                                    size = Size(width = size.width, height = size.height)
+                                )
                             },
-                            colorType = colorType,
-                            onCardsHeight = { height ->
-                                cardsHeight = height.dp
-                            },
-                            modifier = Modifier.fillMaxWidth(0.5f)
-                        )
-                    }
-                } else {
-                    Box(
-                        contentAlignment = Alignment.BottomCenter,
-                    ) {
-                        Image(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                            contentDescription = "home drawer image",
-                            contentScale = ContentScale.FillHeight,
-                            modifier = Modifier
-                                .offset(y = drawerOffset)
-                                .drawBehind {
-                                    drawRect(
-                                        color = DRAWER_COLOR,
-                                        topLeft = Offset(x = 0f, y = size.height - 2f),
-                                        size = Size(width = size.width, height = size.height)
-                                    )
-                                },
-                        )
-                        Cards(
-                            news = news,
-                            onClick = { index ->
-                                cardIndex = index
-                            },
-                            colorType = colorType,
-                            onCardsHeight = { height ->
-                                cardsHeight = height.dp
-                            },
-                        )
-                    }
+                    )
+                    Cards(
+                        news = news,
+                        onClick = { index ->
+                            cardIndex = index
+                        },
+                        colorType = colorType,
+                        onCardsHeight = { height ->
+                            cardsHeight = height.dp
+                        },
+                        modifier = Modifier.fillMaxWidth(0.5f)
+                    )
                 }
-
+            } else {
+                Box(
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
+                        contentDescription = "home drawer image",
+                        contentScale = ContentScale.FillHeight,
+                        modifier = Modifier
+                            .offset(y = drawerOffset)
+                            .drawBehind {
+                                drawRect(
+                                    color = DRAWER_COLOR,
+                                    topLeft = Offset(x = 0f, y = size.height - 2f),
+                                    size = Size(width = size.width, height = size.height)
+                                )
+                            },
+                    )
+                    Cards(
+                        news = news,
+                        onClick = { index ->
+                            cardIndex = index
+                        },
+                        colorType = colorType,
+                        onCardsHeight = { height ->
+                            cardsHeight = height.dp
+                        },
+                    )
+                }
             }
-        }
 
-        PopUpDialog(
-            visibility = cardIndex != null,
-            onDismissRequest = {
-                cardIndex = null
-                onDismissRequest()
-            },
-            cardItems = news,
-            cardIndex = cardIndex ?: 0,
-            colorType = colorType,
-        )
+        }
     }
+
+    PopUpDialog(
+        visibility = cardIndex != null,
+        onDismissRequest = {
+            cardIndex = null
+            onDismissRequest()
+        },
+        cardItems = news,
+        cardIndex = cardIndex ?: 0,
+        colorType = colorType,
+    )
 }
 
 @Composable
