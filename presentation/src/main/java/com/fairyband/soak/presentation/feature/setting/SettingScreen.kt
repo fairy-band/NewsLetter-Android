@@ -120,10 +120,7 @@ private fun SettingScreen(
                 modifier = Modifier.noRippleClickable(onNotificationClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
-            HorizontalDivider(
-                color = SoakTheme.colors.borderPrimary,
-                modifier = Modifier.padding(horizontal = 0.5.dp)
-            )
+            HorizontalDivider(color = SoakTheme.colors.borderPrimary)
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(id = R.string.setting_version_title),
@@ -136,10 +133,7 @@ private fun SettingScreen(
                 subText = BuildConfig.VERSION_NAME
             )
             Spacer(modifier = Modifier.height(24.dp))
-            HorizontalDivider(
-                color = SoakTheme.colors.borderPrimary,
-                modifier = Modifier.padding(horizontal = 0.5.dp)
-            )
+            HorizontalDivider(color = SoakTheme.colors.borderPrimary)
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(id = R.string.setting_support_title),
@@ -152,10 +146,7 @@ private fun SettingScreen(
                 subText = stringResource(R.string.setting_support_email)
             )
             Spacer(modifier = Modifier.height(24.dp))
-            HorizontalDivider(
-                color = SoakTheme.colors.borderPrimary,
-                modifier = Modifier.padding(horizontal = 0.5.dp)
-            )
+            HorizontalDivider(color = SoakTheme.colors.borderPrimary)
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(id = R.string.setting_policy_title),
