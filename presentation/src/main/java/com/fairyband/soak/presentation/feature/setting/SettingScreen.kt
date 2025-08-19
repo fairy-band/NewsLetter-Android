@@ -1,6 +1,7 @@
 package com.fairyband.soak.presentation.feature.setting
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -112,12 +113,12 @@ private fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_info_user),
-                modifier = Modifier.noRippleClickable(onInfoUserClick)
+                modifier = Modifier.clickable(onClick = onInfoUserClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_info_alarm),
-                modifier = Modifier.noRippleClickable(onNotificationClick)
+                modifier = Modifier.clickable(onClick = onNotificationClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(color = SoakTheme.colors.borderPrimary)
@@ -156,12 +157,12 @@ private fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_policy_service),
-                modifier = Modifier.noRippleClickable(onServiceClick)
+                modifier = Modifier.clickable(onClick = onServiceClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_policy_personal),
-                modifier = Modifier.noRippleClickable(onPersonalClick)
+                modifier = Modifier.clickable(onClick = onPersonalClick)
             )
         }
     }
