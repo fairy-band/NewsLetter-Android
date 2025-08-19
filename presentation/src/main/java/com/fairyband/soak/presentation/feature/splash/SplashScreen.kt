@@ -21,7 +21,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SplashScreen(viewModel: SplashViewModel = koinViewModel()) {
-    val isLoaded by viewModel.isLoaded.collectAsStateWithLifecycle()
+    val isLoaded by viewModel.shouldGoHome.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     LaunchedEffect(isLoaded) {
