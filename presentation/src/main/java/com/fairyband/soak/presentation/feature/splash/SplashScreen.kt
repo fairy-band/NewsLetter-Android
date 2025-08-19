@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.navigation.Screen
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -28,13 +27,6 @@ fun SplashScreen(viewModel: SplashViewModel = koinViewModel()) {
         if (isLoaded) {
             navController.replace(Screen.Home)
         }
-    }
-
-    LaunchedEffect(Unit) {
-        // remoteConfig를 못 받아와도 앱을 사용하는데 지장이 없기 때문에
-        // 로딩이 안 끝나도 너무 오래 걸리면 그냥 홈으로 보내버린다.
-        delay(5_000)
-        navController.replace(Screen.Home)
     }
 
     Box(
