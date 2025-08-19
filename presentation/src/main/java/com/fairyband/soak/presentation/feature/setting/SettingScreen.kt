@@ -68,7 +68,7 @@ internal fun SettingScreen(
         onInfoUserClick = {
             bottomSheetVisibility = true
         },
-        onAlarmClick = (context::openAppNotificationSettings),
+        onNotificationClick = (context::openAppNotificationSettings),
         onBackClick = (navController::pop),
         onServiceClick = {
             navController.navigate(Screen.SettingService)
@@ -82,7 +82,7 @@ internal fun SettingScreen(
 @Composable
 private fun SettingScreen(
     onInfoUserClick: () -> Unit,
-    onAlarmClick: () -> Unit,
+    onNotificationClick: () -> Unit,
     onBackClick: () -> Unit,
     onServiceClick: () -> Unit,
     onPersonalClick: () -> Unit,
@@ -117,7 +117,7 @@ private fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingArrow(
                 title = stringResource(R.string.setting_info_alarm),
-                modifier = Modifier.noRippleClickable(onAlarmClick)
+                modifier = Modifier.noRippleClickable(onNotificationClick)
             )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
@@ -235,7 +235,7 @@ private fun SettingScreenPreview() {
     SoakTheme {
         SettingScreen(
             onInfoUserClick = {},
-            onAlarmClick = {},
+            onNotificationClick = {},
             onBackClick = {},
             onServiceClick = {},
             onPersonalClick = {}
