@@ -1,3 +1,8 @@
+<img src="https://github.com/user-attachments/assets/67b7410e-f4fb-4dae-8ba2-9217640dbea4" width="22%" />
+<img src="https://github.com/user-attachments/assets/83dcef4e-6d27-478b-9b7f-df9d84530c02" width="22%" />
+<img src="https://github.com/user-attachments/assets/b6b6f6bb-2e43-48ff-8afa-3d85574403af" width="22%" />
+<img src="https://github.com/user-attachments/assets/70515106-fbd4-490a-8699-570bc17f3f8a" width="22%" />
+
 # News Letter (가제)
 
 ### 빌드하는 법
