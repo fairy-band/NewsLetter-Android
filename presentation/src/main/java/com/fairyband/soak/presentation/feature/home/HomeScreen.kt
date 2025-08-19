@@ -151,14 +151,14 @@ fun HomeScreen(
     }
 
     val activity = LocalContext.current.findActivity()
-    var isFold = true
+    var isWide = true
 
     if (activity != null) {
         val windowSizeClass = calculateWindowSizeClass(activity = activity)
         val devicePosture = rememberHomeState()
         val widthSizeClass = windowSizeClass.widthSizeClass
 
-        isFold = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isNormal
+        isWide = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isNormal
     }
 
     HomeScreen(
@@ -167,7 +167,7 @@ fun HomeScreen(
         },
         news = news,
         colorType = colorType,
-        isFold = isFold,
+        isWide = isWide,
     )
 }
 
@@ -176,7 +176,7 @@ private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
     colorType: String,
-    isFold: Boolean,
+    isWide: Boolean,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
@@ -243,7 +243,7 @@ private fun HomeScreen(
                 Timer()
                 Spacer(modifier = Modifier.weight(1f))
 
-                if (isFold) {
+                if (isWide) {
                     Box(
                         contentAlignment = Alignment.BottomCenter,
                         modifier = Modifier.fillMaxWidth()
@@ -607,7 +607,7 @@ private fun HomeScreenPreview() {
                 ),
             ),
             colorType = "B",
-            isFold = false,
+            isWide = false,
         )
     }
 }
