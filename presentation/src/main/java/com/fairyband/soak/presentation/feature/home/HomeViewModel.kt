@@ -69,9 +69,6 @@ class HomeViewModel(
                 response.toNewsFeed()
             }.toImmutableList()
         }
-        .catch {
-            Timber.e(it)
-        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

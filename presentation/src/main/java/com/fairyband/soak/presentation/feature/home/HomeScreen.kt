@@ -179,7 +179,7 @@ private fun HomeScreen(
     isFold: Boolean,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
-    var cardsHeight by rememberSaveable { mutableStateOf(0.dp) }
+    var cardsHeight by remember { mutableStateOf(0.dp) }
     val drawerOffset = if (cardsHeight > 0.dp) {
         DRAWER_HEIGHT - (cardsHeight + DRAWER_TO_CARD_MARGIN)
     } else {
