@@ -45,6 +45,8 @@ flowlayout = "0.36.0"
 kotlinxCoroutinesAndroid = "1.10.2"
 timber = "5.0.1"
 
+window = "1.4.0"
+
 [libraries]
 # core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +60,8 @@ androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "composeSavable" }
+androidx-window = {group = "androidx.window", name = "window", version.ref = "window"}
+androidx-window-size = { module = "androidx.compose.material3:material3-window-size-class" }
 
 # lifecycle
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
