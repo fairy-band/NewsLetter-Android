@@ -50,6 +50,7 @@ fun Modifier.bounceClick(
     val translationYAnim = remember { Animatable(0f) }
     val scaleXAnim = remember { Animatable(1f) }
     val scaleYAnim = remember { Animatable(1f) }
+    val alphaAnim = remember { Animatable(1f) }
 
     var cardPosition by remember { mutableFloatStateOf(0f) }
     var measuredWidth by remember { mutableFloatStateOf(0f) }
@@ -57,6 +58,11 @@ fun Modifier.bounceClick(
 
     LaunchedEffect(dialogVisible) {
         if (!dialogVisible) {
+
+            alphaAnim.animateTo(
+                targetValue = 1f,
+            )
+
             coroutineScope {
                 launch {
                     translationYAnim.animateTo(
@@ -90,6 +96,7 @@ fun Modifier.bounceClick(
             translationY = translationYAnim.value
             scaleX = scaleXAnim.value
             scaleY = scaleYAnim.value
+            alpha = alphaAnim.value
         }
         .clickable(
             indication = null,
@@ -103,11 +110,13 @@ fun Modifier.bounceClick(
                     )
                 )
 
+                // 1. 처음 올라가는 동작
                 translationYAnim.animateTo(
                     targetValue = TARGET,
                     animationSpec = tween(DURATION_MILLIS)
                 )
 
+                // 2. 카드 Z 위치 제일 앞으로 보내는 동작
                 onPromoteToFront()
 
                 val extraPadding = with(density) { offset.toPx() }
@@ -119,6 +128,7 @@ fun Modifier.bounceClick(
                 val targetScaleX = targetW / measuredWidth
                 val targetScaleY = targetH / measuredHeight
 
+                // 3. 지정된 크기로 맞춰지는 동작
                 coroutineScope {
                     launch {
                         translationYAnim.animateTo(
@@ -141,6 +151,12 @@ fun Modifier.bounceClick(
                 }
 
                 onClick()
+
+                // 4. 사라지는 동작
+                alphaAnim.animateTo(
+                    targetValue = 0f,
+                )
+
             }
         }
 }
