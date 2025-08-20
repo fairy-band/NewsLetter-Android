@@ -63,6 +63,7 @@ import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
@@ -307,7 +308,7 @@ private fun HomeScreen(
                             },
                     )
                     Cards(
-                        news = news,
+                        news = tempNews,
                         onClick = { index ->
                             cardIndex = index
                         },
@@ -328,7 +329,7 @@ private fun HomeScreen(
             cardIndex = null
             onDismissRequest()
         },
-        cardItems = news,
+        cardItems = tempNews,
         cardIndex = cardIndex ?: 0,
         colorType = colorType,
     )
@@ -453,7 +454,7 @@ private fun Cards(
             Card(
                 modifier = Modifier
                     .zIndex(5f - index)
-                    .offset(y = (166 - cardOffsets[index]).dp)
+                    .offset(y = CARD_HEIGHT - cardOffsets[index].dp)
                     .padding(horizontal = horizontalPaddings[index]),
                 feed = news[index],
                 cardColor = cardColors[index],
@@ -491,8 +492,8 @@ private fun Card(
     Box(
         modifier = modifier
             .bounceClick(onClick = onClick)
-            .height(166.dp)
-            .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .height(CARD_HEIGHT)
+            .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
     ) {
         val columnModifier = if (visibleHeight == null) {
@@ -559,6 +560,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 }
 
 private object HomeDefaults {
+    val CARD_HEIGHT = 264.dp
     val DRAWER_HEIGHT = 527.dp
     val DRAWER_TO_CARD_MARGIN = 25.dp
     val DRAWER_COLOR = Color(0xFF99C9FF)
