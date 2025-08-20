@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.feature.home.HomeScreen
+import com.fairyband.soak.presentation.feature.splash.SplashScreen
 import com.fairyband.soak.presentation.feature.setting.personal.SettingPersonalScreen
 import com.fairyband.soak.presentation.feature.setting.SettingScreen
 import com.fairyband.soak.presentation.feature.setting.service.SettingServiceScreen
@@ -52,6 +53,11 @@ class MainActivity : ComponentActivity() {
 
     private fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
         return entryProvider {
+
+            entry<Screen.Splash> { main ->
+                SplashScreen()
+            }
+
             entry<Screen.Home> { main ->
                 HomeScreen()
             }

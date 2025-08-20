@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.filterNotNull
 
 class NavController(val backStack: NavBackStack) {
 
+    fun replace(dest: NavKey) {
+        backStack.add(dest)
+        backStack.removeAt(backStack.size - 2) // 원래 화면
+    }
+
     fun navigate(dest: NavKey) {
         backStack.add(dest)
     }
@@ -26,7 +31,7 @@ class NavController(val backStack: NavBackStack) {
 
 @Composable
 fun rememberNavController(): NavController {
-    val backStack = rememberNavBackStack(Screen.Home)
+    val backStack = rememberNavBackStack(Screen.Splash)
 
     LaunchedEffect(backStack) {
         val analytics = Firebase.analytics
