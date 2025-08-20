@@ -308,7 +308,7 @@ private fun HomeScreen(
                             },
                     )
                     Cards(
-                        news = tempNews,
+                        news = news,
                         onClick = { index ->
                             cardIndex = index
                         },
@@ -329,7 +329,7 @@ private fun HomeScreen(
             cardIndex = null
             onDismissRequest()
         },
-        cardItems = tempNews,
+        cardItems = news,
         cardIndex = cardIndex ?: 0,
         colorType = colorType,
     )
@@ -452,6 +452,7 @@ private fun Cards(
         // 항상 6
         repeat(news.size) { index ->
             Card(
+                offset = (topPaddings[index] + bottomPaddings[index] + 20.dp),
                 modifier = Modifier
                     .zIndex(5f - index)
                     .offset(y = CARD_HEIGHT - cardOffsets[index].dp)
@@ -475,6 +476,7 @@ private fun Cards(
  */
 @Composable
 private fun Card(
+    offset: Dp,
     feed: NewsFeed,
     topPadding: Dp,
     bottomPadding: Dp,
@@ -491,7 +493,10 @@ private fun Card(
 
     Box(
         modifier = modifier
-            .bounceClick(onClick = onClick)
+            .bounceClick(
+                offset = offset,
+                onClick = onClick
+            )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)

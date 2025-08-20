@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -20,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier = composed {
@@ -29,25 +29,41 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
         onClick()
     }
 }
+
 fun Modifier.bounceClick(
+    offset: Dp,
     dialogPosition: Dp = 232.dp,
-    durationMillis: Int = 900,
+    dialogHeight: Dp = 369.dp,
+    dialogWidth: Dp = 314.dp,
     onClick: () -> Unit,
 ): Modifier = composed {
     val context = LocalContext.current
     val density = LocalDensity.current
     val vibrator = context.vibrator
     val scope = rememberCoroutineScope()
-    val scale = remember { Animatable(0f) }
-    val firstTarget  = -500f
+
+    val translationYAnim = remember { Animatable(0f) }
+
+    val scaleXAnim = remember { Animatable(1f) }
+    val scaleYAnim = remember { Animatable(1f) }
+
     var cardPosition by remember { mutableFloatStateOf(0f) }
+    var measuredWidth by remember { mutableFloatStateOf(0f) }
+    var measuredHeight by remember { mutableFloatStateOf(0f) }
+
+    val firstTarget = -500f
+    val durationMillis = 900
 
     this
-        .onGloballyPositioned {
-            cardPosition = it.positionInWindow().y
+        .onGloballyPositioned { card ->
+            cardPosition = card.positionInWindow().y
+            measuredWidth = card.size.width.toFloat()
+            measuredHeight = card.size.height.toFloat()
         }
         .graphicsLayer {
-            translationY = scale.value
+            translationY = translationYAnim.value
+            scaleX = scaleXAnim.value
+            scaleY = scaleYAnim.value
         }
         .clickable(
             indication = null,
@@ -61,18 +77,40 @@ fun Modifier.bounceClick(
                     )
                 )
 
-                scale.animateTo(
+                translationYAnim.animateTo(
                     targetValue = firstTarget,
                     animationSpec = tween(durationMillis)
                 )
 
-                val targetPx = with(density) { dialogPosition.toPx() }
-                val secondTarget = targetPx - cardPosition   // 절대목표 - 현재절대 = 상대이동
+                val extraPadding = with(density) { offset.toPx() }
 
-                scale.animateTo(
-                    targetValue = secondTarget,
-                    animationSpec = tween(durationMillis)
-                )
+                val targetY = with(density) { dialogPosition.toPx() } - cardPosition
+                val targetW = with(density) { dialogWidth.toPx() }
+                val targetH = with(density) { dialogHeight.toPx() }
+
+                val targetScaleX = targetW / measuredWidth
+                val targetScaleY = targetH / measuredHeight
+
+                coroutineScope {
+                    launch {
+                        translationYAnim.animateTo(
+                            targetValue = targetY + extraPadding,
+                            animationSpec = tween(durationMillis)
+                        )
+                    }
+                    launch {
+                        scaleXAnim.animateTo(
+                            targetValue = targetScaleX,
+                            animationSpec = tween(durationMillis)
+                        )
+                    }
+                    launch {
+                        scaleYAnim.animateTo(
+                            targetValue = targetScaleY,
+                            animationSpec = tween(durationMillis)
+                        )
+                    }
+                }
 
                 onClick()
             }
