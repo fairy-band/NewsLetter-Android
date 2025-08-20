@@ -15,6 +15,12 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            "String",
+            "VERSION_NAME",
+            "\"${project.findProperty("VERSION_CODE") ?: "3"}\""
+        )
     }
 
     buildTypes {
@@ -35,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -85,4 +92,8 @@ dependencies {
 
     // log
     implementation(libs.timber)
+
+    // window
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.window.size)
 }
