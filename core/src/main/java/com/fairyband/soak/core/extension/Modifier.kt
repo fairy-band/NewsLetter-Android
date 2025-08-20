@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.extension.ModifierDefaults.DURATION_MILLIS
+import com.fairyband.soak.core.extension.ModifierDefaults.TARGET
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -35,6 +38,7 @@ fun Modifier.bounceClick(
     dialogPosition: Dp = 232.dp,
     dialogHeight: Dp = 369.dp,
     dialogWidth: Dp = 314.dp,
+    dialogVisible: Boolean,
     onClick: () -> Unit,
 ): Modifier = composed {
     val context = LocalContext.current
@@ -43,7 +47,6 @@ fun Modifier.bounceClick(
     val scope = rememberCoroutineScope()
 
     val translationYAnim = remember { Animatable(0f) }
-
     val scaleXAnim = remember { Animatable(1f) }
     val scaleYAnim = remember { Animatable(1f) }
 
@@ -51,8 +54,30 @@ fun Modifier.bounceClick(
     var measuredWidth by remember { mutableFloatStateOf(0f) }
     var measuredHeight by remember { mutableFloatStateOf(0f) }
 
-    val firstTarget = -500f
-    val durationMillis = 900
+    LaunchedEffect(dialogVisible) {
+        if (!dialogVisible) {
+            coroutineScope {
+                launch {
+                    translationYAnim.animateTo(
+                        targetValue = 0f,
+                        animationSpec = tween(DURATION_MILLIS)
+                    )
+                }
+                launch {
+                    scaleXAnim.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(DURATION_MILLIS)
+                    )
+                }
+                launch {
+                    scaleYAnim.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(DURATION_MILLIS)
+                    )
+                }
+            }
+        }
+    }
 
     this
         .onGloballyPositioned { card ->
@@ -78,8 +103,8 @@ fun Modifier.bounceClick(
                 )
 
                 translationYAnim.animateTo(
-                    targetValue = firstTarget,
-                    animationSpec = tween(durationMillis)
+                    targetValue = TARGET,
+                    animationSpec = tween(DURATION_MILLIS)
                 )
 
                 val extraPadding = with(density) { offset.toPx() }
@@ -95,19 +120,19 @@ fun Modifier.bounceClick(
                     launch {
                         translationYAnim.animateTo(
                             targetValue = targetY + extraPadding,
-                            animationSpec = tween(durationMillis)
+                            animationSpec = tween(DURATION_MILLIS)
                         )
                     }
                     launch {
                         scaleXAnim.animateTo(
                             targetValue = targetScaleX,
-                            animationSpec = tween(durationMillis)
+                            animationSpec = tween(DURATION_MILLIS)
                         )
                     }
                     launch {
                         scaleYAnim.animateTo(
                             targetValue = targetScaleY,
-                            animationSpec = tween(durationMillis)
+                            animationSpec = tween(DURATION_MILLIS)
                         )
                     }
                 }
@@ -115,4 +140,9 @@ fun Modifier.bounceClick(
                 onClick()
             }
         }
+}
+
+private object ModifierDefaults {
+    const val TARGET = -500f
+    const val DURATION_MILLIS = 900
 }

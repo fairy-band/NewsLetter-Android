@@ -286,7 +286,8 @@ private fun HomeScreen(
                         onCardsHeight = { height ->
                             cardsHeight = height.dp
                         },
-                        modifier = Modifier.fillMaxWidth(0.5f)
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        dialogVisible = cardIndex != null,
                     )
                 }
             } else {
@@ -308,6 +309,7 @@ private fun HomeScreen(
                             },
                     )
                     Cards(
+                        dialogVisible = cardIndex != null,
                         news = news,
                         onClick = { index ->
                             cardIndex = index
@@ -388,6 +390,7 @@ private fun Timer() {
 
 @Composable
 private fun Cards(
+    dialogVisible: Boolean,
     news: ImmutableList<NewsFeed>,
     onClick: (Int) -> Unit,
     colorType: String,
@@ -452,6 +455,7 @@ private fun Cards(
         // 항상 6
         repeat(news.size) { index ->
             Card(
+                dialogVisible = dialogVisible,
                 offset = (topPaddings[index] + bottomPaddings[index] + 20.dp),
                 modifier = Modifier
                     .zIndex(5f - index)
@@ -476,6 +480,7 @@ private fun Cards(
  */
 @Composable
 private fun Card(
+    dialogVisible: Boolean,
     offset: Dp,
     feed: NewsFeed,
     topPadding: Dp,
@@ -495,7 +500,8 @@ private fun Card(
         modifier = modifier
             .bounceClick(
                 offset = offset,
-                onClick = onClick
+                onClick = onClick,
+                dialogVisible = dialogVisible
             )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))
