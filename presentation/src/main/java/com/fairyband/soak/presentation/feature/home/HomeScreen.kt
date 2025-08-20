@@ -457,20 +457,6 @@ private fun Cards(
         if (!dialogVisible) frontMostIndex = -1
     }
 
-    val interactionSources = remember(news) {
-        List(news.size) { MutableInteractionSource() }
-    }
-
-    interactionSources.forEachIndexed { index, src ->
-        LaunchedEffect(src) {
-            src.interactions.collect { inter ->
-                if (inter is PressInteraction.Press) {
-                    frontMostIndex = index
-                }
-            }
-        }
-    }
-
     Box(
         modifier = modifier,
         contentAlignment = Alignment.BottomCenter
@@ -495,7 +481,7 @@ private fun Cards(
                 visibleHeight = if (index < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[index] = height },
                 onClick = { onClick(index) },
-                interactionSource = interactionSources[index],
+                onPromoteToFront = { frontMostIndex = index },
             )
         }
     }
@@ -518,7 +504,7 @@ private fun Card(
     visibleHeight: Int? = null,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
-    interactionSource: MutableInteractionSource,
+    onPromoteToFront: () -> Unit,
 ) {
     val density = LocalDensity.current
     var lineCount by remember { mutableIntStateOf(2) }
@@ -529,7 +515,7 @@ private fun Card(
                 offset = offset,
                 onClick = onClick,
                 dialogVisible = dialogVisible,
-                interactionSource = interactionSource,
+                onPromoteToFront = onPromoteToFront,
             )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))

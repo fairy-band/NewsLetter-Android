@@ -40,7 +40,7 @@ fun Modifier.bounceClick(
     dialogWidth: Dp = 314.dp,
     dialogVisible: Boolean,
     onClick: () -> Unit,
-    interactionSource: MutableInteractionSource,
+    onPromoteToFront: () -> Unit,
 ): Modifier = composed {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -93,7 +93,7 @@ fun Modifier.bounceClick(
         }
         .clickable(
             indication = null,
-            interactionSource = interactionSource,
+            interactionSource = remember { MutableInteractionSource() }
         ) {
             scope.launch {
                 vibrator.vibrate(
@@ -107,6 +107,8 @@ fun Modifier.bounceClick(
                     targetValue = TARGET,
                     animationSpec = tween(DURATION_MILLIS)
                 )
+
+                onPromoteToFront()
 
                 val extraPadding = with(density) { offset.toPx() }
 
