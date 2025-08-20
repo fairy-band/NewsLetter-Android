@@ -40,6 +40,7 @@ fun Modifier.bounceClick(
     dialogWidth: Dp = 314.dp,
     dialogVisible: Boolean,
     onClick: () -> Unit,
+    interactionSource: MutableInteractionSource,
 ): Modifier = composed {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -92,7 +93,7 @@ fun Modifier.bounceClick(
         }
         .clickable(
             indication = null,
-            interactionSource = remember { MutableInteractionSource() }
+            interactionSource = interactionSource,
         ) {
             scope.launch {
                 vibrator.vibrate(

@@ -2,6 +2,8 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,6 +69,7 @@ import com.fairyband.soak.presentation.feature.home.HomeDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -448,17 +451,39 @@ private fun Cards(
         onCardsHeight(cardOffsets[news.size - 1])
     }
 
+    var frontMostIndex by remember { mutableIntStateOf(-1) }
+
+    LaunchedEffect(dialogVisible) {
+        if (!dialogVisible) frontMostIndex = -1
+    }
+
+    val interactionSources = remember(news) {
+        List(news.size) { MutableInteractionSource() }
+    }
+
+    interactionSources.forEachIndexed { index, src ->
+        LaunchedEffect(src) {
+            src.interactions.collect { inter ->
+                if (inter is PressInteraction.Press) {
+                    frontMostIndex = index
+                }
+            }
+        }
+    }
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.BottomCenter
     ) {
-        // 항상 6
         repeat(news.size) { index ->
+            val baseZ = FRONT_MOST_Z_INDEX - index
+            val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
+
             Card(
                 dialogVisible = dialogVisible,
                 offset = (topPaddings[index] + bottomPaddings[index] + 20.dp),
                 modifier = Modifier
-                    .zIndex(5f - index)
+                    .zIndex(currentZ)
                     .offset(y = CARD_HEIGHT - cardOffsets[index].dp)
                     .padding(horizontal = horizontalPaddings[index]),
                 feed = news[index],
@@ -470,6 +495,7 @@ private fun Cards(
                 visibleHeight = if (index < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[index] = height },
                 onClick = { onClick(index) },
+                interactionSource = interactionSources[index],
             )
         }
     }
@@ -492,6 +518,7 @@ private fun Card(
     visibleHeight: Int? = null,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
+    interactionSource: MutableInteractionSource,
 ) {
     val density = LocalDensity.current
     var lineCount by remember { mutableIntStateOf(2) }
@@ -501,11 +528,12 @@ private fun Card(
             .bounceClick(
                 offset = offset,
                 onClick = onClick,
-                dialogVisible = dialogVisible
+                dialogVisible = dialogVisible,
+                interactionSource = interactionSource,
             )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))
-            .background(color = cardColor)
+            .background(color = cardColor),
     ) {
         val columnModifier = if (visibleHeight == null) {
             Modifier
@@ -572,6 +600,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 
 private object HomeDefaults {
     val CARD_HEIGHT = 264.dp
+    val FRONT_MOST_Z_INDEX = 5f
     val DRAWER_HEIGHT = 527.dp
     val DRAWER_TO_CARD_MARGIN = 25.dp
     val DRAWER_COLOR = Color(0xFF99C9FF)
