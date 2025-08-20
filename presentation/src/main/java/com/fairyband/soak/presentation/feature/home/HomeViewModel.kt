@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import timber.log.Timber
-import java.time.LocalDate
 
 @KoinViewModel
 class HomeViewModel(
@@ -68,6 +67,9 @@ class HomeViewModel(
             it.map { response ->
                 response.toNewsFeed()
             }.toImmutableList()
+        }
+        .catch {
+            Timber.e(it)
         }
         .stateIn(
             viewModelScope,
