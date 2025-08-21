@@ -457,11 +457,11 @@ private fun Cards(
             launch {
                 animatable.animateTo(
                     targetValue = -4f,
-                    animationSpec = tween(durationMillis = 150)
+                    animationSpec = tween(durationMillis = 100)
                 )
                 animatable.animateTo(
                     targetValue = 1f,
-                    animationSpec = tween(durationMillis = 150)
+                    animationSpec = tween(durationMillis = 100)
                 )
             }
         }
