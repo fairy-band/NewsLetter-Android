@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.extension.ModifierDefaults.DURATION_MILLIS
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
@@ -54,6 +55,7 @@ internal object PopUpDialogDefaults {
 
 @Composable
 internal fun PopUpDialog(
+    backgroundVisibility: Boolean,
     visibility: Boolean,
     onDismissRequest: () -> Unit,
     cardItems: ImmutableList<NewsFeed>,
@@ -77,8 +79,8 @@ internal fun PopUpDialog(
 
     Box {
         AnimatedVisibility(
-            visibility,
-            enter = fadeIn(animationSpec = tween(150)),
+            visible = backgroundVisibility,
+            enter = fadeIn(animationSpec = tween(500, DURATION_MILLIS - 500)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
             Box(
@@ -91,7 +93,7 @@ internal fun PopUpDialog(
 
         AnimatedVisibility(
             visibility,
-            enter = fadeIn(animationSpec = tween(200, 150)),
+            enter = fadeIn(animationSpec = tween(100)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
             val pagerState = rememberPagerState(

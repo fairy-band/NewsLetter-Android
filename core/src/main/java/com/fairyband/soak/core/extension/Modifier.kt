@@ -41,6 +41,7 @@ fun Modifier.bounceClick(
     dialogVisible: Boolean,
     onClick: () -> Unit,
     onPromoteToFront: () -> Unit,
+    onCardHidden: () -> Unit,
 ): Modifier = composed {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -58,7 +59,6 @@ fun Modifier.bounceClick(
 
     LaunchedEffect(dialogVisible) {
         if (!dialogVisible) {
-
             alphaAnim.animateTo(
                 targetValue = 1f,
             )
@@ -113,7 +113,7 @@ fun Modifier.bounceClick(
                 // 1. 처음 올라가는 동작
                 translationYAnim.animateTo(
                     targetValue = TARGET,
-                    animationSpec = tween(DURATION_MILLIS)
+                    animationSpec = tween(900)
                 )
 
                 // 2. 카드 Z 위치 제일 앞으로 보내는 동작
@@ -148,6 +148,9 @@ fun Modifier.bounceClick(
                             animationSpec = tween(DURATION_MILLIS)
                         )
                     }
+                    launch {
+                        onCardHidden()
+                    }
                 }
 
                 onClick()
@@ -155,13 +158,13 @@ fun Modifier.bounceClick(
                 // 4. 사라지는 동작
                 alphaAnim.animateTo(
                     targetValue = 0f,
+                    animationSpec = tween(DURATION_MILLIS)
                 )
-
             }
         }
 }
 
-private object ModifierDefaults {
+object ModifierDefaults {
     const val TARGET = -500f
-    const val DURATION_MILLIS = 900
+    const val DURATION_MILLIS = 700
 }

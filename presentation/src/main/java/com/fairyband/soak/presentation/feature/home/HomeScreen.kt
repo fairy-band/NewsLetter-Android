@@ -190,6 +190,7 @@ private fun HomeScreen(
         0.dp
     }
     val navController = LocalNavController.current
+    var onCardHidden by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -289,6 +290,7 @@ private fun HomeScreen(
                         },
                         modifier = Modifier.fillMaxWidth(0.5f),
                         dialogVisible = cardIndex != null,
+                        onCardHidden = { onCardHidden = true }
                     )
                 }
             } else {
@@ -310,7 +312,6 @@ private fun HomeScreen(
                             },
                     )
                     Cards(
-                        dialogVisible = cardIndex != null,
                         news = news,
                         onClick = { index ->
                             cardIndex = index
@@ -319,6 +320,8 @@ private fun HomeScreen(
                         onCardsHeight = { height ->
                             cardsHeight = height.dp
                         },
+                        dialogVisible = cardIndex != null,
+                        onCardHidden = { onCardHidden = true }
                     )
                 }
             }
@@ -328,9 +331,11 @@ private fun HomeScreen(
 
     PopUpDialog(
         visibility = cardIndex != null,
+        backgroundVisibility = onCardHidden,
         onDismissRequest = {
             cardIndex = null
             onDismissRequest()
+            onCardHidden = false
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
@@ -396,7 +401,8 @@ private fun Cards(
     onClick: (Int) -> Unit,
     colorType: String,
     onCardsHeight: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCardHidden: () -> Unit
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
@@ -480,6 +486,7 @@ private fun Cards(
                 onHeightInflated = { height -> cardHeights[index] = height },
                 onClick = { onClick(index) },
                 onPromoteToFront = { frontMostIndex = index },
+                onCardHidden = onCardHidden,
             )
         }
     }
@@ -503,6 +510,7 @@ private fun Card(
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
     onPromoteToFront: () -> Unit,
+    onCardHidden: () -> Unit,
 ) {
     val density = LocalDensity.current
     var lineCount by remember { mutableIntStateOf(2) }
@@ -514,6 +522,7 @@ private fun Card(
                 onClick = onClick,
                 dialogVisible = dialogVisible,
                 onPromoteToFront = onPromoteToFront,
+                onCardHidden = onCardHidden
             )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))
