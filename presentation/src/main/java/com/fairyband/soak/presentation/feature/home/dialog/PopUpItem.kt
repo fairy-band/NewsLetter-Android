@@ -42,7 +42,8 @@ import com.fairyband.soak.presentation.model.NewsFeed
 internal fun PopUpItem(
     newsFeed: NewsFeed,
     titleColor: Color,
-    onClick: () -> Unit,
+    onWebClick: () -> Unit,
+    onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -104,7 +105,7 @@ internal fun PopUpItem(
             BaseButton(
                 modifier = Modifier.size(44.dp),
                 paddingVertical = 12.dp,
-                onClick = onClick,
+                onClick = onShareClick,
                 shape = CircleShape,
                 borderWidth = 1.dp,
                 borderColor = SoakTheme.colors.borderSecondary
@@ -116,7 +117,7 @@ internal fun PopUpItem(
             }
             BaseButton(
                 paddingVertical = 12.dp,
-                onClick = onClick,
+                onClick = onWebClick,
                 shape = CircleShape,
                 borderWidth = 1.dp,
                 borderColor = SoakTheme.colors.borderSecondary
@@ -144,7 +145,8 @@ private fun PopUpItemPreview() {
                 url = ""
             ),
             titleColor = SoakTheme.colors.statePositivePrimary,
-            onClick = {},
+            onWebClick = {},
+            onShareClick = {}
         )
     }
 }

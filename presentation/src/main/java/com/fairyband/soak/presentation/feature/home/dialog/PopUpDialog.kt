@@ -140,10 +140,13 @@ internal fun PopUpDialog(
                             url = item.url
                         ),
                         titleColor = titleColors[pageIndex],
-                        onClick = {
+                        onWebClick = {
                             navController.navigate(Screen.WebView(url = item.url))
                             webClickEvent(id = item.id, page = pageIndex.toLong())
                         },
+                        onShareClick = {
+
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
