@@ -446,7 +446,7 @@ private fun Cards(
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
 
     var start by remember { mutableIntStateOf(0) }
-    val mapFeedIndex = { index: Int -> (index + start) % news.size }
+    val mapFeedIndex = { index: Int -> (index - start + news.size) % news.size }
 
     val density = LocalDensity.current
     val stepDp = 106.dp
@@ -515,9 +515,9 @@ private fun Cards(
                     .zIndex(5f - index)
                     .offset(y = (166 - cardOffsets[index]).dp)
                     .offset(y = animationList[index].value.dp)
-                    .padding(horizontal = (feedIndex * 16).dp),
-                feed = news[index],
-                cardColor = cardColors[index],
+                    .padding(horizontal = (index * 16).dp),
+                feed = news[feedIndex],
+                cardColor = cardColors[feedIndex],
                 topPadding = topPaddings[index],
                 bottomPadding = bottomPaddings[index],
                 textStyle = textStyles[index],
