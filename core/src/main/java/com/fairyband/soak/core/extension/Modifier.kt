@@ -5,6 +5,9 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -16,10 +19,14 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.extension.BounceClickDefaults.CARD_HEIGHT
+import com.fairyband.soak.core.extension.BounceClickDefaults.CARD_WIDTH_RATIO
+import com.fairyband.soak.core.extension.BounceClickDefaults.INDICATOR_HEIGHT
+import com.fairyband.soak.core.extension.BounceClickDefaults.MARGIN_CARD_TO_INDICATOR
 import com.fairyband.soak.core.extension.ModifierDefaults.DURATION_MILLIS
 import com.fairyband.soak.core.extension.ModifierDefaults.TARGET
 import kotlinx.coroutines.coroutineScope
@@ -33,18 +40,41 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
     }
 }
 
+private object BounceClickDefaults {
+    const val CARD_WIDTH_RATIO = 0.8f
+    val CARD_HEIGHT = 369.dp
+    val MARGIN_CARD_TO_INDICATOR = 16.dp
+    val INDICATOR_HEIGHT = 8.dp
+}
+
+
 fun Modifier.bounceClick(
-    offset: Dp,
-    dialogPosition: Dp = 232.dp,
-    dialogHeight: Dp = 369.dp,
-    dialogWidth: Dp = 314.dp,
     dialogVisible: Boolean,
     onClick: () -> Unit,
     onPromoteToFront: () -> Unit,
     onCardHidden: () -> Unit,
 ): Modifier = composed {
+    val configuration = LocalConfiguration.current
     val context = LocalContext.current
     val density = LocalDensity.current
+
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
+
+    val cardWidth = screenWidth * CARD_WIDTH_RATIO
+
+    val screenHeightPx = with(density) { screenHeight.toPx() }
+
+    val topInsetPx = WindowInsets.statusBars.getTop(density)
+    val bottomInsetPx = WindowInsets.navigationBars.getBottom(density)
+
+    val groupHeightPx = with(density) {
+        (CARD_HEIGHT + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
+    }
+    val usableHeightPx = screenHeightPx - (topInsetPx + bottomInsetPx)
+    val expectedTopPx = topInsetPx + (usableHeightPx - groupHeightPx) / 2f
+    val expectedTopDp = with(density) { expectedTopPx.toDp() }
+
     val vibrator = context.vibrator
     val scope = rememberCoroutineScope()
 
@@ -119,32 +149,28 @@ fun Modifier.bounceClick(
                 // 2. 카드 Z 위치 제일 앞으로 보내는 동작
                 onPromoteToFront()
 
-                val extraPadding = with(density) { offset.toPx() }
-
-                val targetY = with(density) { dialogPosition.toPx() } - cardPosition
-                val targetW = with(density) { dialogWidth.toPx() }
-                val targetH = with(density) { dialogHeight.toPx() }
-
-                val targetScaleX = targetW / measuredWidth
-                val targetScaleY = targetH / measuredHeight
+                val targetTopPx = with(density) { expectedTopDp.toPx() }
+                val targetCenterPx = targetTopPx + with(density) { CARD_HEIGHT.toPx() } / 2f
+                val currentCenterPx = cardPosition + (measuredHeight / 2f)
+                val deltaY = targetCenterPx - currentCenterPx
 
                 // 3. 지정된 크기로 맞춰지는 동작
                 coroutineScope {
                     launch {
                         translationYAnim.animateTo(
-                            targetValue = targetY + extraPadding,
+                            targetValue = deltaY,
                             animationSpec = tween(DURATION_MILLIS)
                         )
                     }
                     launch {
                         scaleXAnim.animateTo(
-                            targetValue = targetScaleX,
+                            targetValue = with(density) { cardWidth.toPx() } / measuredWidth,
                             animationSpec = tween(DURATION_MILLIS)
                         )
                     }
                     launch {
                         scaleYAnim.animateTo(
-                            targetValue = targetScaleY,
+                            targetValue = with(density) { CARD_HEIGHT.toPx() } / measuredHeight,
                             animationSpec = tween(DURATION_MILLIS)
                         )
                     }
