@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.home.dialog
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -92,17 +97,35 @@ internal fun PopUpItem(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(16.dp))
-        BaseButton(
-            paddingVertical = 12.dp,
-            onClick = onClick,
-            shape = CircleShape,
-            borderWidth = 1.dp,
-            borderColor = SoakTheme.colors.borderSecondary
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = stringResource(id = R.string.home_popup_button_text),
-                style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
-            )
+            BaseButton(
+                modifier = Modifier.size(44.dp),
+                paddingVertical = 12.dp,
+                onClick = onClick,
+                shape = CircleShape,
+                borderWidth = 1.dp,
+                borderColor = SoakTheme.colors.borderSecondary
+            ) {
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_share),
+                    contentDescription = "share image",
+                )
+            }
+            BaseButton(
+                paddingVertical = 12.dp,
+                onClick = onClick,
+                shape = CircleShape,
+                borderWidth = 1.dp,
+                borderColor = SoakTheme.colors.borderSecondary
+            ) {
+                Text(
+                    text = stringResource(id = R.string.home_popup_button_text),
+                    style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+                )
+            }
         }
     }
 }
