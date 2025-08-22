@@ -4,6 +4,9 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +44,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -441,6 +446,32 @@ private fun Cards(
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
 
+    var start by remember { mutableIntStateOf(0) }
+    val mapFeedIndex = { index: Int -> (index + start) % news.size }
+
+    val density = LocalDensity.current
+    val stepDp = 106.dp
+    val stepPx = with(density) { stepDp.toPx() }
+
+    var scrollAccum by remember { mutableFloatStateOf(0f) }
+    val scrollState = rememberScrollableState { delta ->
+        scrollAccum += delta
+
+        delta
+    }
+
+    LaunchedEffect(scrollAccum) {
+        if (news.isEmpty()) return@LaunchedEffect
+
+        if (scrollAccum > stepPx) {
+            start = (start + 1) % news.size
+        }
+
+        if (scrollAccum < stepPx) {
+            start = (start - 1 + news.size) % news.size
+        }
+    }
+
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
@@ -468,13 +499,18 @@ private fun Cards(
     }
 
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
         // 항상 6
         repeat(news.size) { index ->
+            val feedIndex = mapFeedIndex(index)
+
             Card(
                 modifier = Modifier
+                    .graphicsLayer { translationY = scrollAccum }
                     .zIndex(5f - index)
                     .offset(y = (166 - cardOffsets[index]).dp)
                     .offset(y = animationList[index].value.dp)
@@ -516,7 +552,7 @@ private fun Card(
         modifier = modifier
             .bounceClick(onClick = onClick)
             .height(166.dp)
-            .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
     ) {
         val columnModifier = if (visibleHeight == null) {
