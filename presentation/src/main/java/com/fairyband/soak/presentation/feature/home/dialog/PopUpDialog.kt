@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -30,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.ModifierDefaults.DURATION_MILLIS
@@ -48,7 +48,7 @@ import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-object PopUpDialogDefaults {
+internal object PopUpDialogDefaults {
     const val SUMMARY_MAX_LINE = 8
     const val TITLE_MAX_LINE = 2
     const val CARD_WIDTH_RATIO = 0.8f
@@ -120,48 +120,53 @@ internal fun PopUpDialog(
                     }
             }
 
-            Column(
+            Box(
                 modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.weight(217f))
-                HorizontalPager(
-                    state = pagerState,
-                    pageSize = PageSize.Fixed(pageSize),
-                    pageSpacing = 12.dp,
-                    contentPadding = PaddingValues(horizontal = horizontalPadding),
-                    key = { cardItems[it].id },
-                ) { pageIndex ->
-                    val item = cardItems[pageIndex]
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    HorizontalPager(
+                        state = pagerState,
+                        pageSize = PageSize.Fixed(pageSize),
+                        pageSpacing = 12.dp,
+                        contentPadding = PaddingValues(horizontal = horizontalPadding),
+                        key = { cardItems[it].id },
+                    ) { pageIndex ->
+                        val item = cardItems[pageIndex]
 
-                    PopUpItem(
-                        newsFeed = NewsFeed(
-                            id = item.id,
-                            title = item.title,
-                            keyword = item.keyword,
-                            letter = item.letter,
-                            summary = item.summary,
-                            url = item.url
-                        ),
-                        titleColor = titleColors[pageIndex],
-                        onClick = {
-                            navController.navigate(Screen.WebView(url = item.url))
-                            webClickEvent(id = item.id, page = pageIndex.toLong())
-                        },
+                        PopUpItem(
+                            newsFeed = NewsFeed(
+                                id = item.id,
+                                title = item.title,
+                                keyword = item.keyword,
+                                letter = item.letter,
+                                summary = item.summary,
+                                url = item.url
+                            ),
+                            titleColor = titleColors[pageIndex],
+                            onClick = {
+                                navController.navigate(Screen.WebView(url = item.url))
+                                webClickEvent(id = item.id, page = pageIndex.toLong())
+                            },
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Indicator(
+                        pageCount = cardItems.size,
+                        pageIndex = pagerState.currentPage
                     )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Indicator(
-                    pageCount = cardItems.size,
-                    pageIndex = pagerState.currentPage
-                )
-                Spacer(modifier = Modifier.height(49.dp))
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
                     contentDescription = "pop up dismiss button",
-                    modifier = Modifier.noRippleClickable(onClick = onDismissRequest)
+                    modifier = Modifier
+                        .noRippleClickable(onClick = onDismissRequest)
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 124.dp)
                 )
-                Spacer(modifier = Modifier.weight(124f))
             }
         }
     }
