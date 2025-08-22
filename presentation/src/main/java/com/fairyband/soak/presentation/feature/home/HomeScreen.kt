@@ -1,5 +1,7 @@
 package com.fairyband.soak.presentation.feature.home
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -83,6 +85,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.Duration
 import java.time.LocalDate
@@ -461,6 +464,26 @@ private fun Cards(
         if (!dialogVisible) frontMostIndex = -1
     }
 
+    val animationList = remember(news) {
+        news.map { Animatable(initialValue = 0f) }
+    }
+
+    LaunchedEffect(news) {
+        animationList.forEachIndexed { index, animatable ->
+            delay(40L * index)
+            launch {
+                animatable.animateTo(
+                    targetValue = -4f,
+                    animationSpec = tween(durationMillis = 100)
+                )
+                animatable.animateTo(
+                    targetValue = 0f,
+                    animationSpec = tween(durationMillis = 100)
+                )
+            }
+        }
+    }
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.BottomCenter
@@ -475,6 +498,7 @@ private fun Cards(
                 modifier = Modifier
                     .zIndex(currentZ)
                     .offset(y = CARD_HEIGHT - cardOffsets[index].dp)
+                    .offset(y = animationList[index].value.dp)
                     .padding(horizontal = horizontalPaddings[index]),
                 feed = news[index],
                 cardColor = cardColors[index],
