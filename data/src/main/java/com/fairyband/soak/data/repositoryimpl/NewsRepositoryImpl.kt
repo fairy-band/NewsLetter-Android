@@ -20,7 +20,6 @@ class NewsRepositoryImpl(
     private val newsLetterDataSource: NewsLetterDataSource,
     private val authDataSource: AuthDataSource,
 ) : NewsRepository {
-    // 선호 직군 선택 등 뉴스 알고리즘이 변경되었을 때 뉴스 목록을 새로고침해요.
     private val refreshFlow = MutableSharedFlow<Unit>()
 
     // 매일 자정에 뉴스를 새로고침해요.
