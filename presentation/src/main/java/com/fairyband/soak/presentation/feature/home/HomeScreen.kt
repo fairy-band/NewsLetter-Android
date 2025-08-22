@@ -291,6 +291,8 @@ private fun HomeScreen(
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
+                            if (cardsHeight > 0.dp) return@Cards
+
                             cardsHeight = height.dp
                         },
                         modifier = Modifier.fillMaxWidth(0.5f)
@@ -321,6 +323,8 @@ private fun HomeScreen(
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
+                            if (cardsHeight > 0.dp) return@Cards
+
                             cardsHeight = height.dp
                         },
                     )
