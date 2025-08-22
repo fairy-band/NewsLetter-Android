@@ -2,7 +2,6 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fairyband.soak.data.repository.AuthRepository
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.fairyband.soak.data.repository.UserRepository
@@ -23,9 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -36,7 +33,6 @@ import timber.log.Timber
 @KoinViewModel
 class HomeViewModel(
     private val newsRepository: NewsRepository,
-    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
