@@ -60,7 +60,7 @@ class HomeViewModel(
         )
 
     val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
-        .getNews()
+        .news
         .map {
             it.map { response ->
                 response.toNewsFeed()

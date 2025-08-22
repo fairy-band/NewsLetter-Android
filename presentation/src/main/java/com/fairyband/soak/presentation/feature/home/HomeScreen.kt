@@ -596,7 +596,6 @@ private object HomeDefaults {
 private fun HomeScreenPreview() {
     SoakTheme {
         HomeScreen(
-            fetchNews = {},
             onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
