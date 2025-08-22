@@ -7,7 +7,7 @@ import com.fairyband.soak.data.model.response.NewsResponse
 import com.fairyband.soak.data.repository.NewsRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -21,7 +21,7 @@ class NewsRepositoryImpl(
     private val authDataSource: AuthDataSource,
 ) : NewsRepository {
     // 선호 직군 선택 등 뉴스 알고리즘이 변경되었을 때 뉴스 목록을 새로고침해요.
-    private val refreshFlow = MutableStateFlow(Unit)
+    private val refreshFlow = MutableSharedFlow<Unit>()
 
     // 매일 자정에 뉴스를 새로고침해요.
     private val dayFlow = flow {
