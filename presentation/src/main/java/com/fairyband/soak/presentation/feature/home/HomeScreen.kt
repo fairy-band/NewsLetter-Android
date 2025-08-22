@@ -448,7 +448,7 @@ private fun Cards(
     }
 
     val animationList = remember(news) {
-        news.map { Animatable(initialValue = 1f) }
+        news.map { Animatable(initialValue = 0f) }
     }
 
     LaunchedEffect(news) {
@@ -460,7 +460,7 @@ private fun Cards(
                     animationSpec = tween(durationMillis = 100)
                 )
                 animatable.animateTo(
-                    targetValue = 1f,
+                    targetValue = 0f,
                     animationSpec = tween(durationMillis = 100)
                 )
             }
