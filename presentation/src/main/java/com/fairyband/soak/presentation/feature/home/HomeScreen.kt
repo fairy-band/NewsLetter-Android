@@ -81,6 +81,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -173,6 +174,7 @@ fun HomeScreen(
         news = news,
         colorType = colorType,
         isWide = isWide,
+        fetchNews = viewModel::fetchNews
     )
 }
 
@@ -182,6 +184,7 @@ private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
     colorType: String,
     isWide: Boolean,
+    fetchNews: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
@@ -258,7 +261,7 @@ private fun HomeScreen(
                 ),
                 color = SoakTheme.colors.textStrong,
             )
-            Timer()
+            Timer(fetchNews = fetchNews)
             Spacer(modifier = Modifier.weight(1f))
 
             if (isWide) {
@@ -338,7 +341,8 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun Timer() {
+private fun Timer(fetchNews: () -> Unit) {
+    var currentDay by rememberSaveable { mutableIntStateOf(LocalDate.now().dayOfMonth) }
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()
@@ -348,10 +352,18 @@ private fun Timer() {
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
             val seconds = duration.seconds % 60
+
+            currentDay = now.dayOfMonth
             emit(Triple(first = hours, second = minutes, third = seconds % 60))
+
             delay(200)
         }
     }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
+
+    // 00:00:00 에 새로고침한다.
+    LaunchedEffect(currentDay) {
+        fetchNews()
+    }
 
     Row(
         modifier = Modifier.padding(top = 8.dp),
@@ -593,6 +605,7 @@ private object HomeDefaults {
 private fun HomeScreenPreview() {
     SoakTheme {
         HomeScreen(
+            fetchNews = {},
             onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
