@@ -453,6 +453,7 @@ private fun Cards(
     val stepPx = with(density) { stepDp.toPx() }
 
     var scrollAccum by remember { mutableFloatStateOf(0f) }
+    var progress by remember { mutableFloatStateOf(0f) }
     val scrollState = rememberScrollableState { delta ->
         scrollAccum += delta
 
@@ -471,6 +472,8 @@ private fun Cards(
             start = (start + 1) % news.size
             scrollAccum += stepPx
         }
+
+        progress = scrollAccum / stepPx
     }
 
     LaunchedEffect(cardOffsets) {
@@ -515,7 +518,7 @@ private fun Cards(
                     .zIndex(5f - index)
                     .offset(y = (166 - cardOffsets[index]).dp)
                     .offset(y = animationList[index].value.dp)
-                    .padding(horizontal = (index * 16).dp),
+                    .padding(horizontal = ((index - progress).coerceAtLeast(0f) * 16).dp),
                 feed = news[feedIndex],
                 cardColor = cardColors[feedIndex],
                 topPadding = topPaddings[index],
