@@ -403,7 +403,6 @@ private fun Cards(
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
-    val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
     val keywordVisibilities = listOf(true, true, true, false, false, false)
     val textStyles = listOf(
         SoakTheme.typography.body18.copy(
@@ -464,11 +463,13 @@ private fun Cards(
         if (news.isEmpty()) return@LaunchedEffect
 
         if (scrollAccum > stepPx) {
-            start = (start + 1) % news.size
+            start = (start - 1 + news.size) % news.size
+            scrollAccum -= stepPx
         }
 
-        if (scrollAccum < stepPx) {
-            start = (start - 1 + news.size) % news.size
+        if (scrollAccum < -stepPx) {
+            start = (start + 1) % news.size
+            scrollAccum += stepPx
         }
     }
 
@@ -514,7 +515,7 @@ private fun Cards(
                     .zIndex(5f - index)
                     .offset(y = (166 - cardOffsets[index]).dp)
                     .offset(y = animationList[index].value.dp)
-                    .padding(horizontal = horizontalPaddings[index]),
+                    .padding(horizontal = (feedIndex * 16).dp),
                 feed = news[index],
                 cardColor = cardColors[index],
                 topPadding = topPaddings[index],
