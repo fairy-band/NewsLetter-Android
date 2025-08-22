@@ -34,7 +34,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
-import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
 import com.fairyband.soak.presentation.feature.home.getCardTitleColors
@@ -56,6 +55,8 @@ internal object PopUpDialogDefaults {
 internal fun PopUpDialog(
     visibility: Boolean,
     onDismissRequest: () -> Unit,
+    onWebClick: (NewsFeed, Int) -> Unit,
+    onShareClick: () -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
     colorType: String,
@@ -72,8 +73,6 @@ internal fun PopUpDialog(
 
     val pageSize = screenWidth * CARD_WIDTH_RATIO
     val horizontalPadding = (screenWidth - pageSize) / 2
-
-    val navController = LocalNavController.current
 
     Box {
         AnimatedVisibility(
@@ -140,13 +139,8 @@ internal fun PopUpDialog(
                             url = item.url
                         ),
                         titleColor = titleColors[pageIndex],
-                        onWebClick = {
-                            navController.navigate(Screen.WebView(url = item.url))
-                            webClickEvent(id = item.id, page = pageIndex.toLong())
-                        },
-                        onShareClick = {
-
-                        }
+                        onWebClick = { onWebClick(item, pageIndex) },
+                        onShareClick = onShareClick
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -188,16 +182,5 @@ private fun Indicator(
                     )
             )
         }
-    }
-}
-
-private fun webClickEvent(id: String, page: Long) {
-    // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
-    Firebase.analytics.logEvent("click") {
-        param("navigation", Screen.NewsLetterCarousel.name)
-        param("object_section", "newsletter_card")
-        param("object_type", "button")
-        param("object_id", id)
-        param("card_index", page)
     }
 }
