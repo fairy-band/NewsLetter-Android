@@ -494,7 +494,6 @@ private fun Cards(
 
             Card(
                 dialogVisible = dialogVisible,
-                offset = (topPaddings[index] + bottomPaddings[index] + 20.dp),
                 modifier = Modifier
                     .zIndex(currentZ)
                     .offset(y = CARD_HEIGHT - cardOffsets[index].dp)
@@ -522,7 +521,6 @@ private fun Cards(
 @Composable
 private fun Card(
     dialogVisible: Boolean,
-    offset: Dp,
     feed: NewsFeed,
     topPadding: Dp,
     bottomPadding: Dp,
@@ -542,7 +540,6 @@ private fun Card(
     Box(
         modifier = modifier
             .bounceClick(
-                offset = offset,
                 onClick = onClick,
                 dialogVisible = dialogVisible,
                 onPromoteToFront = onPromoteToFront,
