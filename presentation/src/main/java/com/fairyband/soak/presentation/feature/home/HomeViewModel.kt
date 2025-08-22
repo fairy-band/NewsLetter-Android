@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,7 +32,7 @@ import timber.log.Timber
 
 @KoinViewModel
 class HomeViewModel(
-    private val newsRepository: NewsRepository,
+    newsRepository: NewsRepository,
     private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     remoteConfigRepository: RemoteConfigRepository,
@@ -59,8 +59,18 @@ class HomeViewModel(
             false
         )
 
-    private val _news = MutableStateFlow<ImmutableList<NewsFeed>>(persistentListOf())
-    val news = _news.asStateFlow()
+    val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
+        .getNews()
+        .map {
+            it.map { response ->
+                response.toNewsFeed()
+            }.toImmutableList()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            persistentListOf()
+        )
 
     val cardColorType: StateFlow<String> = remoteConfigRepository
         .getCardColorType()
@@ -71,19 +81,8 @@ class HomeViewModel(
         )
 
     init {
-        fetchNews()
         visitApp()
         observeBottomSheetTrigger()
-    }
-
-    fun fetchNews() {
-        newsRepository.getNews()
-            .onEach { response ->
-                _news.update {
-                    response.map { it.toNewsFeed() }.toImmutableList()
-                }
-            }
-            .launchIn(viewModelScope)
     }
 
     private fun observeBottomSheetTrigger() {

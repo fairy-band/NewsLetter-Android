@@ -174,7 +174,6 @@ fun HomeScreen(
         news = news,
         colorType = colorType,
         isWide = isWide,
-        fetchNews = viewModel::fetchNews
     )
 }
 
@@ -184,7 +183,6 @@ private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
     colorType: String,
     isWide: Boolean,
-    fetchNews: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
@@ -261,7 +259,7 @@ private fun HomeScreen(
                 ),
                 color = SoakTheme.colors.textStrong,
             )
-            Timer(fetchNews = fetchNews)
+            Timer()
             Spacer(modifier = Modifier.weight(1f))
 
             if (isWide) {
@@ -341,8 +339,7 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun Timer(fetchNews: () -> Unit) {
-    var currentDay by rememberSaveable { mutableIntStateOf(LocalDate.now().dayOfMonth) }
+private fun Timer() {
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()
@@ -353,17 +350,11 @@ private fun Timer(fetchNews: () -> Unit) {
             val minutes = duration.toMinutes() % 60
             val seconds = duration.seconds % 60
 
-            currentDay = now.dayOfMonth
             emit(Triple(first = hours, second = minutes, third = seconds % 60))
 
             delay(200)
         }
     }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
-
-    // 00:00:00 에 새로고침한다.
-    LaunchedEffect(currentDay) {
-        fetchNews()
-    }
 
     Row(
         modifier = Modifier.padding(top = 8.dp),
