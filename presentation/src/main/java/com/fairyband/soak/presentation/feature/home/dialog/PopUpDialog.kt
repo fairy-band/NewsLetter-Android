@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.ModifierDefaults.DURATION_MILLIS
@@ -47,10 +48,11 @@ import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-internal object PopUpDialogDefaults {
+object PopUpDialogDefaults {
     const val SUMMARY_MAX_LINE = 8
     const val TITLE_MAX_LINE = 2
     const val CARD_WIDTH_RATIO = 0.8f
+    val CARD_HEIGHT = 369.dp
 }
 
 @Composable
@@ -79,7 +81,7 @@ internal fun PopUpDialog(
 
     Box {
         AnimatedVisibility(
-            visible = backgroundVisibility,
+            visible = backgroundVisibility || visibility,
             enter = fadeIn(animationSpec = tween(500, DURATION_MILLIS - 500)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
