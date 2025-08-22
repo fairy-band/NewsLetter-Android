@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.fairyband.soak.presentation.model.NewsFeed
@@ -52,6 +53,7 @@ internal fun PopUpItem(
                 shape = RoundedCornerShape(16.dp),
             )
             .fillMaxWidth()
+            .height(CARD_HEIGHT)
             .padding(24.dp),
     ) {
         var titleLineCount by remember { mutableIntStateOf(1) }
