@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.home
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -188,6 +189,7 @@ private fun HomeScreen(
         0.dp
     }
     val navController = LocalNavController.current
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -327,6 +329,17 @@ private fun HomeScreen(
         onDismissRequest = {
             cardIndex = null
             onDismissRequest()
+        },
+        onWebClick = { item, pageIndex ->
+            navController.navigate(Screen.WebView(url = item.url))
+            webClickEvent(id = item.id, page = pageIndex.toLong())
+        },
+        onShareClick = { url ->
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "쏙 뉴스레터 보러가기 \n $url")
+            }
+            context.startActivity(Intent.createChooser(intent, "공유하기"))
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
@@ -555,6 +568,17 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
         param("object_type", "button")
         param("job_group", jobGroup.joinToString(separator = ","))
         param("career_level", careerLevel)
+    }
+}
+
+private fun webClickEvent(id: String, page: Long) {
+    // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
+    Firebase.analytics.logEvent("click") {
+        param("navigation", Screen.NewsLetterCarousel.name)
+        param("object_section", "newsletter_card")
+        param("object_type", "button")
+        param("object_id", id)
+        param("card_index", page)
     }
 }
 
