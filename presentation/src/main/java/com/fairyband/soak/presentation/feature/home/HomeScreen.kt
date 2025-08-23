@@ -83,6 +83,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -357,7 +358,9 @@ private fun Timer() {
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
             val seconds = duration.seconds % 60
+
             emit(Triple(first = hours, second = minutes, third = seconds % 60))
+
             delay(200)
         }
     }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
