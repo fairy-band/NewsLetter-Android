@@ -543,11 +543,11 @@ private fun Card(
                 onClick = onClick,
                 dialogVisible = dialogVisible,
                 onPromoteToFront = onPromoteToFront,
-                onCardHidden = onCardHidden
+                onCardHidden = onCardHidden,
             )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))
-            .background(color = cardColor),
+            .background(color = cardColor)
     ) {
         val columnModifier = if (visibleHeight == null) {
             Modifier

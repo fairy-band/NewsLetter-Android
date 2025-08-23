@@ -5,9 +5,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -65,14 +62,24 @@ fun Modifier.bounceClick(
 
     val screenHeightPx = with(density) { screenHeight.toPx() }
 
-    val topInsetPx = WindowInsets.statusBars.getTop(density)
-    val bottomInsetPx = WindowInsets.navigationBars.getBottom(density)
+    val resourceNavigationId =
+        context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+    var navigationbarHeight = 0
+    if (resourceNavigationId > 0) navigationbarHeight =
+        context.resources.getDimensionPixelSize(resourceNavigationId)
+
+    var statusbarHeight = 0
+    val resourceStatusId: Int =
+        context.resources.getIdentifier("status_bar_height", "dimen", "android")
+    if (resourceStatusId > 0) statusbarHeight =
+        context.resources.getDimensionPixelSize(resourceStatusId)
 
     val groupHeightPx = with(density) {
         (CARD_HEIGHT + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
     }
-    val usableHeightPx = screenHeightPx - (topInsetPx + bottomInsetPx)
-    val expectedTopPx = topInsetPx + (usableHeightPx - groupHeightPx) / 2f
+    val usableHeightPx = screenHeightPx - (statusbarHeight + navigationbarHeight)
+    val expectedTopPx =
+        statusbarHeight + navigationbarHeight + (usableHeightPx - groupHeightPx) / 2f
     val expectedTopDp = with(density) { expectedTopPx.toDp() }
 
     val vibrator = context.vibrator
