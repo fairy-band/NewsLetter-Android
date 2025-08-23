@@ -544,23 +544,44 @@ private fun Cards(
             )
         }
 
+        val lastIndex = news.size - 1
+
+        // todo: 아래로 스와이프할 때 마지막 인덱스에 하나 추가
+        if (progress > 0) {
+            Card(
+                modifier = Modifier
+                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] }
+                    .zIndex(-1f)
+                    .offset(y = (166 - cardOffsets[(lastIndex - 1).coerceAtLeast(0)]).dp)
+                    .padding(horizontal = ((lastIndex) * 16).dp),
+                feed = news[start],
+                cardColor = cardColors[start],
+                topPadding = topPaddings[start],
+                bottomPadding = bottomPaddings[start],
+                textStyle = textStyles[start],
+                showKeyword = keywordVisibilities[start],
+                visibleHeight = null,
+                onHeightInflated = { _ ->  },
+                onClick = { onClick(start) },
+            )
+        }
+
+        // todo: 위로 스와이프할 때 첫 번째 인덱스에 하나 추가
 //        if (progress < 0) {
 //            Card(
 //                modifier = Modifier
-//                    .graphicsLayer { translationY = scrollAccum }
-//                    .zIndex(5f - index)
-//                    .offset(y = (166 - cardOffsets[index]).dp)
-//                    .offset(y = animationList[index].value.dp)
-//                    .padding(horizontal = ((index - progress).coerceAtLeast(0f) * 16).dp),
-//                feed = news[feedIndex],
-//                cardColor = cardColors[feedIndex],
-//                topPadding = topPaddings[index],
-//                bottomPadding = bottomPaddings[index],
-//                textStyle = textStyles[index],
-//                showKeyword = keywordVisibilities[index],
-//                visibleHeight = if (index < 3) 106 else null,
-//                onHeightInflated = { height -> cardHeights[index] = height },
-//                onClick = { onClick(index) },
+//                    .graphicsLayer { translationY = progress * cardHeights[0] }
+//                    .zIndex(6f)
+//                    .offset(y = 0.dp),
+//                feed = news[lastIndex],
+//                cardColor = cardColors[lastIndex],
+//                topPadding = topPaddings[start],
+//                bottomPadding = bottomPaddings[start],
+//                textStyle = textStyles[start],
+//                showKeyword = keywordVisibilities[start],
+//                visibleHeight = null,
+//                onHeightInflated = { _ ->  },
+//                onClick = { onClick(start) },
 //            )
 //        }
     }
