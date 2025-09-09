@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.home
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -60,7 +61,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
-import com.fairyband.soak.core.extension.findActivity
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
@@ -156,7 +156,7 @@ fun HomeScreen(
         )
     }
 
-    val activity = LocalContext.current.findActivity()
+    val activity = LocalActivity.current
     var isWide = true
 
     if (activity != null) {

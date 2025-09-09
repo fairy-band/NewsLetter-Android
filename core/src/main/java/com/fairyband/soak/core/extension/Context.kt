@@ -1,8 +1,6 @@
 package com.fairyband.soak.core.extension
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
 import android.os.Vibrator
@@ -15,12 +13,6 @@ val Context.vibrator: Vibrator
     } else {
         getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
-
-fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
 
 fun Context.openAppNotificationSettings() {
     val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
