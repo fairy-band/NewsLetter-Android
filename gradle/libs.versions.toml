@@ -46,6 +46,9 @@ timber = "5.0.1"
 
 window = "1.4.0"
 
+# kotest
+kotest = "6.0.3"
+
 [libraries]
 # core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -105,6 +108,11 @@ accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayo
 
 # logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+# kotest
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 [bundles]
 compose-ui = [
