@@ -60,10 +60,12 @@ internal fun NotificationBottomSheet(
     DisposableEffect(Unit) {
         val analytics = Firebase.analytics
 
+        // 알림 바텀시트 노출
         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, Screen.BottomSheetNotification.name)
         }
 
+        // 앱 메인 페이지 진입
         onDispose {
             analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, Screen.Home.name)
@@ -100,6 +102,11 @@ internal fun NotificationBottomSheet(
                 onClick = {
                     onDismissRequest()
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    // 알림받기 버튼 클릭
+                    Firebase.analytics.logEvent("click") {
+                        param("navigation", Screen.BottomSheetNotification.name)
+                        param("object_type", "button")
+                    }
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
