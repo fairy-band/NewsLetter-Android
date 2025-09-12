@@ -22,9 +22,7 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_PROPERTIES }}" > keystore.properties
           echo "base.url=${{ secrets.BASE_URL }}" > local.properties
-          cat << 'EOF' > app/google-services.json
-          ${{ secrets.GOOGLE_SERVICES_JSON }}
-          EOF
+          echo "${{ secrets.GOOGLE_SERVICES_BASE64 }}" | base64 -d > app/google-services.json
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
