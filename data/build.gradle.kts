@@ -24,13 +24,11 @@ android {
 
     buildTypes {
         defaultConfig {
-            buildConfigField("String", "BASE_URL", "\"${properties.getProperty("base.url")}\"")
-//
-//            buildConfigField(
-//                "String",
-//                "BASE_URL",
-//                properties.getProperty("base.url")
-//            )
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"${properties.getProperty("base.url")}\""
+            )
         }
         release {
             isMinifyEnabled = false
