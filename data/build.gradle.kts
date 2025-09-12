@@ -20,16 +20,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            properties.getProperty("base.url")
+        )
     }
 
     buildTypes {
-        defaultConfig {
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                properties.getProperty("base.url")
-            )
-        }
         release {
             isMinifyEnabled = false
             proguardFiles(
