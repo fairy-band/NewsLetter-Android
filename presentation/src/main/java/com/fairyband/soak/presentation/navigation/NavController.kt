@@ -42,7 +42,7 @@ fun rememberNavController(): NavController {
             .collect {
                 val screenName = (it as? Screen)?.name ?: "Unknown"
 
-                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                analytics.logEvent("page_view") {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
                     param("platform", "Android")
                     param("previous_screen", previousScreenName)

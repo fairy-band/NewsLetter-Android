@@ -61,13 +61,13 @@ internal fun NotificationBottomSheet(
         val analytics = Firebase.analytics
 
         // 알림 바텀시트 노출
-        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+        analytics.logEvent("page_view") {
             param(FirebaseAnalytics.Param.SCREEN_NAME, Screen.BottomSheetNotification.name)
         }
 
         // 앱 메인 페이지 진입
         onDispose {
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            analytics.logEvent("page_view") {
                 param(FirebaseAnalytics.Param.SCREEN_NAME, Screen.Home.name)
             }
         }

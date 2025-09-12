@@ -81,7 +81,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -123,7 +122,7 @@ fun HomeScreen(
                 val screenName = if (isHome) Screen.Home.name else Screen.BottomSheetCustom.name
 
                 // 앱 메인 페이지 진입 & 맞춤정보 바텀시트 노출
-                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                Firebase.analytics.logEvent("page_view") {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
                 }
             }
@@ -201,7 +200,7 @@ private fun HomeScreen(
                 val screenName = if (isHome) Screen.Home.name else Screen.NewsLetterCarousel.name
 
                 // 앱 메인 페이지 진입 & 뉴스레터 캐러셀 진입
-                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                Firebase.analytics.logEvent("page_view") {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
                 }
             }
