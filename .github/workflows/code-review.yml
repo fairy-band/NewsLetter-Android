@@ -20,3 +20,22 @@ jobs:
           LANGUAGE: Korean
           PROMPT: 코드에 잠재적인 문제가 있는지 혹은 더 좋은 방안이 있는지 확인해줘
           IGNORE_PATTERNS: /node_modules,*.md # Regex pattern to ignore files, separated by comma
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run unit tests
+        run: ./gradlew test
