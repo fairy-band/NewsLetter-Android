@@ -104,18 +104,22 @@ internal fun PopUpDialog(
             )
 
             LaunchedEffect(Unit) {
+                val loggedPages = mutableSetOf<Int>()
+
                 snapshotFlow { pagerState.currentPage }
                     .distinctUntilChanged()
                     .collect { page ->
-                        val item = cardItems[page]
+                        if (loggedPages.add(page)) {
+                            val item = cardItems[page]
 
-                        // 뉴스레터 캐러셀 카드 노출
-                        Firebase.analytics.logEvent("impression") {
-                            param("navigation", Screen.NewsLetterCarousel.name)
-                            param("object_section", "newsletter_card")
-                            param("object_type", "newsletter")
-                            param("object_id", item.id)
-                            param("card_index", page.toLong())
+                            // 뉴스레터 캐러셀 카드 노출
+                            Firebase.analytics.logEvent("impression") {
+                                param("navigation", Screen.NewsLetterCarousel.name)
+                                param("object_section", "newsletter_card")
+                                param("object_type", "newsletter")
+                                param("object_id", item.id)
+                                param("card_index", page.toLong())
+                            }
                         }
                     }
             }

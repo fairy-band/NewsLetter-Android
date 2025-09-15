@@ -27,7 +27,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                properties.getProperty("base.url")
+                "\"${properties.getProperty("base.url")}\""
             )
         }
         release {
