@@ -545,12 +545,13 @@ private fun Cards(
         }
 
         val lastIndex = news.size - 1
+        val density = LocalDensity.current.density
 
         // todo: 아래로 스와이프할 때 마지막 인덱스에 하나 추가
         if (progress > 0) {
             Card(
                 modifier = Modifier
-                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] }
+                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] * density }
                     .zIndex(-1f)
                     .offset(y = (166 - cardOffsets[(lastIndex - 1).coerceAtLeast(0)]).dp)
                     .padding(horizontal = ((lastIndex) * 16).dp),
