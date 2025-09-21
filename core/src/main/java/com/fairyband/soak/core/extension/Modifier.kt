@@ -44,7 +44,6 @@ private object BounceClickDefaults {
     val INDICATOR_HEIGHT = 8.dp
 }
 
-
 fun Modifier.bounceClick(
     dialogVisible: Boolean,
     onClick: () -> Unit,
