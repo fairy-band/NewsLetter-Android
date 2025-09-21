@@ -90,6 +90,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -468,17 +469,16 @@ private fun Cards(
         if (news.isEmpty()) return@LaunchedEffect
 
         if (scrollAccum > stepPx) {
-            start = (start - 1 + news.size) % news.size
+            start = (start + 1) % news.size
             scrollAccum -= stepPx
         }
 
         if (scrollAccum < -stepPx) {
-            start = (start + 1) % news.size
+            start = (start - 1 + news.size) % news.size
             scrollAccum += stepPx
         }
 
         progress = scrollAccum / stepPx
-        println("${progress}, $scrollAccum, $stepPx")
     }
 
     LaunchedEffect(cardOffsets) {
@@ -520,34 +520,34 @@ private fun Cards(
             Card(
                 modifier = Modifier
                     .graphicsLayer {
-                        if (progress < 0 && index == news.size - 1) {
-                            val dy = cardHeights[index].toFloat() * progress * density.density
+                        if (progress < 0 && feedIndex == news.size - 1) {
+                            val dy = cardHeights[feedIndex].toFloat() * progress * density.density
                             translationY = -dy
                         } else {
-                            val dy = cardHeights[(index + 1).coerceAtMost(news.size - 1)].toFloat() * progress * density.density
+                            val dy = cardHeights[(feedIndex + 1).coerceAtMost(news.size - 1)].toFloat() * progress * density.density
                             translationY = dy
                         }
                     }
-                    .zIndex(5f - index)
-                    .offset(y = (166 - cardOffsets[index]).dp)
-                    .offset(y = animationList[index].value.dp)
-                    .padding(horizontal = ((index - progress).coerceAtLeast(0f) * 16).dp),
-                feed = news[feedIndex],
-                cardColor = cardColors[feedIndex],
-                topPadding = topPaddings[index],
-                bottomPadding = bottomPaddings[index],
-                textStyle = textStyles[index],
-                showKeyword = keywordVisibilities[index],
-                visibleHeight = if (index < 3) 106 else null,
-                onHeightInflated = { height -> cardHeights[index] = height },
-                onClick = { onClick(index) },
+                    .zIndex(5f - feedIndex)
+                    .offset(y = (166 - cardOffsets[feedIndex]).dp)
+                    .offset(y = animationList[feedIndex].value.dp)
+                    .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
+                feed = news[index],
+                cardColor = cardColors[index],
+                topPadding = topPaddings[feedIndex],
+                bottomPadding = bottomPaddings[feedIndex],
+                textStyle = textStyles[feedIndex],
+                showKeyword = keywordVisibilities[feedIndex],
+                visibleHeight = if (feedIndex < 3) 106 else null,
+                onHeightInflated = { height -> cardHeights[feedIndex] = height },
+                onClick = { onClick(feedIndex) },
             )
         }
 
         val lastIndex = news.size - 1
         val density = LocalDensity.current.density
 
-        // todo: 아래로 스와이프할 때 마지막 인덱스에 하나 추가
+        // 아래로 스와이프할 때 가장 뒤쪽 카드가 서서히 올라와요.
         if (progress > 0) {
             Card(
                 modifier = Modifier
@@ -567,7 +567,7 @@ private fun Cards(
             )
         }
 
-        // todo: 위로 스와이프할 때 첫 번째 인덱스에 하나 추가
+        // todo: 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
 //        if (progress < 0) {
 //            Card(
 //                modifier = Modifier
