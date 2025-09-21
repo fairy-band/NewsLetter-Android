@@ -540,7 +540,7 @@ private fun Cards(
                 showKeyword = keywordVisibilities[feedIndex],
                 visibleHeight = if (feedIndex < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[feedIndex] = height },
-                onClick = { onClick(feedIndex) },
+                onClick = { onClick(index) },
             )
         }
 
@@ -557,10 +557,10 @@ private fun Cards(
                     .padding(horizontal = ((lastIndex) * 16).dp),
                 feed = news[start],
                 cardColor = cardColors[start],
-                topPadding = topPaddings[start],
-                bottomPadding = bottomPaddings[start],
-                textStyle = textStyles[start],
-                showKeyword = keywordVisibilities[start],
+                topPadding = topPaddings[lastIndex],
+                bottomPadding = bottomPaddings[lastIndex],
+                textStyle = textStyles[lastIndex],
+                showKeyword = keywordVisibilities[lastIndex],
                 visibleHeight = null,
                 onHeightInflated = { _ ->  },
                 onClick = { onClick(start) },
