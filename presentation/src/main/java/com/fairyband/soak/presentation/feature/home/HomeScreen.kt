@@ -567,24 +567,26 @@ private fun Cards(
             )
         }
 
-        // todo: 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
-//        if (progress < 0) {
-//            Card(
-//                modifier = Modifier
-//                    .graphicsLayer { translationY = progress * cardHeights[0] }
-//                    .zIndex(6f)
-//                    .offset(y = 0.dp),
-//                feed = news[lastIndex],
-//                cardColor = cardColors[lastIndex],
-//                topPadding = topPaddings[start],
-//                bottomPadding = bottomPaddings[start],
-//                textStyle = textStyles[start],
-//                showKeyword = keywordVisibilities[start],
-//                visibleHeight = null,
-//                onHeightInflated = { _ ->  },
-//                onClick = { onClick(start) },
-//            )
-//        }
+        // 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
+        // info: start - 1 은 마지막 index 이다.
+        if (news.isNotEmpty() && progress < 0) {
+            val risingIndex = (start - 1 + news.size) % news.size
+            Card(
+                modifier = Modifier
+                    .graphicsLayer { translationY = progress * cardHeights[0] * density }
+                    .zIndex(6f)
+                    .offset(y = 166.dp),
+                feed = news[risingIndex],
+                cardColor = cardColors[risingIndex],
+                topPadding = topPaddings[0],
+                bottomPadding = bottomPaddings[0],
+                textStyle = textStyles[0],
+                showKeyword = keywordVisibilities[0],
+                visibleHeight = 106,
+                onHeightInflated = { _ ->  },
+                onClick = { onClick(risingIndex) },
+            )
+        }
     }
 }
 
