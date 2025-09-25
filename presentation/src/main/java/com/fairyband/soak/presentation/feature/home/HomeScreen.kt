@@ -90,7 +90,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -543,12 +542,11 @@ private fun Cards(
                 onClick = { onClick(index) },
             )
         }
-
-        val lastIndex = news.size - 1
         val density = LocalDensity.current.density
 
         // 아래로 스와이프할 때 가장 뒤쪽 카드가 서서히 올라와요.
         if (progress > 0) {
+            val lastIndex = news.size - 1
             Card(
                 modifier = Modifier
                     .graphicsLayer { translationY = -progress * cardHeights[lastIndex] * density }
