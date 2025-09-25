@@ -5,6 +5,9 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +45,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -286,6 +291,8 @@ private fun HomeScreen(
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
+                            if (cardsHeight > 0.dp) return@Cards
+
                             cardsHeight = height.dp
                         },
                         modifier = Modifier.fillMaxWidth(0.5f)
@@ -316,6 +323,8 @@ private fun HomeScreen(
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
+                            if (cardsHeight > 0.dp) return@Cards
+
                             cardsHeight = height.dp
                         },
                     )
@@ -400,7 +409,6 @@ private fun Cards(
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
-    val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
     val keywordVisibilities = listOf(true, true, true, false, false, false)
     val textStyles = listOf(
         SoakTheme.typography.body18.copy(
@@ -443,6 +451,37 @@ private fun Cards(
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
 
+    var start by remember { mutableIntStateOf(0) }
+    val mapFeedIndex = { index: Int -> (index - start + news.size) % news.size }
+
+    val density = LocalDensity.current
+    val stepDp = 106.dp
+    val stepPx = with(density) { stepDp.toPx() }
+
+    var scrollAccum by remember { mutableFloatStateOf(0f) }
+    var progress by remember { mutableFloatStateOf(0f) }
+    val scrollState = rememberScrollableState { delta ->
+        scrollAccum += delta
+
+        delta
+    }
+
+    LaunchedEffect(scrollAccum) {
+        if (news.isEmpty()) return@LaunchedEffect
+
+        if (scrollAccum > stepPx) {
+            start = (start + 1) % news.size
+            scrollAccum -= stepPx
+        }
+
+        if (scrollAccum < -stepPx) {
+            start = (start - 1 + news.size) % news.size
+            scrollAccum += stepPx
+        }
+
+        progress = scrollAccum / stepPx
+    }
+
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
@@ -470,26 +509,82 @@ private fun Cards(
     }
 
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
         // 항상 6
         repeat(news.size) { index ->
+            val feedIndex = mapFeedIndex(index)
+
             Card(
                 modifier = Modifier
-                    .zIndex(5f - index)
-                    .offset(y = (166 - cardOffsets[index]).dp)
-                    .offset(y = animationList[index].value.dp)
-                    .padding(horizontal = horizontalPaddings[index]),
+                    .graphicsLayer {
+                        if (progress < 0 && feedIndex == news.size - 1) {
+                            val dy = cardHeights[feedIndex].toFloat() * progress * density.density
+                            translationY = -dy
+                        } else {
+                            val dy = cardHeights[(feedIndex + 1).coerceAtMost(news.size - 1)].toFloat() * progress * density.density
+                            translationY = dy
+                        }
+                    }
+                    .zIndex(5f - feedIndex)
+                    .offset(y = (166 - cardOffsets[feedIndex]).dp)
+                    .offset(y = animationList[feedIndex].value.dp)
+                    .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
                 feed = news[index],
                 cardColor = cardColors[index],
-                topPadding = topPaddings[index],
-                bottomPadding = bottomPaddings[index],
-                textStyle = textStyles[index],
-                showKeyword = keywordVisibilities[index],
-                visibleHeight = if (index < 3) 106 else null,
-                onHeightInflated = { height -> cardHeights[index] = height },
+                topPadding = topPaddings[feedIndex],
+                bottomPadding = bottomPaddings[feedIndex],
+                textStyle = textStyles[feedIndex],
+                showKeyword = keywordVisibilities[feedIndex],
+                visibleHeight = if (feedIndex < 3) 106 else null,
+                onHeightInflated = { height -> cardHeights[feedIndex] = height },
                 onClick = { onClick(index) },
+            )
+        }
+        val density = LocalDensity.current.density
+
+        // 아래로 스와이프할 때 가장 뒤쪽 카드가 서서히 올라와요.
+        if (progress > 0) {
+            val lastIndex = news.size - 1
+            Card(
+                modifier = Modifier
+                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] * density }
+                    .zIndex(-1f)
+                    .offset(y = (166 - cardOffsets[(lastIndex - 1).coerceAtLeast(0)]).dp)
+                    .padding(horizontal = ((lastIndex) * 16).dp),
+                feed = news[start],
+                cardColor = cardColors[start],
+                topPadding = topPaddings[lastIndex],
+                bottomPadding = bottomPaddings[lastIndex],
+                textStyle = textStyles[lastIndex],
+                showKeyword = keywordVisibilities[lastIndex],
+                visibleHeight = null,
+                onHeightInflated = { _ ->  },
+                onClick = { onClick(start) },
+            )
+        }
+
+        // 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
+        // info: start - 1 은 마지막 index 이다.
+        if (news.isNotEmpty() && progress < 0) {
+            val risingIndex = (start - 1 + news.size) % news.size
+            Card(
+                modifier = Modifier
+                    .graphicsLayer { translationY = progress * cardHeights[0] * density }
+                    .zIndex(6f)
+                    .offset(y = 166.dp),
+                feed = news[risingIndex],
+                cardColor = cardColors[risingIndex],
+                topPadding = topPaddings[0],
+                bottomPadding = bottomPaddings[0],
+                textStyle = textStyles[0],
+                showKeyword = keywordVisibilities[0],
+                visibleHeight = 106,
+                onHeightInflated = { _ ->  },
+                onClick = { onClick(risingIndex) },
             )
         }
     }
@@ -518,7 +613,7 @@ private fun Card(
         modifier = modifier
             .bounceClick(onClick = onClick)
             .height(166.dp)
-            .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
     ) {
         val columnModifier = if (visibleHeight == null) {
