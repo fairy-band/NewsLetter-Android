@@ -194,6 +194,7 @@ private fun HomeScreen(
     }
     val navController = LocalNavController.current
     var onCardHidden by remember { mutableStateOf(false) }
+    var dismissedCardIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -286,6 +287,7 @@ private fun HomeScreen(
                         news = news,
                         onClick = { index ->
                             cardIndex = index
+                            dismissedCardIndex = null
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
@@ -293,7 +295,9 @@ private fun HomeScreen(
                         },
                         modifier = Modifier.fillMaxWidth(0.5f),
                         dialogVisible = cardIndex != null,
-                        onCardHidden = { onCardHidden = true }
+                        onCardHidden = { onCardHidden = true },
+                        dismissedCardIndex = dismissedCardIndex,
+                        onDismissAnimationFinished = { dismissedCardIndex = null }
                     )
                 }
             } else {
@@ -318,13 +322,16 @@ private fun HomeScreen(
                         news = news,
                         onClick = { index ->
                             cardIndex = index
+                            dismissedCardIndex = null
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
                             cardsHeight = height.dp
                         },
                         dialogVisible = cardIndex != null,
-                        onCardHidden = { onCardHidden = true }
+                        onCardHidden = { onCardHidden = true },
+                        dismissedCardIndex = dismissedCardIndex,
+                        onDismissAnimationFinished = { dismissedCardIndex = null }
                     )
                 }
             }
@@ -336,6 +343,7 @@ private fun HomeScreen(
         visibility = cardIndex != null,
         backgroundVisibility = onCardHidden,
         onDismissRequest = {
+            dismissedCardIndex = cardIndex
             cardIndex = null
             onDismissRequest()
             onCardHidden = false
@@ -407,7 +415,9 @@ private fun Cards(
     colorType: String,
     onCardsHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onCardHidden: () -> Unit
+    onCardHidden: () -> Unit,
+    dismissedCardIndex: Int?,
+    onDismissAnimationFinished: () -> Unit,
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
@@ -495,7 +505,6 @@ private fun Cards(
             val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
 
             Card(
-                dialogVisible = dialogVisible,
                 modifier = Modifier
                     .zIndex(currentZ)
                     .offset(y = CARD_HEIGHT - cardOffsets[index].dp)
@@ -512,6 +521,8 @@ private fun Cards(
                 onClick = { onClick(index) },
                 onPromoteToFront = { frontMostIndex = index },
                 onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == index,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
     }
@@ -522,7 +533,6 @@ private fun Cards(
  */
 @Composable
 private fun Card(
-    dialogVisible: Boolean,
     feed: NewsFeed,
     topPadding: Dp,
     bottomPadding: Dp,
@@ -535,6 +545,8 @@ private fun Card(
     onHeightInflated: (height: Int) -> Unit,
     onPromoteToFront: () -> Unit,
     onCardHidden: () -> Unit,
+    isDismissing: Boolean,
+    onDismissAnimationFinished: () -> Unit
 ) {
     val density = LocalDensity.current
     var lineCount by remember { mutableIntStateOf(2) }
@@ -543,9 +555,10 @@ private fun Card(
         modifier = modifier
             .bounceClick(
                 onClick = onClick,
-                dialogVisible = dialogVisible,
                 onPromoteToFront = onPromoteToFront,
                 onCardHidden = onCardHidden,
+                isDismissing = isDismissing,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
             .height(CARD_HEIGHT)
             .clip(shape = RoundedCornerShape(24.dp))

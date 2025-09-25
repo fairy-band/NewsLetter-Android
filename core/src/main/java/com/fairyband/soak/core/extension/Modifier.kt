@@ -45,10 +45,11 @@ private object BounceClickDefaults {
 }
 
 fun Modifier.bounceClick(
-    dialogVisible: Boolean,
     onClick: () -> Unit,
     onPromoteToFront: () -> Unit,
     onCardHidden: () -> Unit,
+    isDismissing: Boolean,
+    onDismissAnimationFinished: () -> Unit
 ): Modifier = composed {
     val configuration = LocalConfiguration.current
     val context = LocalContext.current
@@ -93,14 +94,20 @@ fun Modifier.bounceClick(
     var measuredWidth by remember { mutableFloatStateOf(0f) }
     var measuredHeight by remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(dialogVisible) {
-        if (!dialogVisible) {
+    LaunchedEffect(isDismissing) {
+        if (isDismissing) {
             alphaAnim.animateTo(
                 targetValue = 1f,
             )
 
             // 1. 원래의 크기로 돌아가는 동작
             coroutineScope {
+                launch {
+                    translationYAnim.animateTo(
+                        targetValue = TARGET,
+                        animationSpec = tween(DURATION_MILLIS)
+                    )
+                }
                 launch {
                     scaleXAnim.animateTo(
                         targetValue = 1f,
@@ -117,10 +124,11 @@ fun Modifier.bounceClick(
 
             // 2. 원래 위치로 내려가는 동작
             translationYAnim.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(900)
+                targetValue = 0f,
+                animationSpec = tween(DURATION_MILLIS)
             )
 
+            onDismissAnimationFinished()
         }
     }
 
