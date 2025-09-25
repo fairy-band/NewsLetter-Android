@@ -99,13 +99,8 @@ fun Modifier.bounceClick(
                 targetValue = 1f,
             )
 
+            // 1. 원래의 크기로 돌아가는 동작
             coroutineScope {
-                launch {
-                    translationYAnim.animateTo(
-                        targetValue = 0f,
-                        animationSpec = tween(DURATION_MILLIS)
-                    )
-                }
                 launch {
                     scaleXAnim.animateTo(
                         targetValue = 1f,
@@ -119,6 +114,13 @@ fun Modifier.bounceClick(
                     )
                 }
             }
+
+            // 2. 원래 위치로 내려가는 동작
+            translationYAnim.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(900)
+            )
+
         }
     }
 
