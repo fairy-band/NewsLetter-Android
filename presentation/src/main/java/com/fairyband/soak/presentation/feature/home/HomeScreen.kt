@@ -534,8 +534,6 @@ private fun Cards(
         }
     }
 
-    var scrollIndex by remember { mutableIntStateOf(-1) }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -546,8 +544,6 @@ private fun Cards(
             val feedIndex = mapFeedIndex(index)
             val baseZ = FRONT_MOST_Z_INDEX - feedIndex
             val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
-
-            scrollIndex = index
 
             Card(
                 modifier = Modifier
@@ -601,10 +597,10 @@ private fun Cards(
                 visibleHeight = null,
                 onHeightInflated = { _ -> },
                 onClick = { onClick(start) },
-                onPromoteToFront = { frontMostIndex = scrollIndex},
+                onPromoteToFront = { frontMostIndex = start },
                 onPromoteToBack = { frontMostIndex = -1 },
                 onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == scrollIndex,
+                isDismissing = dismissedCardIndex == start,
                 onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
@@ -627,10 +623,10 @@ private fun Cards(
                 visibleHeight = 106,
                 onHeightInflated = { _ -> },
                 onClick = { onClick(risingIndex) },
-                onPromoteToFront = { frontMostIndex = scrollIndex },
+                onPromoteToFront = { frontMostIndex = risingIndex },
                 onPromoteToBack = { frontMostIndex = -1 },
                 onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == scrollIndex,
+                isDismissing = dismissedCardIndex == risingIndex,
                 onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
