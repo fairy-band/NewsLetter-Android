@@ -47,6 +47,7 @@ private object BounceClickDefaults {
 fun Modifier.bounceClick(
     onClick: () -> Unit,
     onPromoteToFront: () -> Unit,
+    onPromoteToBack: () -> Unit,
     onCardHidden: () -> Unit,
     isDismissing: Boolean,
     onDismissAnimationFinished: () -> Unit
@@ -96,11 +97,14 @@ fun Modifier.bounceClick(
 
     LaunchedEffect(isDismissing) {
         if (isDismissing) {
+            // 1. Z축을 가장 앞으로 먼저 보냄
+            onPromoteToFront()
+
             alphaAnim.animateTo(
                 targetValue = 1f,
             )
 
-            // 1. 원래의 크기로 돌아가는 동작
+            // 2. 원래의 크기로 돌아가는 동작
             coroutineScope {
                 launch {
                     translationYAnim.animateTo(
@@ -122,7 +126,10 @@ fun Modifier.bounceClick(
                 }
             }
 
-            // 2. 원래 위치로 내려가는 동작
+            // 3. 원래 Z축으로 돌아가는 동작
+            onPromoteToBack()
+
+            // 4. 원래 위치로 내려가는 동작
             translationYAnim.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(DURATION_MILLIS)

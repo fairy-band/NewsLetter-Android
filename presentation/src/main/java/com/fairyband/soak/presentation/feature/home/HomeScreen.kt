@@ -520,6 +520,7 @@ private fun Cards(
                 onHeightInflated = { height -> cardHeights[index] = height },
                 onClick = { onClick(index) },
                 onPromoteToFront = { frontMostIndex = index },
+                onPromoteToBack = { frontMostIndex = -1 },
                 onCardHidden = onCardHidden,
                 isDismissing = dismissedCardIndex == index,
                 onDismissAnimationFinished = onDismissAnimationFinished
@@ -544,6 +545,7 @@ private fun Card(
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
     onPromoteToFront: () -> Unit,
+    onPromoteToBack: () -> Unit,
     onCardHidden: () -> Unit,
     isDismissing: Boolean,
     onDismissAnimationFinished: () -> Unit
@@ -556,6 +558,7 @@ private fun Card(
             .bounceClick(
                 onClick = onClick,
                 onPromoteToFront = onPromoteToFront,
+                onPromoteToBack = onPromoteToBack,
                 onCardHidden = onCardHidden,
                 isDismissing = isDismissing,
                 onDismissAnimationFinished = onDismissAnimationFinished
