@@ -150,7 +150,7 @@ fun Modifier.bounceClick(
             scaleX = scaleXAnim.value
             scaleY = scaleYAnim.value
             alpha = alphaAnim.value
-        }
+        } // TODO: width, height 바꾸기
         .clickable(
             indication = null,
             interactionSource = remember { MutableInteractionSource() }
