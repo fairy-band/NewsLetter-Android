@@ -107,14 +107,12 @@ fun Modifier.bounceClick(
             // 1. 가장 앞으로 Z축을 보내는 동작
             onPromoteToFront()
 
-            alphaAnim.animateTo(
-                targetValue = 1f,
-            )
+            alphaAnim.animateTo(1f)
 
-            // 2. 원래의 크기로 돌아가는 동작
             val backWidthDp = with(density) { latestWidthPx.toDp().value }
             val backHeightDp = with(density) { latestHeightPx.toDp().value }
 
+            // 2. 원래의 크기로 돌아가는 동작
             coroutineScope {
                 launch { translationYAnim.animateTo(TARGET, tween(DURATION_MILLIS)) }
                 launch { widthAnim.animateTo(backWidthDp, tween(DURATION_MILLIS)) }
@@ -125,10 +123,7 @@ fun Modifier.bounceClick(
             onPromoteToBack()
 
             // 4. 원래 위치로 내려가는 동작
-            translationYAnim.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(DURATION_MILLIS)
-            )
+            translationYAnim.animateTo(0f, tween(DURATION_MILLIS))
 
             resizing = false
 
@@ -178,10 +173,7 @@ fun Modifier.bounceClick(
                 resizing = true
 
                 // 1. 처음 올라가는 동작
-                translationYAnim.animateTo(
-                    targetValue = TARGET,
-                    animationSpec = tween(900)
-                )
+                translationYAnim.animateTo(TARGET, tween(900))
 
                 // 2. 카드 Z 위치 제일 앞으로 보내는 동작
                 onPromoteToFront()
@@ -193,36 +185,16 @@ fun Modifier.bounceClick(
 
                 // 3. 지정된 크기로 맞춰지는 동작
                 coroutineScope {
-                    launch {
-                        translationYAnim.animateTo(
-                            targetValue = deltaY,
-                            animationSpec = tween(DURATION_MILLIS)
-                        )
-                    }
-                    launch {
-                        widthAnim.animateTo(
-                            targetValue = targetCardWidth.value,
-                            animationSpec = tween(DURATION_MILLIS)
-                        )
-                    }
-                    launch {
-                        heightAnim.animateTo(
-                            targetValue = targetCardHeight.value,
-                            animationSpec = tween(DURATION_MILLIS)
-                        )
-                    }
-                    launch {
-                        onCardHidden()
-                    }
+                    launch { translationYAnim.animateTo(deltaY, tween(DURATION_MILLIS)) }
+                    launch { widthAnim.animateTo(targetCardWidth.value, tween(DURATION_MILLIS)) }
+                    launch { heightAnim.animateTo(targetCardHeight.value, tween(DURATION_MILLIS)) }
+                    launch { onCardHidden() }
                 }
 
                 onClick()
 
                 // 4. 사라지는 동작
-                alphaAnim.animateTo(
-                    targetValue = 0f,
-                    animationSpec = tween(DURATION_MILLIS)
-                )
+                alphaAnim.animateTo(0f, tween(DURATION_MILLIS))
 
                 resizing = false
             }
