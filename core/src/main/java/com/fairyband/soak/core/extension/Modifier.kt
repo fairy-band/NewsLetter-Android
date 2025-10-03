@@ -1,5 +1,6 @@
 package com.fairyband.soak.core.extension
 
+import android.content.Context
 import android.os.VibrationEffect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -31,19 +32,24 @@ import com.fairyband.soak.core.extension.ModifierDefaults.TARGET
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
+private object BounceClickDefaults {
+    const val CARD_WIDTH_RATIO = 0.8f
+    val CARD_HEIGHT = 369.dp
+    val MARGIN_CARD_TO_INDICATOR = 16.dp
+    val INDICATOR_HEIGHT = 8.dp
+}
+
+object ModifierDefaults {
+    const val TARGET = -500f
+    const val DURATION_MILLIS = 700
+}
+
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier = composed {
     clickable(
         indication = null,
         interactionSource = remember { MutableInteractionSource() }) {
         onClick()
     }
-}
-
-private object BounceClickDefaults {
-    const val CARD_WIDTH_RATIO = 0.8f
-    val CARD_HEIGHT = 369.dp
-    val MARGIN_CARD_TO_INDICATOR = 16.dp
-    val INDICATOR_HEIGHT = 8.dp
 }
 
 fun Modifier.bounceClick(
@@ -67,24 +73,15 @@ fun Modifier.bounceClick(
 
     val screenHeightPx = with(density) { screenHeight.toPx() }
 
-    val resourceNavigationId =
-        context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
-    var navigationbarHeight = 0
-    if (resourceNavigationId > 0) navigationbarHeight =
-        context.resources.getDimensionPixelSize(resourceNavigationId)
-
-    var statusbarHeight = 0
-    val resourceStatusId: Int =
-        context.resources.getIdentifier("status_bar_height", "dimen", "android")
-    if (resourceStatusId > 0) statusbarHeight =
-        context.resources.getDimensionPixelSize(resourceStatusId)
+    val statusBarHeight = getStatusBarHeight(context)
+    val navigationBarHeight = getNavigationBarHeight(context)
 
     val groupHeightPx = with(density) {
         (targetCardHeight + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
     }
-    val usableHeightPx = screenHeightPx - (statusbarHeight + navigationbarHeight)
+    val usableHeightPx = screenHeightPx - (statusBarHeight + navigationBarHeight)
     val expectedTopPx =
-        statusbarHeight + navigationbarHeight + (usableHeightPx - groupHeightPx) / 2f
+        statusBarHeight + navigationBarHeight + (usableHeightPx - groupHeightPx) / 2f
     val expectedTopDp = with(density) { expectedTopPx.toDp() }
 
     val vibrator = context.vibrator
@@ -232,7 +229,22 @@ fun Modifier.bounceClick(
         }
 }
 
-object ModifierDefaults {
-    const val TARGET = -500f
-    const val DURATION_MILLIS = 700
+private fun getStatusBarHeight(context: Context): Int {
+    var statusbarHeight = 0
+    val resourceStatusId: Int =
+        context.resources.getIdentifier("status_bar_height", "dimen", "android")
+    if (resourceStatusId > 0) statusbarHeight =
+        context.resources.getDimensionPixelSize(resourceStatusId)
+
+    return statusbarHeight
+}
+
+private fun getNavigationBarHeight(context: Context): Int {
+    val resourceNavigationId =
+        context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+    var navigationbarHeight = 0
+    if (resourceNavigationId > 0) navigationbarHeight =
+        context.resources.getDimensionPixelSize(resourceNavigationId)
+
+    return navigationbarHeight
 }
