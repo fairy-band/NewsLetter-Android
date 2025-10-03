@@ -5,9 +5,11 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -59,7 +61,9 @@ fun Modifier.bounceClick(
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
 
-    val cardWidth = screenWidth * CARD_WIDTH_RATIO
+    // 카드 최종 목표 크기
+    val targetCardWidth = screenWidth * CARD_WIDTH_RATIO
+    val targetCardHeight = CARD_HEIGHT
 
     val screenHeightPx = with(density) { screenHeight.toPx() }
 
@@ -76,7 +80,7 @@ fun Modifier.bounceClick(
         context.resources.getDimensionPixelSize(resourceStatusId)
 
     val groupHeightPx = with(density) {
-        (CARD_HEIGHT + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
+        (targetCardHeight + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
     }
     val usableHeightPx = screenHeightPx - (statusbarHeight + navigationbarHeight)
     val expectedTopPx =
@@ -87,16 +91,22 @@ fun Modifier.bounceClick(
     val scope = rememberCoroutineScope()
 
     val translationYAnim = remember { Animatable(0f) }
-    val scaleXAnim = remember { Animatable(1f) }
-    val scaleYAnim = remember { Animatable(1f) }
     val alphaAnim = remember { Animatable(1f) }
 
     var cardPosition by remember { mutableFloatStateOf(0f) }
-    var measuredWidth by remember { mutableFloatStateOf(0f) }
-    var measuredHeight by remember { mutableFloatStateOf(0f) }
+
+    // 최신 측정 값
+    var latestWidthPx by remember { mutableFloatStateOf(0f) }
+    var latestHeightPx by remember { mutableFloatStateOf(0f) }
+    var resizing by remember { mutableStateOf(false) }
+
+    val widthAnim = remember { Animatable(0f) }
+    val heightAnim = remember { Animatable(0f) }
 
     LaunchedEffect(isDismissing) {
         if (isDismissing) {
+            resizing = true
+
             // 1. 가장 앞으로 Z축을 보내는 동작
             onPromoteToFront()
 
@@ -105,25 +115,13 @@ fun Modifier.bounceClick(
             )
 
             // 2. 원래의 크기로 돌아가는 동작
+            val backWidthDp = with(density) { latestWidthPx.toDp().value }
+            val backHeightDp = with(density) { latestHeightPx.toDp().value }
+
             coroutineScope {
-                launch {
-                    translationYAnim.animateTo(
-                        targetValue = TARGET,
-                        animationSpec = tween(DURATION_MILLIS)
-                    )
-                }
-                launch {
-                    scaleXAnim.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(DURATION_MILLIS)
-                    )
-                }
-                launch {
-                    scaleYAnim.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(DURATION_MILLIS)
-                    )
-                }
+                launch { translationYAnim.animateTo(TARGET, tween(DURATION_MILLIS)) }
+                launch { widthAnim.animateTo(backWidthDp, tween(DURATION_MILLIS)) }
+                launch { heightAnim.animateTo(backHeightDp, tween(DURATION_MILLIS)) }
             }
 
             // 3. 원래 Z축으로 돌아가는 동작
@@ -135,6 +133,8 @@ fun Modifier.bounceClick(
                 animationSpec = tween(DURATION_MILLIS)
             )
 
+            resizing = false
+
             onDismissAnimationFinished()
         }
     }
@@ -142,15 +142,25 @@ fun Modifier.bounceClick(
     this
         .onGloballyPositioned { card ->
             cardPosition = card.positionInWindow().y
-            measuredWidth = card.size.width.toFloat()
-            measuredHeight = card.size.height.toFloat()
+            if (!resizing) {
+                latestWidthPx = card.size.width.toFloat()
+                latestHeightPx = card.size.height.toFloat()
+            }
         }
         .graphicsLayer {
             translationY = translationYAnim.value
-            scaleX = scaleXAnim.value
-            scaleY = scaleYAnim.value
             alpha = alphaAnim.value
-        } // TODO: width, height 바꾸기
+        }
+        .then(
+            if (resizing) {
+                Modifier.requiredSize(
+                    width = widthAnim.value.dp,
+                    height = heightAnim.value.dp
+                )
+            } else {
+                Modifier
+            }
+        )
         .clickable(
             indication = null,
             interactionSource = remember { MutableInteractionSource() }
@@ -163,6 +173,13 @@ fun Modifier.bounceClick(
                     )
                 )
 
+                val startWidthDp = with(density) { latestWidthPx.toDp().value }
+                val startHeightDp = with(density) { latestHeightPx.toDp().value }
+                widthAnim.snapTo(startWidthDp)
+                heightAnim.snapTo(startHeightDp)
+
+                resizing = true
+
                 // 1. 처음 올라가는 동작
                 translationYAnim.animateTo(
                     targetValue = TARGET,
@@ -173,9 +190,9 @@ fun Modifier.bounceClick(
                 onPromoteToFront()
 
                 val targetTopPx = with(density) { expectedTopDp.toPx() }
-                val targetCenterPx = targetTopPx + with(density) { CARD_HEIGHT.toPx() } / 2f
-                val currentCenterPx = cardPosition + (measuredHeight / 2f)
-                val deltaY = targetCenterPx - currentCenterPx
+                val targetCenterPx = targetTopPx + with(density) { targetCardHeight.toPx() } / 2f
+                val currentCenterPx = cardPosition + (latestHeightPx / 2f)
+                val deltaY = targetCenterPx - currentCenterPx + 300
 
                 // 3. 지정된 크기로 맞춰지는 동작
                 coroutineScope {
@@ -186,14 +203,14 @@ fun Modifier.bounceClick(
                         )
                     }
                     launch {
-                        scaleXAnim.animateTo(
-                            targetValue = with(density) { cardWidth.toPx() } / measuredWidth,
+                        widthAnim.animateTo(
+                            targetValue = targetCardWidth.value,
                             animationSpec = tween(DURATION_MILLIS)
                         )
                     }
                     launch {
-                        scaleYAnim.animateTo(
-                            targetValue = with(density) { CARD_HEIGHT.toPx() } / measuredHeight,
+                        heightAnim.animateTo(
+                            targetValue = targetCardHeight.value,
                             animationSpec = tween(DURATION_MILLIS)
                         )
                     }
@@ -209,6 +226,8 @@ fun Modifier.bounceClick(
                     targetValue = 0f,
                     animationSpec = tween(DURATION_MILLIS)
                 )
+
+                resizing = false
             }
         }
 }
