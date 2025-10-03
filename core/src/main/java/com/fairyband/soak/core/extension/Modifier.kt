@@ -60,49 +60,32 @@ fun Modifier.bounceClick(
     isDismissing: Boolean,
     onDismissAnimationFinished: () -> Unit
 ): Modifier = composed {
-    val configuration = LocalConfiguration.current
     val context = LocalContext.current
     val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+    val scope = rememberCoroutineScope()
 
+    // 화면 및 목표 크기
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
-
-    // 카드 최종 목표 크기
     val targetCardWidth = screenWidth * CARD_WIDTH_RATIO
     val targetCardHeight = CARD_HEIGHT
 
-    val screenHeightPx = with(density) { screenHeight.toPx() }
-
-    val statusBarHeight = getStatusBarHeight(context)
-    val navigationBarHeight = getNavigationBarHeight(context)
-
-    val groupHeightPx = with(density) {
-        (targetCardHeight + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
-    }
-    val usableHeightPx = screenHeightPx - (statusBarHeight + navigationBarHeight)
-    val expectedTopPx =
-        statusBarHeight + navigationBarHeight + (usableHeightPx - groupHeightPx) / 2f
-    val expectedTopDp = with(density) { expectedTopPx.toDp() }
-
-    val vibrator = context.vibrator
-    val scope = rememberCoroutineScope()
-
+    // 애니메이션 상태 관리
     val translationYAnim = remember { Animatable(0f) }
     val alphaAnim = remember { Animatable(1f) }
-
-    var cardPosition by remember { mutableFloatStateOf(0f) }
-
-    // 최신 측정 값
-    var latestWidthPx by remember { mutableFloatStateOf(0f) }
-    var latestHeightPx by remember { mutableFloatStateOf(0f) }
-    var resizing by remember { mutableStateOf(false) }
-
     val widthAnim = remember { Animatable(0f) }
     val heightAnim = remember { Animatable(0f) }
+    var isAnimating by remember { mutableStateOf(false) }
+
+    // 최신 측정 값
+    var cardPosition by remember { mutableFloatStateOf(0f) }
+    var latestWidthPx by remember { mutableFloatStateOf(0f) }
+    var latestHeightPx by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(isDismissing) {
         if (isDismissing) {
-            resizing = true
+            isAnimating = true
 
             // 1. 가장 앞으로 Z축을 보내는 동작
             onPromoteToFront()
@@ -125,7 +108,7 @@ fun Modifier.bounceClick(
             // 4. 원래 위치로 내려가는 동작
             translationYAnim.animateTo(0f, tween(DURATION_MILLIS))
 
-            resizing = false
+            isAnimating = false
 
             onDismissAnimationFinished()
         }
@@ -133,8 +116,8 @@ fun Modifier.bounceClick(
 
     this
         .onGloballyPositioned { card ->
-            cardPosition = card.positionInWindow().y
-            if (!resizing) {
+            if (!isAnimating) {
+                cardPosition = card.positionInWindow().y
                 latestWidthPx = card.size.width.toFloat()
                 latestHeightPx = card.size.height.toFloat()
             }
@@ -144,7 +127,7 @@ fun Modifier.bounceClick(
             alpha = alphaAnim.value
         }
         .then(
-            if (resizing) {
+            if (isAnimating) {
                 Modifier.requiredSize(
                     width = widthAnim.value.dp,
                     height = heightAnim.value.dp
@@ -158,19 +141,37 @@ fun Modifier.bounceClick(
             interactionSource = remember { MutableInteractionSource() }
         ) {
             scope.launch {
-                vibrator.vibrate(
-                    VibrationEffect.createOneShot(
-                        100,
-                        VibrationEffect.DEFAULT_AMPLITUDE
-                    )
-                )
+                val screenHeightPx = with(density) { screenHeight.toPx() }
+
+                val statusBarHeight = getStatusBarHeight(context)
+                val navigationBarHeight = getNavigationBarHeight(context)
+
+                val groupHeightPx = with(density) {
+                    (targetCardHeight + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
+                }
+                val usableHeightPx = screenHeightPx - (statusBarHeight + navigationBarHeight)
+                val expectedTopPx =
+                    statusBarHeight + navigationBarHeight + (usableHeightPx - groupHeightPx) / 2f
+                val expectedTopDp = with(density) { expectedTopPx.toDp() }
+
+                val targetTopPx = with(density) { expectedTopDp.toPx() }
+                val targetCenterPx = targetTopPx + with(density) { targetCardHeight.toPx() } / 2f
+                val currentCenterPx = cardPosition + (latestHeightPx / 2f)
+                val translationAmount = targetCenterPx - currentCenterPx + 300
 
                 val startWidthDp = with(density) { latestWidthPx.toDp().value }
                 val startHeightDp = with(density) { latestHeightPx.toDp().value }
                 widthAnim.snapTo(startWidthDp)
                 heightAnim.snapTo(startHeightDp)
 
-                resizing = true
+                context.vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        100,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+
+                isAnimating = true
 
                 // 1. 처음 올라가는 동작
                 translationYAnim.animateTo(TARGET, tween(900))
@@ -178,14 +179,9 @@ fun Modifier.bounceClick(
                 // 2. 카드 Z 위치 제일 앞으로 보내는 동작
                 onPromoteToFront()
 
-                val targetTopPx = with(density) { expectedTopDp.toPx() }
-                val targetCenterPx = targetTopPx + with(density) { targetCardHeight.toPx() } / 2f
-                val currentCenterPx = cardPosition + (latestHeightPx / 2f)
-                val deltaY = targetCenterPx - currentCenterPx + 300
-
                 // 3. 지정된 크기로 맞춰지는 동작
                 coroutineScope {
-                    launch { translationYAnim.animateTo(deltaY, tween(DURATION_MILLIS)) }
+                    launch { translationYAnim.animateTo(translationAmount, tween(DURATION_MILLIS)) }
                     launch { widthAnim.animateTo(targetCardWidth.value, tween(DURATION_MILLIS)) }
                     launch { heightAnim.animateTo(targetCardHeight.value, tween(DURATION_MILLIS)) }
                     launch { onCardHidden() }
@@ -196,7 +192,7 @@ fun Modifier.bounceClick(
                 // 4. 사라지는 동작
                 alphaAnim.animateTo(0f, tween(DURATION_MILLIS))
 
-                resizing = false
+                isAnimating = false
             }
         }
 }
