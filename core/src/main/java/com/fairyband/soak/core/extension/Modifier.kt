@@ -142,22 +142,13 @@ fun Modifier.bounceClick(
         ) {
             scope.launch {
                 val screenHeightPx = with(density) { screenHeight.toPx() }
-
                 val statusBarHeight = getStatusBarHeight(context)
-                val navigationBarHeight = getNavigationBarHeight(context)
 
                 val groupHeightPx = with(density) {
                     (targetCardHeight + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
                 }
-                val usableHeightPx = screenHeightPx - (statusBarHeight + navigationBarHeight)
-                val expectedTopPx =
-                    statusBarHeight + navigationBarHeight + (usableHeightPx - groupHeightPx) / 2f
-                val expectedTopDp = with(density) { expectedTopPx.toDp() }
-
-                val targetTopPx = with(density) { expectedTopDp.toPx() }
-                val targetCenterPx = targetTopPx + with(density) { targetCardHeight.toPx() } / 2f
-                val currentCenterPx = cardPosition + (latestHeightPx / 2f)
-                val translationAmount = targetCenterPx - currentCenterPx + 300
+                val targetTopPx = statusBarHeight + (screenHeightPx - groupHeightPx) / 2f
+                val translationAmount = targetTopPx - cardPosition
 
                 val startWidthDp = with(density) { latestWidthPx.toDp().value }
                 val startHeightDp = with(density) { latestHeightPx.toDp().value }
@@ -181,7 +172,12 @@ fun Modifier.bounceClick(
 
                 // 3. 지정된 크기로 맞춰지는 동작
                 coroutineScope {
-                    launch { translationYAnim.animateTo(translationAmount, tween(DURATION_MILLIS)) }
+                    launch {
+                        translationYAnim.animateTo(
+                            -TARGET + translationAmount,
+                            tween(DURATION_MILLIS)
+                        )
+                    }
                     launch { widthAnim.animateTo(targetCardWidth.value, tween(DURATION_MILLIS)) }
                     launch { heightAnim.animateTo(targetCardHeight.value, tween(DURATION_MILLIS)) }
                     launch { onCardHidden() }
@@ -205,14 +201,4 @@ private fun getStatusBarHeight(context: Context): Int {
         context.resources.getDimensionPixelSize(resourceStatusId)
 
     return statusbarHeight
-}
-
-private fun getNavigationBarHeight(context: Context): Int {
-    var navigationbarHeight = 0
-    val resourceNavigationId =
-        context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
-    if (resourceNavigationId > 0) navigationbarHeight =
-        context.resources.getDimensionPixelSize(resourceNavigationId)
-
-    return navigationbarHeight
 }
