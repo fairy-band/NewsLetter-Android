@@ -97,7 +97,7 @@ fun Modifier.bounceClick(
 
     LaunchedEffect(isDismissing) {
         if (isDismissing) {
-            // 1. Z축을 가장 앞으로 먼저 보냄
+            // 1. 가장 앞으로 Z축을 보내는 동작
             onPromoteToFront()
 
             alphaAnim.animateTo(
