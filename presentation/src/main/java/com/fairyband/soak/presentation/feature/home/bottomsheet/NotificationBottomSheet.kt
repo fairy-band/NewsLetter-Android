@@ -30,9 +30,7 @@ import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 
@@ -61,15 +59,13 @@ internal fun NotificationBottomSheet(
         val analytics = Firebase.analytics
 
         // 알림 바텀시트 노출
-        analytics.logEvent("page_view") {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, Screen.BottomSheetNotification.name)
+        analytics.logEvent("pageview_bottom_sheet_notification") {
+            param("object_type", "bottom_sheet")
         }
 
         // 앱 메인 페이지 진입
         onDispose {
-            analytics.logEvent("page_view") {
-                param(FirebaseAnalytics.Param.SCREEN_NAME, Screen.Home.name)
-            }
+            analytics.logEvent("pageview_main") {}
         }
     }
 
@@ -103,8 +99,7 @@ internal fun NotificationBottomSheet(
                     onDismissRequest()
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     // 알림받기 버튼 클릭
-                    Firebase.analytics.logEvent("click") {
-                        param("navigation", Screen.BottomSheetNotification.name)
+                    Firebase.analytics.logEvent("click_bottom_sheet_notification") {
                         param("object_type", "button")
                     }
                 },

@@ -80,7 +80,6 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
@@ -125,11 +124,14 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         snapshotFlow { bottomSheetVisibility }
             .collect { isHome ->
-                val screenName = if (isHome) Screen.Home.name else Screen.BottomSheetCustom.name
-
-                // 앱 메인 페이지 진입 & 맞춤정보 바텀시트 노출
-                Firebase.analytics.logEvent("page_view") {
-                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                if (isHome) {
+                    // 앱 메인 페이지 진입
+                    Firebase.analytics.logEvent("pageview_main") {}
+                } else {
+                    // 맞춤정보 바텀시트 노출
+                    Firebase.analytics.logEvent("pageview_bottom_sheet_custom") {
+                        param("object_type", "bottom_sheet")
+                    }
                 }
             }
     }
@@ -205,11 +207,14 @@ private fun HomeScreen(
             .map { it == null }
             .distinctUntilChanged()
             .collect { isHome ->
-                val screenName = if (isHome) Screen.Home.name else Screen.NewsLetterCarousel.name
-
-                // 앱 메인 페이지 진입 & 뉴스레터 캐러셀 진입
-                Firebase.analytics.logEvent("page_view") {
-                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                if (isHome) {
+                    // 앱 메인 페이지 진입
+                    Firebase.analytics.logEvent("pageview_main") {}
+                } else {
+                    // 뉴스레터 캐러셀 진입
+                    Firebase.analytics.logEvent("pageview_newsletter_carousel") {
+                        param("object_type", "newsletter")
+                    }
                 }
             }
     }
@@ -217,13 +222,12 @@ private fun HomeScreen(
     LaunchedEffect(cardIndex, news) {
         cardIndex?.let {
             // 뉴스레터 클릭
-            Firebase.analytics.logEvent("click") {
-                val objectId = news.getOrNull(it)?.id.orEmpty()
+            Firebase.analytics.logEvent("click_main") {
+                val title = news.getOrNull(it)?.title.orEmpty()
 
-                param("navigation", Screen.Home.name)
                 param("object_section", "newsletter_list")
                 param("object_type", "newsletter")
-                param("object_id", objectId)
+                param("object_id", title)
                 param("list_index", it.toLong())
             }
         }
@@ -726,8 +730,7 @@ private fun Card(
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
-    Firebase.analytics.logEvent("click") {
-        param("navigation", Screen.BottomSheetCustom.name)
+    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
         param("object_type", "button")
         param("job_group", jobGroup.joinToString(separator = ","))
         param("career_level", careerLevel)

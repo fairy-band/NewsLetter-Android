@@ -113,11 +113,10 @@ internal fun PopUpDialog(
                             val item = cardItems[page]
 
                             // 뉴스레터 캐러셀 카드 노출
-                            Firebase.analytics.logEvent("impression") {
-                                param("navigation", Screen.NewsLetterCarousel.name)
+                            Firebase.analytics.logEvent("impression_newsletter_carousel") {
                                 param("object_section", "newsletter_card")
                                 param("object_type", "newsletter")
-                                param("object_id", item.id)
+                                param("object_id", item.title)
                                 param("card_index", page.toLong())
                             }
                         }
@@ -203,8 +202,7 @@ private fun Indicator(
 
 private fun webClickEvent(id: String, page: Long) {
     // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
-    Firebase.analytics.logEvent("click") {
-        param("navigation", Screen.NewsLetterCarousel.name)
+    Firebase.analytics.logEvent("click_newsletter_carousel") {
         param("object_section", "newsletter_card")
         param("object_type", "button")
         param("object_id", id)

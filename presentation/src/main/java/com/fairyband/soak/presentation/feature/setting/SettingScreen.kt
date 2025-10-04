@@ -213,8 +213,7 @@ private fun SettingText(
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
-    Firebase.analytics.logEvent("click") {
-        param("navigation", Screen.BottomSheetCustom.name)
+    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
         param("object_type", "button")
         param("job_group", jobGroup.joinToString(separator = ","))
         param("career_level", careerLevel)
