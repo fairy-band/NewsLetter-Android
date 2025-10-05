@@ -2,11 +2,11 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fairyband.soak.data.repository.AuthRepository
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.fairyband.soak.data.repository.UserRepository
 import com.fairyband.soak.domain.usecase.BottomSheetUseCase
+import com.fairyband.soak.domain.usecase.PutUserInfoUseCase
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.model.UserInfo
 import com.fairyband.soak.presentation.model.toNewsFeed
@@ -20,24 +20,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import timber.log.Timber
-import java.time.LocalDate
 
 @KoinViewModel
 class HomeViewModel(
     newsRepository: NewsRepository,
-    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
+    private val putUserInfoUseCase: PutUserInfoUseCase,
     remoteConfigRepository: RemoteConfigRepository,
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
@@ -63,7 +59,7 @@ class HomeViewModel(
         )
 
     val news: StateFlow<ImmutableList<NewsFeed>> = newsRepository
-        .getNews()
+        .news
         .map {
             it.map { response ->
                 response.toNewsFeed()
@@ -108,15 +104,13 @@ class HomeViewModel(
     fun saveUserInfo(
         preferences: List<String>,
         workingExperience: String
-    ) {
-        userRepository.putUserInfo(
+    ) = viewModelScope.launch {
+        putUserInfoUseCase(
             UserInfo(
                 preferences = preferences,
                 workingExperience = workingExperience
             ).toRequest()
-        ).catch {
-            Timber.e(it.message)
-        }.launchIn(viewModelScope)
+        )
     }
 
     fun disableNotificationSetting() = viewModelScope.launch {

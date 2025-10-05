@@ -38,7 +38,6 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_WIDTH_RATIO
 import com.fairyband.soak.presentation.feature.home.getCardTitleColors
 import com.fairyband.soak.presentation.model.NewsFeed
-import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
@@ -99,18 +98,21 @@ internal fun PopUpDialog(
             )
 
             LaunchedEffect(Unit) {
+                val loggedPages = mutableSetOf<Int>()
+
                 snapshotFlow { pagerState.currentPage }
                     .distinctUntilChanged()
                     .collect { page ->
-                        val item = cardItems[page]
+                        if (loggedPages.add(page)) {
+                            val item = cardItems[page]
 
-                        // 뉴스레터 캐러셀 카드 노출
-                        Firebase.analytics.logEvent("impression") {
-                            param("navigation", Screen.NewsLetterCarousel.name)
-                            param("object_section", "newsletter_card")
-                            param("object_type", "newsletter")
-                            param("object_id", item.id)
-                            param("card_index", page.toLong())
+                            // 뉴스레터 캐러셀 카드 노출
+                            Firebase.analytics.logEvent("impression_newsletter_carousel") {
+                                param("object_section", "newsletter_card")
+                                param("object_type", "newsletter")
+                                param("object_id", item.title)
+                                param("card_index", page.toLong())
+                            }
                         }
                     }
             }

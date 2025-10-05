@@ -1,10 +1,14 @@
 package com.fairyband.soak.presentation.feature.home
 
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +46,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -61,7 +67,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
-import com.fairyband.soak.core.extension.findActivity
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
@@ -75,7 +80,6 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
@@ -120,11 +124,14 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         snapshotFlow { bottomSheetVisibility }
             .collect { isHome ->
-                val screenName = if (isHome) Screen.Home.name else Screen.BottomSheetCustom.name
-
-                // 앱 메인 페이지 진입 & 맞춤정보 바텀시트 노출
-                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                if (isHome) {
+                    // 앱 메인 페이지 진입
+                    Firebase.analytics.logEvent("pageview_main") {}
+                } else {
+                    // 맞춤정보 바텀시트 노출
+                    Firebase.analytics.logEvent("pageview_bottom_sheet_custom") {
+                        param("object_type", "bottom_sheet")
+                    }
                 }
             }
     }
@@ -156,7 +163,7 @@ fun HomeScreen(
         )
     }
 
-    val activity = LocalContext.current.findActivity()
+    val activity = LocalActivity.current
     var isWide = true
 
     if (activity != null) {
@@ -200,11 +207,14 @@ private fun HomeScreen(
             .map { it == null }
             .distinctUntilChanged()
             .collect { isHome ->
-                val screenName = if (isHome) Screen.Home.name else Screen.NewsLetterCarousel.name
-
-                // 앱 메인 페이지 진입 & 뉴스레터 캐러셀 진입
-                Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                if (isHome) {
+                    // 앱 메인 페이지 진입
+                    Firebase.analytics.logEvent("pageview_main") {}
+                } else {
+                    // 뉴스레터 캐러셀 진입
+                    Firebase.analytics.logEvent("pageview_newsletter_carousel") {
+                        param("object_type", "newsletter")
+                    }
                 }
             }
     }
@@ -212,13 +222,12 @@ private fun HomeScreen(
     LaunchedEffect(cardIndex, news) {
         cardIndex?.let {
             // 뉴스레터 클릭
-            Firebase.analytics.logEvent("click") {
-                val objectId = news.getOrNull(it)?.id.orEmpty()
+            Firebase.analytics.logEvent("click_main") {
+                val title = news.getOrNull(it)?.title.orEmpty()
 
-                param("navigation", Screen.Home.name)
                 param("object_section", "newsletter_list")
                 param("object_type", "newsletter")
-                param("object_id", objectId)
+                param("object_id", title)
                 param("list_index", it.toLong())
             }
         }
@@ -289,6 +298,8 @@ private fun HomeScreen(
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
+                            if (cardsHeight > 0.dp) return@Cards
+
                             cardsHeight = height.dp
                         },
                         modifier = Modifier.fillMaxWidth(0.5f)
@@ -319,6 +330,8 @@ private fun HomeScreen(
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
+                            if (cardsHeight > 0.dp) return@Cards
+
                             cardsHeight = height.dp
                         },
                     )
@@ -362,7 +375,9 @@ private fun Timer() {
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
             val seconds = duration.seconds % 60
+
             emit(Triple(first = hours, second = minutes, third = seconds % 60))
+
             delay(200)
         }
     }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
@@ -412,7 +427,6 @@ private fun Cards(
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
-    val horizontalPaddings = listOf(0.dp, 16.dp, 32.dp, 48.dp, 64.dp, 80.dp)
     val keywordVisibilities = listOf(true, true, true, false, false, false)
     val textStyles = listOf(
         SoakTheme.typography.body18.copy(
@@ -455,6 +469,37 @@ private fun Cards(
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
 
+    var start by remember { mutableIntStateOf(0) }
+    val mapFeedIndex = { index: Int -> (index - start + news.size) % news.size }
+
+    val density = LocalDensity.current
+    val stepDp = 106.dp
+    val stepPx = with(density) { stepDp.toPx() }
+
+    var scrollAccum by remember { mutableFloatStateOf(0f) }
+    var progress by remember { mutableFloatStateOf(0f) }
+    val scrollState = rememberScrollableState { delta ->
+        scrollAccum += delta
+
+        delta
+    }
+
+    LaunchedEffect(scrollAccum) {
+        if (news.isEmpty()) return@LaunchedEffect
+
+        if (scrollAccum > stepPx) {
+            start = (start + 1) % news.size
+            scrollAccum -= stepPx
+        }
+
+        if (scrollAccum < -stepPx) {
+            start = (start - 1 + news.size) % news.size
+            scrollAccum += stepPx
+        }
+
+        progress = scrollAccum / stepPx
+    }
+
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
@@ -482,26 +527,83 @@ private fun Cards(
     }
 
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
         // 항상 6
         repeat(news.size) { index ->
+            val feedIndex = mapFeedIndex(index)
+
             Card(
                 modifier = Modifier
-                    .zIndex(5f - index)
-                    .offset(y = (166 - cardOffsets[index]).dp)
-                    .offset(y = animationList[index].value.dp)
-                    .padding(horizontal = horizontalPaddings[index]),
+                    .graphicsLayer {
+                        if (progress < 0 && feedIndex == news.size - 1) {
+                            val dy = cardHeights[feedIndex].toFloat() * progress * density.density
+                            translationY = -dy
+                        } else {
+                            val dy =
+                                cardHeights[(feedIndex + 1).coerceAtMost(news.size - 1)].toFloat() * progress * density.density
+                            translationY = dy
+                        }
+                    }
+                    .zIndex(5f - feedIndex)
+                    .offset(y = (166 - cardOffsets[feedIndex]).dp)
+                    .offset(y = animationList[feedIndex].value.dp)
+                    .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
                 feed = news[index],
                 cardColor = cardColors[index],
-                topPadding = topPaddings[index],
-                bottomPadding = bottomPaddings[index],
-                textStyle = textStyles[index],
-                showKeyword = keywordVisibilities[index],
-                visibleHeight = if (index < 3) 106 else null,
-                onHeightInflated = { height -> cardHeights[index] = height },
+                topPadding = topPaddings[feedIndex],
+                bottomPadding = bottomPaddings[feedIndex],
+                textStyle = textStyles[feedIndex],
+                showKeyword = keywordVisibilities[feedIndex],
+                visibleHeight = if (feedIndex < 3) 106 else null,
+                onHeightInflated = { height -> cardHeights[feedIndex] = height },
                 onClick = { onClick(index) },
+            )
+        }
+        val density = LocalDensity.current.density
+
+        // 아래로 스와이프할 때 가장 뒤쪽 카드가 서서히 올라와요.
+        if (progress > 0) {
+            val lastIndex = news.size - 1
+            Card(
+                modifier = Modifier
+                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] * density }
+                    .zIndex(-1f)
+                    .offset(y = (166 - cardOffsets[(lastIndex - 1).coerceAtLeast(0)]).dp)
+                    .padding(horizontal = ((lastIndex) * 16).dp),
+                feed = news[start],
+                cardColor = cardColors[start],
+                topPadding = topPaddings[lastIndex],
+                bottomPadding = bottomPaddings[lastIndex],
+                textStyle = textStyles[lastIndex],
+                showKeyword = keywordVisibilities[lastIndex],
+                visibleHeight = null,
+                onHeightInflated = { _ -> },
+                onClick = { onClick(start) },
+            )
+        }
+
+        // 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
+        // info: start - 1 은 마지막 index 이다.
+        if (news.isNotEmpty() && progress < 0) {
+            val risingIndex = (start - 1 + news.size) % news.size
+            Card(
+                modifier = Modifier
+                    .graphicsLayer { translationY = progress * cardHeights[0] * density }
+                    .zIndex(6f)
+                    .offset(y = 166.dp),
+                feed = news[risingIndex],
+                cardColor = cardColors[risingIndex],
+                topPadding = topPaddings[0],
+                bottomPadding = bottomPaddings[0],
+                textStyle = textStyles[0],
+                showKeyword = keywordVisibilities[0],
+                visibleHeight = 106,
+                onHeightInflated = { _ -> },
+                onClick = { onClick(risingIndex) },
             )
         }
     }
@@ -530,7 +632,7 @@ private fun Card(
         modifier = modifier
             .bounceClick(onClick = onClick)
             .height(166.dp)
-            .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
     ) {
         val columnModifier = if (visibleHeight == null) {
@@ -588,8 +690,7 @@ private fun Card(
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
-    Firebase.analytics.logEvent("click") {
-        param("navigation", Screen.BottomSheetCustom.name)
+    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
         param("object_type", "button")
         param("job_group", jobGroup.joinToString(separator = ","))
         param("career_level", careerLevel)
@@ -598,8 +699,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 
 private fun webClickEvent(id: String, page: Long) {
     // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
-    Firebase.analytics.logEvent("click") {
-        param("navigation", Screen.NewsLetterCarousel.name)
+    Firebase.analytics.logEvent("click_newsletter_carousel") {
         param("object_section", "newsletter_card")
         param("object_type", "button")
         param("object_id", id)
