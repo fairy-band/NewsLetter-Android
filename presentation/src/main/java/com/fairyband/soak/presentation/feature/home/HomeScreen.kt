@@ -11,7 +11,9 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,6 +72,7 @@ import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
@@ -250,24 +253,8 @@ private fun HomeScreen(
                         navController.navigate(Screen.Setting)
                     }
             )
-            val today = LocalDate.now()
-            Text(
-                modifier = Modifier
-                    .padding(top = 44.dp)
-                    .padding(horizontal = 20.dp),
-                text = stringResource(
-                    R.string.home_title,
-                    today.year,
-                    today.monthValue.toString().padStart(2, '0'),
-                    today.dayOfMonth.toString().padStart(2, '0')
-                ),
-                style = SoakTheme.typography.title.copy(
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp,
-                ),
-                color = SoakTheme.colors.textStrong,
-            )
-            Timer()
+
+            Title()
             Spacer(modifier = Modifier.weight(1f))
 
             if (isWide) {
@@ -350,8 +337,81 @@ private fun HomeScreen(
     )
 }
 
+// TODO: AB 받아오기
+// TODO: 위아래 1:2 비율 적용
 @Composable
-private fun Timer() {
+private fun ColumnScope.Title(variant: HomeTitleVariant = HomeTitleVariant.NEW) {
+    val today = LocalDate.now()
+
+    val titleResId = when (variant) {
+        HomeTitleVariant.EXISTING -> R.string.home_title
+        HomeTitleVariant.NEW -> R.string.home_title_b
+    }
+    Text(
+        modifier = Modifier
+            .padding(top = 44.dp)
+            .padding(horizontal = 20.dp),
+        text = stringResource(
+            titleResId,
+            today.year,
+            today.monthValue.toString().padStart(2, '0'),
+            today.dayOfMonth.toString().padStart(2, '0')
+        ),
+        style = SoakTheme.typography.title.copy(
+            textAlign = TextAlign.Center,
+            fontSize = 24.sp,
+        ),
+        color = SoakTheme.colors.textStrong,
+    )
+
+    when (variant) {
+        HomeTitleVariant.NEW -> Spacer(Modifier.height(12.dp))
+        HomeTitleVariant.EXISTING -> Spacer(Modifier.height(8.dp))
+    }
+
+    if (variant == HomeTitleVariant.NEW) {
+        Text(
+            text = stringResource(R.string.home_update_notice_b),
+            style = SoakTheme.typography.body15.copy(
+                fontWeight = FontWeight.SemiBold,
+                color = SoakTheme.colors.textStrong,
+            )
+        )
+    }
+
+    if (variant == HomeTitleVariant.NEW) Spacer(Modifier.height(4.dp))
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(1.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        if (variant == HomeTitleVariant.NEW) {
+            Text(
+                modifier = Modifier.padding(end = 2.dp),
+                text = stringResource(R.string.home_limited_time_notice_prefix_b),
+                style = SoakTheme.typography.body15.copy(
+                    fontWeight = FontWeight.Medium,
+                    color = SoakTheme.colors.textSecondary,
+                )
+            )
+        }
+
+        RemainingTime()
+
+        val suffixString = stringResource(R.string.home_limited_time_notice)
+        Text(
+            modifier = Modifier.padding(start = 2.dp),
+            text = suffixString,
+            style = SoakTheme.typography.body15.copy(
+                fontWeight = FontWeight.Medium,
+                color = SoakTheme.colors.textSecondary,
+            )
+        )
+    }
+}
+
+@Composable
+private fun RowScope.RemainingTime() {
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()
@@ -368,39 +428,24 @@ private fun Timer() {
         }
     }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
 
-    Row(
-        modifier = Modifier.padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(1.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        val suffixString = stringResource(R.string.home_limited_time_notice)
-        val numberStyle = SoakTheme.typography.body16.copy(
-            fontWeight = FontWeight.SemiBold,
-            color = SoakTheme.colors.stateNegativePrimary
-        )
-        val colonStyle = SoakTheme.typography.body15.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.stateNegativePrimary
-        )
+    val numberStyle = SoakTheme.typography.body16.copy(
+        fontWeight = FontWeight.SemiBold,
+        color = SoakTheme.colors.stateNegativePrimary
+    )
+    val colonStyle = SoakTheme.typography.body15.copy(
+        fontWeight = FontWeight.Bold,
+        color = SoakTheme.colors.stateNegativePrimary
+    )
 
-        val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
-        val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
-        val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
+    val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
+    val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
+    val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
 
-        Text(hh, style = numberStyle)
-        Text(":", style = colonStyle)
-        Text(mm, style = numberStyle)
-        Text(":", style = colonStyle)
-        Text(ss, style = numberStyle)
-        Text(
-            modifier = Modifier.padding(start = 2.dp),
-            text = suffixString,
-            style = SoakTheme.typography.body15.copy(
-                fontWeight = FontWeight.Medium,
-                color = SoakTheme.colors.textSecondary,
-            )
-        )
-    }
+    Text(hh, style = numberStyle)
+    Text(":", style = colonStyle)
+    Text(mm, style = numberStyle)
+    Text(":", style = colonStyle)
+    Text(ss, style = numberStyle)
 }
 
 @Composable
