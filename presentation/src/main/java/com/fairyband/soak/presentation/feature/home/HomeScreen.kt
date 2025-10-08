@@ -1,6 +1,5 @@
 package com.fairyband.soak.presentation.feature.home
 
-import android.content.Intent
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -200,7 +199,6 @@ private fun HomeScreen(
     }
     val navController = LocalNavController.current
     val context = LocalContext.current
-    val shareTitle = stringResource(R.string.home_share)
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -351,12 +349,8 @@ private fun HomeScreen(
             navController.navigate(Screen.WebView(url = item.url))
             webClickEvent(id = item.id, page = pageIndex.toLong())
         },
-        onShareClick = { url ->
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "$shareTitle \n $url")
-            }
-            context.startActivity(Intent.createChooser(intent, "공유하기"))
+        onShareClick = {
+            // TODO: 카카오 공유하기
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
