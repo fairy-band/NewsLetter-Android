@@ -1,6 +1,9 @@
 package com.fairyband.soak.presentation.feature.home
 
+import android.content.Context
+import android.content.Intent
 import androidx.activity.compose.LocalActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -46,6 +49,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -68,6 +72,7 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
@@ -81,6 +86,8 @@ import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
+import com.kakao.sdk.share.ShareClient
+import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
@@ -89,6 +96,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -349,8 +357,13 @@ private fun HomeScreen(
             navController.navigate(Screen.WebView(url = item.url))
             webClickEvent(id = item.id, page = pageIndex.toLong())
         },
-        onShareClick = {
-            // TODO: 카카오 공유하기
+        onShareClick = { id, title, color ->
+            kakaoShare(
+                id = id,
+                title = title,
+                color = color,
+                context = context
+            )
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
@@ -691,13 +704,51 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     }
 }
 
-private fun webClickEvent(id: String, page: Long) {
+private fun webClickEvent(id: Int, page: Long) {
     // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
     Firebase.analytics.logEvent("click_newsletter_carousel") {
         param("object_section", "newsletter_card")
         param("object_type", "button")
-        param("object_id", id)
+        param("object_id", id.toString())
         param("card_index", page)
+    }
+}
+
+private fun kakaoShare(
+    id: Int,
+    title: String,
+    color: Color,
+    context: Context
+) {
+    val templateId = 124946L
+    val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
+    val templateArgs = mapOf(
+        "TITLE" to title,
+        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=$id&textColor=%23$textColor"
+    )
+
+    if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
+        ShareClient.instance.shareCustom(
+            context,
+            templateId,
+            templateArgs
+        ) { sharingResult, error ->
+            if (error != null) {
+                Timber.e("카카오톡 공유 실패: ${error.message}")
+            } else if (sharingResult != null) {
+                context.startActivity(sharingResult.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
+        }
+    } else {
+        val sharerUrl = WebSharerClient.instance.makeCustomUrl(templateId, templateArgs)
+        try {
+            val intent = CustomTabsIntent.Builder().build().intent
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.data = sharerUrl
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Timber.e("웹 공유 실패: ${e.message}")
+        }
     }
 }
 
@@ -715,7 +766,7 @@ private fun HomeScreenPreview() {
             onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -723,7 +774,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -731,7 +782,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -739,7 +790,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -747,7 +798,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -755,7 +806,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
