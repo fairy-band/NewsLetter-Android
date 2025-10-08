@@ -144,6 +144,7 @@ fun Modifier.bounceClick(
                 val screenHeightPx = with(density) { screenHeight.toPx() }
                 val statusBarHeight = getStatusBarHeight(context)
 
+                // 팝업 다이얼로그와 인디케이터를 포함한 높이
                 val groupHeightPx = with(density) {
                     (targetCardHeight + MARGIN_CARD_TO_INDICATOR + INDICATOR_HEIGHT).toPx()
                 }
