@@ -7,6 +7,7 @@ import com.fairyband.soak.data.di.ServiceModule
 import com.fairyband.soak.domain.di.DomainModule
 import com.fairyband.soak.presentation.di.PresentationModule
 import com.google.firebase.installations.FirebaseInstallations
+import com.kakao.sdk.common.KakaoSdk
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -35,6 +36,7 @@ class SoakApplication : Application() {
         }
 
         printInstallationToken()
+        initKakaoSdk()
     }
 
     private fun printInstallationToken() {
@@ -48,5 +50,9 @@ class SoakApplication : Application() {
                     Timber.d("AB 테스트를 위한 파이어베이스 설치 토큰을 받지 못했어요.")
                 }
             }
+    }
+
+    private fun initKakaoSdk() {
+        KakaoSdk.init(this, BuildConfig.NATIVE_APP_KEY)
     }
 }
