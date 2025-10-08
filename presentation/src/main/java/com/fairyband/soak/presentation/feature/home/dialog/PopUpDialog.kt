@@ -55,7 +55,7 @@ internal fun PopUpDialog(
     visibility: Boolean,
     onDismissRequest: () -> Unit,
     onWebClick: (NewsFeed, Int) -> Unit,
-    onShareClick: () -> Unit,
+    onShareClick: (Int, String, Color) -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
     colorType: String,
@@ -142,7 +142,13 @@ internal fun PopUpDialog(
                         ),
                         titleColor = titleColors[pageIndex],
                         onWebClick = { onWebClick(item, pageIndex) },
-                        onShareClick = onShareClick
+                        onShareClick = {
+                            onShareClick(
+                                item.id,
+                                item.title,
+                                titleColors[pageIndex]
+                            )
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
