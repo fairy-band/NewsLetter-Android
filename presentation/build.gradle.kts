@@ -1,9 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+}
+
+val properties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
 }
 
 android {
@@ -20,6 +26,11 @@ android {
             "String",
             "VERSION_NAME",
             "\"${project.findProperty("VERSION_CODE") ?: "3"}\""
+        )
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"${properties.getProperty("base.url")}\""
         )
     }
 
@@ -101,6 +112,9 @@ dependencies {
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.framework.engine)
     testImplementation(libs.kotest.runner.junit5)
+
+    // kakao
+    implementation(libs.kakao.share)
 }
 
 tasks.withType<Test>().configureEach {
