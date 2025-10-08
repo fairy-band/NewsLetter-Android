@@ -118,6 +118,7 @@ kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", versio
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 # kakao
+kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakaoVersion" }
 kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakaoVersion" }
 
 [bundles]
