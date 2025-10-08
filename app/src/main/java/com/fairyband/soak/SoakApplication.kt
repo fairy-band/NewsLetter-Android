@@ -1,12 +1,12 @@
 package com.fairyband.soak
 
 import android.app.Application
-import com.google.firebase.installations.FirebaseInstallations
 import com.fairyband.soak.data.di.DataModule
 import com.fairyband.soak.data.di.RetrofitModule
 import com.fairyband.soak.data.di.ServiceModule
 import com.fairyband.soak.domain.di.DomainModule
 import com.fairyband.soak.presentation.di.PresentationModule
+import com.google.firebase.installations.FirebaseInstallations
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

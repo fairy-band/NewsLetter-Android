@@ -95,4 +95,7 @@ dependencies {
 
     // log
     implementation(libs.timber)
+
+    // kakao
+    implementation(libs.kakao.share)
 }
