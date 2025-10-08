@@ -81,7 +81,7 @@ internal fun PopUpDialog(
 
     Box {
         AnimatedVisibility(
-            visible = backgroundVisibility || visibility,
+            visible = backgroundVisibility,
             enter = fadeIn(animationSpec = tween(500, DURATION_MILLIS - 500)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
