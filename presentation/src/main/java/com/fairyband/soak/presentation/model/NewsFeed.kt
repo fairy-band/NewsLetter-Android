@@ -3,7 +3,7 @@ package com.fairyband.soak.presentation.model
 import com.fairyband.soak.data.model.response.NewsResponse
 
 data class NewsFeed(
-    val id: String,
+    val id: Int,
     val title: String,
     val keyword: String,
     val letter: String,
@@ -13,7 +13,7 @@ data class NewsFeed(
 
 fun NewsResponse.toNewsFeed(): NewsFeed {
     return NewsFeed(
-        id = contentUrl,
+        id = id,
         title = title,
         keyword = topKeyword,
         letter = newsletterName,

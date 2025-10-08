@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NewsResponse(
+    val id: Int,
     val title: String,
     val topKeyword: String,
     val summary: String,

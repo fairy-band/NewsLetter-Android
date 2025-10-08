@@ -137,7 +137,7 @@ private fun PopUpItemPreview() {
     SoakTheme {
         PopUpItem(
             newsFeed = NewsFeed(
-                id = "1",
+                id = 1,
                 title = "IT 직장인이라면 알아야 할 주 4일제의 모든 것을 알려준다",
                 keyword = "Kotlin",
                 letter = "안드로이드 위클리",
