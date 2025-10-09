@@ -84,34 +84,34 @@ fun Modifier.bounceClick(
     var latestHeightPx by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(isDismissing) {
-        if (isDismissing) {
-            isAnimating = true
+        if (!isDismissing) return@LaunchedEffect
 
-            // 1. 가장 앞으로 Z축을 보내는 동작
-            onPromoteToFront()
+        isAnimating = true
 
-            alphaAnim.animateTo(1f)
+        // 1. 가장 앞으로 Z축을 보내는 동작
+        onPromoteToFront()
 
-            val backWidthDp = with(density) { latestWidthPx.toDp().value }
-            val backHeightDp = with(density) { latestHeightPx.toDp().value }
+        alphaAnim.animateTo(1f)
 
-            // 2. 원래의 크기로 돌아가는 동작
-            coroutineScope {
-                launch { translationYAnim.animateTo(TARGET, tween(DURATION_MILLIS)) }
-                launch { widthAnim.animateTo(backWidthDp, tween(DURATION_MILLIS)) }
-                launch { heightAnim.animateTo(backHeightDp, tween(DURATION_MILLIS)) }
-            }
+        val backWidthDp = with(density) { latestWidthPx.toDp().value }
+        val backHeightDp = with(density) { latestHeightPx.toDp().value }
 
-            // 3. 원래 Z축으로 돌아가는 동작
-            onPromoteToBack()
-
-            // 4. 원래 위치로 내려가는 동작
-            translationYAnim.animateTo(0f, tween(DURATION_MILLIS))
-
-            isAnimating = false
-
-            onDismissAnimationFinished()
+        // 2. 원래의 크기로 돌아가는 동작
+        coroutineScope {
+            launch { translationYAnim.animateTo(TARGET, tween(DURATION_MILLIS)) }
+            launch { widthAnim.animateTo(backWidthDp, tween(DURATION_MILLIS)) }
+            launch { heightAnim.animateTo(backHeightDp, tween(DURATION_MILLIS)) }
         }
+
+        // 3. 원래 Z축으로 돌아가는 동작
+        onPromoteToBack()
+
+        // 4. 원래 위치로 내려가는 동작
+        translationYAnim.animateTo(0f, tween(DURATION_MILLIS))
+
+        isAnimating = false
+
+        onDismissAnimationFinished()
     }
 
     this
