@@ -512,10 +512,10 @@ private fun Cards(
         onCardsHeight(cardOffsets[news.size - 1])
     }
 
-    var frontMostIndex by remember { mutableIntStateOf(-1) }
+    var frontMostIndex by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(dialogVisible) {
-        if (!dialogVisible) frontMostIndex = -1
+        if (!dialogVisible) frontMostIndex = null
     }
 
     val animationList = remember(news) {
@@ -575,7 +575,7 @@ private fun Cards(
                 onHeightInflated = { height -> cardHeights[feedIndex] = height },
                 onClick = { onClick(index) },
                 onPromoteToFront = { frontMostIndex = index },
-                onPromoteToBack = { frontMostIndex = -1 },
+                onPromoteToBack = { frontMostIndex = null },
                 onCardHidden = onCardHidden,
                 isDismissing = dismissedCardIndex == index,
                 onDismissAnimationFinished = onDismissAnimationFinished
@@ -602,7 +602,7 @@ private fun Cards(
                 onHeightInflated = { _ -> },
                 onClick = { onClick(start) },
                 onPromoteToFront = { frontMostIndex = start },
-                onPromoteToBack = { frontMostIndex = -1 },
+                onPromoteToBack = { frontMostIndex = null },
                 onCardHidden = onCardHidden,
                 isDismissing = dismissedCardIndex == start,
                 onDismissAnimationFinished = onDismissAnimationFinished
@@ -628,7 +628,7 @@ private fun Cards(
                 onHeightInflated = { _ -> },
                 onClick = { onClick(risingIndex) },
                 onPromoteToFront = { frontMostIndex = risingIndex },
-                onPromoteToBack = { frontMostIndex = -1 },
+                onPromoteToBack = { frontMostIndex = null },
                 onCardHidden = onCardHidden,
                 isDismissing = dismissedCardIndex == risingIndex,
                 onDismissAnimationFinished = onDismissAnimationFinished
