@@ -49,6 +49,9 @@ window = "1.4.0"
 # kotest
 kotest = "6.0.3"
 
+## Kakao
+kakaoVersion = "2.20.1"
+
 [libraries]
 # core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -113,6 +116,10 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+
+# kakao
+kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakaoVersion" }
+kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakaoVersion" }
 
 [bundles]
 compose-ui = [
