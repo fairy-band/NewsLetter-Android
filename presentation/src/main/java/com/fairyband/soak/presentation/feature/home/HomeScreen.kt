@@ -73,6 +73,7 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -198,6 +199,8 @@ private fun HomeScreen(
         0.dp
     }
     val navController = LocalNavController.current
+    var onCardHidden by remember { mutableStateOf(false) }
+    var dismissedCardIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -292,6 +295,7 @@ private fun HomeScreen(
                         news = news,
                         onClick = { index ->
                             cardIndex = index
+                            dismissedCardIndex = null
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
@@ -299,7 +303,11 @@ private fun HomeScreen(
 
                             cardsHeight = height.dp
                         },
-                        modifier = Modifier.fillMaxWidth(0.5f)
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        dialogVisible = cardIndex != null,
+                        onCardHidden = { onCardHidden = true },
+                        dismissedCardIndex = dismissedCardIndex,
+                        onDismissAnimationFinished = { dismissedCardIndex = null }
                     )
                 }
             } else {
@@ -324,6 +332,7 @@ private fun HomeScreen(
                         news = news,
                         onClick = { index ->
                             cardIndex = index
+                            dismissedCardIndex = null
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
@@ -331,6 +340,10 @@ private fun HomeScreen(
 
                             cardsHeight = height.dp
                         },
+                        dialogVisible = cardIndex != null,
+                        onCardHidden = { onCardHidden = true },
+                        dismissedCardIndex = dismissedCardIndex,
+                        onDismissAnimationFinished = { dismissedCardIndex = null }
                     )
                 }
             }
@@ -340,9 +353,12 @@ private fun HomeScreen(
 
     PopUpDialog(
         visibility = cardIndex != null,
+        backgroundVisibility = onCardHidden,
         onDismissRequest = {
+            dismissedCardIndex = cardIndex
             cardIndex = null
             onDismissRequest()
+            onCardHidden = false
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
@@ -405,11 +421,15 @@ private fun Timer() {
 
 @Composable
 private fun Cards(
+    dialogVisible: Boolean,
     news: ImmutableList<NewsFeed>,
     onClick: (Int) -> Unit,
     colorType: String,
     onCardsHeight: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCardHidden: () -> Unit,
+    dismissedCardIndex: Int?,
+    onDismissAnimationFinished: () -> Unit,
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
@@ -492,6 +512,12 @@ private fun Cards(
         onCardsHeight(cardOffsets[news.size - 1])
     }
 
+    var frontMostIndex by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(dialogVisible) {
+        if (!dialogVisible) frontMostIndex = null
+    }
+
     val animationList = remember(news) {
         news.map { Animatable(initialValue = 0f) }
     }
@@ -518,9 +544,10 @@ private fun Cards(
             .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
-        // 항상 6
         repeat(news.size) { index ->
             val feedIndex = mapFeedIndex(index)
+            val baseZ = FRONT_MOST_Z_INDEX - feedIndex
+            val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
 
             Card(
                 modifier = Modifier
@@ -534,7 +561,7 @@ private fun Cards(
                             translationY = dy
                         }
                     }
-                    .zIndex(5f - feedIndex)
+                    .zIndex(currentZ)
                     .offset(y = (166 - cardOffsets[feedIndex]).dp)
                     .offset(y = animationList[feedIndex].value.dp)
                     .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
@@ -547,6 +574,11 @@ private fun Cards(
                 visibleHeight = if (feedIndex < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[feedIndex] = height },
                 onClick = { onClick(index) },
+                onPromoteToFront = { frontMostIndex = index },
+                onPromoteToBack = { frontMostIndex = null },
+                onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == index,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
         val density = LocalDensity.current.density
@@ -569,6 +601,11 @@ private fun Cards(
                 visibleHeight = null,
                 onHeightInflated = { _ -> },
                 onClick = { onClick(start) },
+                onPromoteToFront = { frontMostIndex = start },
+                onPromoteToBack = { frontMostIndex = null },
+                onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == start,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
 
@@ -590,6 +627,11 @@ private fun Cards(
                 visibleHeight = 106,
                 onHeightInflated = { _ -> },
                 onClick = { onClick(risingIndex) },
+                onPromoteToFront = { frontMostIndex = risingIndex },
+                onPromoteToBack = { frontMostIndex = null },
+                onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == risingIndex,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
     }
@@ -610,13 +652,25 @@ private fun Card(
     visibleHeight: Int? = null,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
+    onPromoteToFront: () -> Unit,
+    onPromoteToBack: () -> Unit,
+    onCardHidden: () -> Unit,
+    isDismissing: Boolean,
+    onDismissAnimationFinished: () -> Unit,
 ) {
     val density = LocalDensity.current
     var lineCount by remember { mutableIntStateOf(2) }
 
     Box(
         modifier = modifier
-            .bounceClick(onClick = onClick)
+            .bounceClick(
+                onClick = onClick,
+                onPromoteToFront = onPromoteToFront,
+                onPromoteToBack = onPromoteToBack,
+                onCardHidden = onCardHidden,
+                isDismissing = isDismissing,
+                onDismissAnimationFinished = onDismissAnimationFinished
+            )
             .height(166.dp)
             .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
@@ -684,6 +738,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 }
 
 private object HomeDefaults {
+    val FRONT_MOST_Z_INDEX = 5f
     val DRAWER_HEIGHT = 527.dp
     val DRAWER_TO_CARD_MARGIN = 25.dp
     val DRAWER_COLOR = Color(0xFF99C9FF)

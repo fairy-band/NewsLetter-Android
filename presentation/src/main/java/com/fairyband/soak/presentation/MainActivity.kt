@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -36,7 +38,13 @@ class MainActivity : ComponentActivity() {
             SoakTheme {
                 val navController = rememberNavController()
 
-                CompositionLocalProvider(LocalNavController provides navController) {
+                CompositionLocalProvider(
+                    LocalDensity provides Density(
+                        density = LocalDensity.current.density,
+                        fontScale = 1f
+                    ),
+                    LocalNavController provides navController
+                ) {
                     NavDisplay(
                         backStack = navController.backStack,
                         onBack = { navController.pop() },
