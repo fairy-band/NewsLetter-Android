@@ -1,5 +1,7 @@
 package com.fairyband.soak.presentation.feature.home.dialog
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,13 +19,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -34,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.fairyband.soak.presentation.model.NewsFeed
@@ -53,6 +59,7 @@ internal fun PopUpItem(
                 shape = RoundedCornerShape(16.dp),
             )
             .fillMaxWidth()
+            .height(CARD_HEIGHT)
             .padding(24.dp),
     ) {
         var titleLineCount by remember { mutableIntStateOf(1) }
@@ -77,10 +84,7 @@ internal fun PopUpItem(
                 color = titleColor
             )
             Spacer(modifier = Modifier.width(6.dp))
-            VerticalDivider(
-                color = titleColor,
-                modifier = Modifier.padding(vertical = 2.dp)
-            )
+            AnimatedVerticalDivider(color = titleColor)
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = newsFeed.letter,
@@ -129,6 +133,28 @@ internal fun PopUpItem(
             }
         }
     }
+}
+
+@Composable
+private fun AnimatedVerticalDivider(
+    color: Color,
+) {
+    var started by remember { mutableStateOf(false) }
+    val progress by animateFloatAsState(
+        targetValue = if (started) 1f else 0f,
+        animationSpec = tween(500),
+    )
+
+    LaunchedEffect(Unit) { started = true }
+
+    VerticalDivider(
+        color = color,
+        modifier = Modifier
+            .padding(vertical = 2.dp)
+            .graphicsLayer {
+                translationX = (1f - progress) * -20.dp.toPx()
+            }
+    )
 }
 
 @Preview(showBackground = true)
