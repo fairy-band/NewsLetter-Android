@@ -29,6 +29,8 @@ import com.fairyband.soak.core.extension.BounceClickDefaults.INDICATOR_HEIGHT
 import com.fairyband.soak.core.extension.BounceClickDefaults.MARGIN_CARD_TO_INDICATOR
 import com.fairyband.soak.core.extension.ModifierDefaults.DURATION_MILLIS
 import com.fairyband.soak.core.extension.ModifierDefaults.TARGET
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -97,11 +99,10 @@ fun Modifier.bounceClick(
         val backHeightDp = with(density) { latestHeightPx.toDp().value }
 
         // 2. 원래의 크기로 돌아가는 동작
-        coroutineScope {
-            launch { translationYAnim.animateTo(TARGET, tween(DURATION_MILLIS)) }
-            launch { widthAnim.animateTo(backWidthDp, tween(DURATION_MILLIS)) }
-            launch { heightAnim.animateTo(backHeightDp, tween(DURATION_MILLIS)) }
-        }
+        val job1 = async { translationYAnim.animateTo(TARGET, tween(DURATION_MILLIS)) }
+        val job2 = async { widthAnim.animateTo(backWidthDp, tween(DURATION_MILLIS)) }
+        val job3 = async { heightAnim.animateTo(backHeightDp, tween(DURATION_MILLIS)) }
+        awaitAll(job1, job2, job3)
 
         // 3. 원래 Z축으로 돌아가는 동작
         onPromoteToBack()
