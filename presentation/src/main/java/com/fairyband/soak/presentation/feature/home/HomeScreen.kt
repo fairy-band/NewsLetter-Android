@@ -1,6 +1,9 @@
 package com.fairyband.soak.presentation.feature.home
 
+import android.content.Context
+import android.content.Intent
 import androidx.activity.compose.LocalActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -48,6 +51,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -70,12 +74,14 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
+import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -84,6 +90,8 @@ import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
+import com.kakao.sdk.share.ShareClient
+import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
@@ -92,6 +100,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -201,6 +210,9 @@ private fun HomeScreen(
         0.dp
     }
     val navController = LocalNavController.current
+    val context = LocalContext.current
+    var onCardHidden by remember { mutableStateOf(false) }
+    var dismissedCardIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -279,6 +291,7 @@ private fun HomeScreen(
                         news = news,
                         onClick = { index ->
                             cardIndex = index
+                            dismissedCardIndex = null
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
@@ -286,7 +299,11 @@ private fun HomeScreen(
 
                             cardsHeight = height.dp
                         },
-                        modifier = Modifier.fillMaxWidth(0.5f)
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        dialogVisible = cardIndex != null,
+                        onCardHidden = { onCardHidden = true },
+                        dismissedCardIndex = dismissedCardIndex,
+                        onDismissAnimationFinished = { dismissedCardIndex = null }
                     )
                 }
             } else {
@@ -311,6 +328,7 @@ private fun HomeScreen(
                         news = news,
                         onClick = { index ->
                             cardIndex = index
+                            dismissedCardIndex = null
                         },
                         colorType = colorType,
                         onCardsHeight = { height ->
@@ -318,6 +336,10 @@ private fun HomeScreen(
 
                             cardsHeight = height.dp
                         },
+                        dialogVisible = cardIndex != null,
+                        onCardHidden = { onCardHidden = true },
+                        dismissedCardIndex = dismissedCardIndex,
+                        onDismissAnimationFinished = { dismissedCardIndex = null }
                     )
                 }
             }
@@ -327,9 +349,24 @@ private fun HomeScreen(
 
     PopUpDialog(
         visibility = cardIndex != null,
+        backgroundVisibility = onCardHidden,
         onDismissRequest = {
+            dismissedCardIndex = cardIndex
             cardIndex = null
             onDismissRequest()
+            onCardHidden = false
+        },
+        onWebClick = { item, pageIndex ->
+            navController.navigate(Screen.WebView(url = item.url))
+            webClickEvent(id = item.id, page = pageIndex.toLong())
+        },
+        onShareClick = { id, title, color ->
+            kakaoShare(
+                id = id,
+                title = title,
+                color = color,
+                context = context
+            )
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
@@ -450,11 +487,15 @@ private fun RowScope.RemainingTime() {
 
 @Composable
 private fun Cards(
+    dialogVisible: Boolean,
     news: ImmutableList<NewsFeed>,
     onClick: (Int) -> Unit,
     colorType: String,
     onCardsHeight: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCardHidden: () -> Unit,
+    dismissedCardIndex: Int?,
+    onDismissAnimationFinished: () -> Unit,
 ) {
     val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
     val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
@@ -537,6 +578,12 @@ private fun Cards(
         onCardsHeight(cardOffsets[news.size - 1])
     }
 
+    var frontMostIndex by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(dialogVisible) {
+        if (!dialogVisible) frontMostIndex = null
+    }
+
     val animationList = remember(news) {
         news.map { Animatable(initialValue = 0f) }
     }
@@ -563,9 +610,10 @@ private fun Cards(
             .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
-        // 항상 6
         repeat(news.size) { index ->
             val feedIndex = mapFeedIndex(index)
+            val baseZ = FRONT_MOST_Z_INDEX - feedIndex
+            val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
 
             Card(
                 modifier = Modifier
@@ -579,7 +627,7 @@ private fun Cards(
                             translationY = dy
                         }
                     }
-                    .zIndex(5f - feedIndex)
+                    .zIndex(currentZ)
                     .offset(y = (166 - cardOffsets[feedIndex]).dp)
                     .offset(y = animationList[feedIndex].value.dp)
                     .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
@@ -592,6 +640,11 @@ private fun Cards(
                 visibleHeight = if (feedIndex < 3) 106 else null,
                 onHeightInflated = { height -> cardHeights[feedIndex] = height },
                 onClick = { onClick(index) },
+                onPromoteToFront = { frontMostIndex = index },
+                onPromoteToBack = { frontMostIndex = null },
+                onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == index,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
         val density = LocalDensity.current.density
@@ -614,6 +667,11 @@ private fun Cards(
                 visibleHeight = null,
                 onHeightInflated = { _ -> },
                 onClick = { onClick(start) },
+                onPromoteToFront = { frontMostIndex = start },
+                onPromoteToBack = { frontMostIndex = null },
+                onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == start,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
 
@@ -635,6 +693,11 @@ private fun Cards(
                 visibleHeight = 106,
                 onHeightInflated = { _ -> },
                 onClick = { onClick(risingIndex) },
+                onPromoteToFront = { frontMostIndex = risingIndex },
+                onPromoteToBack = { frontMostIndex = null },
+                onCardHidden = onCardHidden,
+                isDismissing = dismissedCardIndex == risingIndex,
+                onDismissAnimationFinished = onDismissAnimationFinished
             )
         }
     }
@@ -655,13 +718,25 @@ private fun Card(
     visibleHeight: Int? = null,
     showKeyword: Boolean = false,
     onHeightInflated: (height: Int) -> Unit,
+    onPromoteToFront: () -> Unit,
+    onPromoteToBack: () -> Unit,
+    onCardHidden: () -> Unit,
+    isDismissing: Boolean,
+    onDismissAnimationFinished: () -> Unit,
 ) {
     val density = LocalDensity.current
     var lineCount by remember { mutableIntStateOf(2) }
 
     Box(
         modifier = modifier
-            .bounceClick(onClick = onClick)
+            .bounceClick(
+                onClick = onClick,
+                onPromoteToFront = onPromoteToFront,
+                onPromoteToBack = onPromoteToBack,
+                onCardHidden = onCardHidden,
+                isDismissing = isDismissing,
+                onDismissAnimationFinished = onDismissAnimationFinished
+            )
             .height(166.dp)
             .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
@@ -728,7 +803,56 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     }
 }
 
+private fun webClickEvent(id: Int, page: Long) {
+    // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
+    Firebase.analytics.logEvent("click_newsletter_carousel") {
+        param("object_section", "newsletter_card")
+        param("object_type", "button")
+        param("object_id", id.toString())
+        param("card_index", page)
+    }
+}
+
+private fun kakaoShare(
+    id: Int,
+    title: String,
+    color: Color,
+    context: Context
+) {
+    val templateId = 124946L
+    val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
+    val templateArgs = mapOf(
+        "TITLE" to title,
+        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=$id&textColor=%23$textColor"
+    )
+
+    if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
+        ShareClient.instance.shareCustom(
+            context,
+            templateId,
+            templateArgs
+        ) { sharingResult, error ->
+            if (error != null) {
+                Timber.e("카카오톡 공유 실패: ${error.message}")
+            } else if (sharingResult != null) {
+                context.startActivity(sharingResult.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
+        }
+    } else {
+        val sharerUrl = WebSharerClient.instance.makeCustomUrl(templateId, templateArgs)
+        try {
+            val intent = CustomTabsIntent.Builder().build().intent
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.data = sharerUrl
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Timber.e("웹 공유 실패: ${e.message}")
+        }
+    }
+}
+
 private object HomeDefaults {
+    val FRONT_MOST_Z_INDEX = 5f
     val DRAWER_HEIGHT = 527.dp
     val DRAWER_TO_CARD_MARGIN = 25.dp
     val DRAWER_COLOR = Color(0xFF99C9FF)
@@ -742,7 +866,7 @@ private fun HomeScreenPreview() {
             onDismissRequest = {},
             news = persistentListOf(
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -750,7 +874,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -758,7 +882,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -766,7 +890,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -774,7 +898,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",
@@ -782,7 +906,7 @@ private fun HomeScreenPreview() {
                     url = "https://naver.com"
                 ),
                 NewsFeed(
-                    id = "1",
+                    id = 1,
                     title = "38800원은 너무 비싸",
                     keyword = "Kotlin",
                     letter = "Android Weekly",

@@ -15,6 +15,10 @@ val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
+val properties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
 android {
     namespace = "com.fairyband.soak"
     compileSdk = 36
@@ -36,6 +40,14 @@ android {
         versionName = project.findProperty("VERSION_NAME")?.toString() ?: "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "NATIVE_APP_KEY",
+            "\"${properties.getProperty("native.app.key")}\""
+        )
+        manifestPlaceholders["NATIVE_APP_KEY"] =
+            properties.getProperty("native.app.key")
     }
 
     buildTypes {
@@ -74,7 +86,7 @@ android {
 }
 
 ksp {
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 dependencies {
@@ -95,4 +107,7 @@ dependencies {
 
     // log
     implementation(libs.timber)
+
+    // kakao
+    implementation(libs.kakao.user)
 }
