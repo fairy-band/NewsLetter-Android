@@ -1,4 +1,4 @@
-package com.fairyband.soak.presentation.abtest
+package com.fairyband.soak.data.model.abtest
 
 enum class HomeTitleVariant {
     EXISTING, NEW

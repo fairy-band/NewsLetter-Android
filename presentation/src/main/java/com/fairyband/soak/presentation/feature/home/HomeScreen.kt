@@ -77,7 +77,7 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.abtest.HomeTitleVariant
+import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
@@ -114,6 +114,7 @@ fun HomeScreen(
 
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
+    val homeTitleVariant by viewModel.homeTitleVariant.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasNotificationPermission by remember { mutableStateOf(false) }
@@ -191,6 +192,7 @@ fun HomeScreen(
         },
         news = news,
         colorType = colorType,
+        homeTitleVariant = homeTitleVariant,
         isWide = isWide,
     )
 }
@@ -200,6 +202,7 @@ private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
     colorType: String,
+    homeTitleVariant: HomeTitleVariant,
     isWide: Boolean,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
@@ -266,7 +269,7 @@ private fun HomeScreen(
                     }
             )
 
-            Title()
+            Title(variant = homeTitleVariant)
             Spacer(modifier = Modifier.weight(1f))
 
             if (isWide) {
@@ -377,7 +380,7 @@ private fun HomeScreen(
 // TODO: AB 받아오기
 // TODO: 위아래 1:2 비율 적용
 @Composable
-private fun ColumnScope.Title(variant: HomeTitleVariant = HomeTitleVariant.NEW) {
+private fun ColumnScope.Title(variant: HomeTitleVariant) {
     val today = LocalDate.now()
 
     val titleResId = when (variant) {
@@ -915,6 +918,7 @@ private fun HomeScreenPreview() {
                 ),
             ),
             colorType = "B",
+            homeTitleVariant = HomeTitleVariant.NEW,
             isWide = false,
         )
     }

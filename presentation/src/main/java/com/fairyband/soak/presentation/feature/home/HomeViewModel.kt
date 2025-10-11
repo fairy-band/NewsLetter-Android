@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.fairyband.soak.data.repository.UserRepository
@@ -77,6 +78,14 @@ class HomeViewModel(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             "B",
+        )
+
+    val homeTitleVariant: StateFlow<HomeTitleVariant> = remoteConfigRepository
+        .getHomeTitleVariant()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            HomeTitleVariant.EXISTING,
         )
 
     init {
