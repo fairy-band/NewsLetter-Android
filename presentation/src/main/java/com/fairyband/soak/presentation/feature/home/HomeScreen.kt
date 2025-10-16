@@ -362,7 +362,7 @@ private fun HomeScreen(
 
     PopUpDialog(
         visibility = cardIndex != null,
-        backgroundVisibility = onCardHidden,
+        backgroundVisibility = onCardHidden || cardIndex != null,
         onDismissRequest = {
             dismissedCardIndex = cardIndex
             cardIndex = null
