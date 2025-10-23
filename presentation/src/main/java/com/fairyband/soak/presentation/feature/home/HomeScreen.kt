@@ -2,7 +2,6 @@ package com.fairyband.soak.presentation.feature.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.activity.compose.LocalActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -80,7 +79,6 @@ import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
@@ -258,9 +256,7 @@ private fun HomeScreen(
 
             Box(
                 contentAlignment = Alignment.BottomCenter,
-                modifier = Modifier
-                    .height(listOf(cardsHeight + DRAWER_TO_CARD_MARGIN, 100.dp).max()) // FIXME
-                    .background(Color.Blue)
+                modifier = Modifier.height(if (cardsHeight > 0.dp) cardsHeight + DRAWER_TO_CARD_MARGIN else 600.dp) // 왠지 모르겠으나 그냥 cardsHeight + DRAWER_TO_CARD_MARGIN 를 쓰면 안 된다.
             ) {
                 Image(
                     painter = painterResource(R.drawable.home_drawer_background),
@@ -289,7 +285,8 @@ private fun HomeScreen(
                         cardsHeight = height.dp
                     },
                     modifier = Modifier
-                        .sizeIn(maxWidth = 532.dp)
+                        .sizeIn(maxWidth = 432.dp)
+                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
                         .fillMaxWidth(),
                     dialogVisible = cardIndex != null,
                     onCardHidden = { onCardHidden = true },
@@ -525,7 +522,7 @@ private fun Cards(
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
-        onCardsHeight(cardOffsets.last() + 20)
+        onCardsHeight(cardOffsets.last())
     }
 
     var frontMostIndex by remember { mutableStateOf<Int?>(null) }
