@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -57,6 +58,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -74,10 +76,10 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
@@ -269,23 +271,28 @@ private fun HomeScreen(
                     }
             )
 
-            Title(variant = homeTitleVariant)
             Spacer(modifier = Modifier.weight(1f))
+            Title(variant = homeTitleVariant)
+            Spacer(modifier = Modifier.weight(2f))
 
             if (isWide) {
                 Box(
                     contentAlignment = Alignment.BottomCenter,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(listOf(cardsHeight + DRAWER_TO_CARD_MARGIN, 100.dp).max()) // FIXME
+                        .background(Color.Black)
                 ) {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                        contentDescription = "home drawer image",
+                        painter = painterResource(R.drawable.home_drawer_background),
+                        contentDescription = null,
                         modifier = Modifier
-                            .offset(y = drawerOffset)
+                            .fillMaxHeight()
+                            .background(Color.Blue)
                             .drawBehind {
                                 drawRect(
                                     color = DRAWER_COLOR,
-                                    topLeft = Offset(x = 0f, y = size.height - 2f),
+                                    topLeft = Offset(x = 0f, y = size.height),
                                     size = Size(width = size.width, height = size.height)
                                 )
                             },
@@ -315,7 +322,7 @@ private fun HomeScreen(
                 ) {
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                        contentDescription = "home drawer image",
+                        contentDescription = null,
                         contentScale = ContentScale.FillHeight,
                         modifier = Modifier
                             .offset(y = drawerOffset)
@@ -377,8 +384,6 @@ private fun HomeScreen(
     )
 }
 
-// TODO: AB 받아오기
-// TODO: 위아래 1:2 비율 적용
 @Composable
 private fun ColumnScope.Title(variant: HomeTitleVariant) {
     val today = LocalDate.now()
@@ -389,7 +394,6 @@ private fun ColumnScope.Title(variant: HomeTitleVariant) {
     }
     Text(
         modifier = Modifier
-            .padding(top = 44.dp)
             .padding(horizontal = 20.dp),
         text = stringResource(
             titleResId,
@@ -578,7 +582,7 @@ private fun Cards(
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
-        onCardsHeight(cardOffsets[news.size - 1])
+        onCardsHeight(cardOffsets.last() + cardHeights.last() - 60)
     }
 
     var frontMostIndex by remember { mutableStateOf<Int?>(null) }
@@ -609,7 +613,6 @@ private fun Cards(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
             .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
