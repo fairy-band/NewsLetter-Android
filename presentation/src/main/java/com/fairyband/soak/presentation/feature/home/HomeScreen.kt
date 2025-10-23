@@ -26,12 +26,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -177,17 +176,6 @@ fun HomeScreen(
         )
     }
 
-    val activity = LocalActivity.current
-    var isWide = true
-
-    if (activity != null) {
-        val windowSizeClass = calculateWindowSizeClass(activity = activity)
-        val devicePosture = rememberHomeState()
-        val widthSizeClass = windowSizeClass.widthSizeClass
-
-        isWide = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isNormal
-    }
-
     HomeScreen(
         onDismissRequest = {
             viewModel.onCardShown()
@@ -195,7 +183,6 @@ fun HomeScreen(
         news = news,
         colorType = colorType,
         homeTitleVariant = homeTitleVariant,
-        isWide = isWide,
     )
 }
 
@@ -205,15 +192,9 @@ private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
     colorType: String,
     homeTitleVariant: HomeTitleVariant,
-    isWide: Boolean,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
-    val drawerOffset = if (cardsHeight > 0.dp) {
-        DRAWER_HEIGHT - (cardsHeight + DRAWER_TO_CARD_MARGIN)
-    } else {
-        0.dp
-    }
     val navController = LocalNavController.current
     val context = LocalContext.current
     var onCardHidden by remember { mutableStateOf(false) }
@@ -275,85 +256,47 @@ private fun HomeScreen(
             Title(variant = homeTitleVariant)
             Spacer(modifier = Modifier.weight(2f))
 
-            if (isWide) {
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier
+                    .height(listOf(cardsHeight + DRAWER_TO_CARD_MARGIN, 100.dp).max()) // FIXME
+                    .background(Color.Blue)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.home_drawer_background),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(listOf(cardsHeight + DRAWER_TO_CARD_MARGIN, 100.dp).max()) // FIXME
-                        .background(Color.Black)
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.home_drawer_background),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .background(Color.Blue)
-                            .drawBehind {
-                                drawRect(
-                                    color = DRAWER_COLOR,
-                                    topLeft = Offset(x = 0f, y = size.height),
-                                    size = Size(width = size.width, height = size.height)
-                                )
-                            },
-                    )
-                    Cards(
-                        news = news,
-                        onClick = { index ->
-                            cardIndex = index
-                            dismissedCardIndex = null
+                        .fillMaxHeight()
+                        .drawBehind {
+                            drawRect(
+                                color = DRAWER_COLOR,
+                                topLeft = Offset(x = 0f, y = size.height),
+                                size = Size(width = size.width, height = size.height)
+                            )
                         },
-                        colorType = colorType,
-                        onCardsHeight = { height ->
-                            if (cardsHeight > 0.dp) return@Cards
+                )
+                Cards(
+                    news = news,
+                    onClick = { index ->
+                        cardIndex = index
+                        dismissedCardIndex = null
+                    },
+                    colorType = colorType,
+                    onCardsHeight = { height ->
+                        if (cardsHeight > 0.dp) return@Cards
 
-                            cardsHeight = height.dp
-                        },
-                        modifier = Modifier.fillMaxWidth(0.5f),
-                        dialogVisible = cardIndex != null,
-                        onCardHidden = { onCardHidden = true },
-                        dismissedCardIndex = dismissedCardIndex,
-                        onDismissAnimationFinished = { dismissedCardIndex = null }
-                    )
-                }
-            } else {
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                        contentDescription = null,
-                        contentScale = ContentScale.FillHeight,
-                        modifier = Modifier
-                            .offset(y = drawerOffset)
-                            .drawBehind {
-                                drawRect(
-                                    color = DRAWER_COLOR,
-                                    topLeft = Offset(x = 0f, y = size.height - 2f),
-                                    size = Size(width = size.width, height = size.height)
-                                )
-                            },
-                    )
-                    Cards(
-                        news = news,
-                        onClick = { index ->
-                            cardIndex = index
-                            dismissedCardIndex = null
-                        },
-                        colorType = colorType,
-                        onCardsHeight = { height ->
-                            if (cardsHeight > 0.dp) return@Cards
-
-                            cardsHeight = height.dp
-                        },
-                        dialogVisible = cardIndex != null,
-                        onCardHidden = { onCardHidden = true },
-                        dismissedCardIndex = dismissedCardIndex,
-                        onDismissAnimationFinished = { dismissedCardIndex = null }
-                    )
-                }
+                        cardsHeight = height.dp
+                    },
+                    modifier = Modifier
+                        .sizeIn(maxWidth = 532.dp)
+                        .fillMaxWidth(),
+                    dialogVisible = cardIndex != null,
+                    onCardHidden = { onCardHidden = true },
+                    dismissedCardIndex = dismissedCardIndex,
+                    onDismissAnimationFinished = { dismissedCardIndex = null }
+                )
             }
-
         }
     }
 
@@ -582,7 +525,7 @@ private fun Cards(
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
-        onCardsHeight(cardOffsets.last() + cardHeights.last() - 60)
+        onCardsHeight(cardOffsets.last() + 20)
     }
 
     var frontMostIndex by remember { mutableStateOf<Int?>(null) }
@@ -922,7 +865,6 @@ private fun HomeScreenPreview() {
             ),
             colorType = "B",
             homeTitleVariant = HomeTitleVariant.NEW,
-            isWide = false,
         )
     }
 }
