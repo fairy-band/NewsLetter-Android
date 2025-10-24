@@ -1,11 +1,12 @@
 package com.fairyband.soak.data.repositoryimpl
 
+import com.fairyband.soak.data.BuildConfig
+import com.fairyband.soak.data.model.abtest.HomeTitleVariant
+import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.fairyband.soak.data.BuildConfig
-import com.fairyband.soak.data.repository.RemoteConfigRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Single
@@ -31,6 +32,17 @@ internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
         emit(getString("card_color") ?: "B")
     }
 
+    override fun getHomeTitleVariant(): Flow<HomeTitleVariant> = flow {
+        val variantString = getString("main_description")
+        val variant = if (variantString == "new") {
+            HomeTitleVariant.NEW
+        } else {
+            HomeTitleVariant.EXISTING
+        }
+
+        emit(variant)
+    }
+
     private suspend fun getString(key: String): String? = suspendCoroutine { continuation ->
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -44,4 +56,5 @@ internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
             }
         }
     }
+
 }

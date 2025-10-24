@@ -2,6 +2,7 @@
 <resources>
     <!--home-->
     <string name="home_title">"%s.%s.%s\nToday's Hot News"</string>
+    <string name="home_title_b">%s.%s.%s</string>
     <string name="home_popup_button_text">원문 보기</string>
     <string name="home_bottomsheet_title">정보를 등록하면\n매일 뉴스레터를 추천해 드려요</string>
     <string name="home_bottomsheet_position">관심 직군</string>
@@ -10,7 +11,9 @@
     <string name="home_notification_setting_title">가장 먼저 새로운 소식을 받아보세요</string>
     <string name="home_notification_setting_description">매일 유용한 뉴스레터를 보내드려요.</string>
     <string name="home_notification_setting_button">알림 받기</string>
+    <string name="home_update_notice_b">뉴스레터는 매일 새롭게 업데이트 돼요</string>
     <string name="home_limited_time_notice">동안 볼 수 있어요</string>
+    <string name="home_limited_time_notice_prefix_b">아래 뉴스는</string>
 
     <!--setting-->
     <string name="setting_info_title">내정보</string>

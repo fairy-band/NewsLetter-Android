@@ -2,7 +2,6 @@ package com.fairyband.soak.presentation.feature.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.activity.compose.LocalActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -14,8 +13,11 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,12 +25,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -55,6 +56,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -72,11 +74,11 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_HEIGHT
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
 import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
@@ -111,6 +113,7 @@ fun HomeScreen(
 
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
+    val homeTitleVariant by viewModel.homeTitleVariant.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasNotificationPermission by remember { mutableStateOf(false) }
@@ -171,24 +174,13 @@ fun HomeScreen(
         )
     }
 
-    val activity = LocalActivity.current
-    var isWide = true
-
-    if (activity != null) {
-        val windowSizeClass = calculateWindowSizeClass(activity = activity)
-        val devicePosture = rememberHomeState()
-        val widthSizeClass = windowSizeClass.widthSizeClass
-
-        isWide = widthSizeClass == WindowWidthSizeClass.Expanded && !devicePosture.value.isNormal
-    }
-
     HomeScreen(
         onDismissRequest = {
             viewModel.onCardShown()
         },
         news = news,
         colorType = colorType,
-        isWide = isWide,
+        homeTitleVariant = homeTitleVariant,
     )
 }
 
@@ -197,15 +189,10 @@ private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
     colorType: String,
-    isWide: Boolean,
+    homeTitleVariant: HomeTitleVariant,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
-    val drawerOffset = if (cardsHeight > 0.dp) {
-        DRAWER_HEIGHT - (cardsHeight + DRAWER_TO_CARD_MARGIN)
-    } else {
-        0.dp
-    }
     val navController = LocalNavController.current
     val context = LocalContext.current
     var onCardHidden by remember { mutableStateOf(false) }
@@ -262,101 +249,51 @@ private fun HomeScreen(
                         navController.navigate(Screen.Setting)
                     }
             )
-            val today = LocalDate.now()
-            Text(
-                modifier = Modifier
-                    .padding(top = 44.dp)
-                    .padding(horizontal = 20.dp),
-                text = stringResource(
-                    R.string.home_title,
-                    today.year,
-                    today.monthValue.toString().padStart(2, '0'),
-                    today.dayOfMonth.toString().padStart(2, '0')
-                ),
-                style = SoakTheme.typography.title.copy(
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp,
-                ),
-                color = SoakTheme.colors.textStrong,
-            )
-            Timer()
+
             Spacer(modifier = Modifier.weight(1f))
+            Title(variant = homeTitleVariant)
+            Spacer(modifier = Modifier.weight(2f))
 
-            if (isWide) {
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                        contentDescription = "home drawer image",
-                        modifier = Modifier
-                            .offset(y = drawerOffset)
-                            .drawBehind {
-                                drawRect(
-                                    color = DRAWER_COLOR,
-                                    topLeft = Offset(x = 0f, y = size.height - 2f),
-                                    size = Size(width = size.width, height = size.height)
-                                )
-                            },
-                    )
-                    Cards(
-                        news = news,
-                        onClick = { index ->
-                            cardIndex = index
-                            dismissedCardIndex = null
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier.height(if (cardsHeight > 0.dp) cardsHeight + DRAWER_TO_CARD_MARGIN else 600.dp) // 왠지 모르겠으나 그냥 cardsHeight + DRAWER_TO_CARD_MARGIN 를 쓰면 안 된다.
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.home_drawer_background),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .drawBehind {
+                            drawRect(
+                                color = DRAWER_COLOR,
+                                topLeft = Offset(x = 0f, y = size.height),
+                                size = Size(width = size.width, height = size.height)
+                            )
                         },
-                        colorType = colorType,
-                        onCardsHeight = { height ->
-                            if (cardsHeight > 0.dp) return@Cards
+                )
+                Cards(
+                    news = news,
+                    onClick = { index ->
+                        cardIndex = index
+                        dismissedCardIndex = null
+                    },
+                    colorType = colorType,
+                    onCardsHeight = { height ->
+                        if (cardsHeight > 0.dp) return@Cards
 
-                            cardsHeight = height.dp
-                        },
-                        modifier = Modifier.fillMaxWidth(0.5f),
-                        dialogVisible = cardIndex != null,
-                        onCardHidden = { onCardHidden = true },
-                        dismissedCardIndex = dismissedCardIndex,
-                        onDismissAnimationFinished = { dismissedCardIndex = null }
-                    )
-                }
-            } else {
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_drawer_half),
-                        contentDescription = "home drawer image",
-                        contentScale = ContentScale.FillHeight,
-                        modifier = Modifier
-                            .offset(y = drawerOffset)
-                            .drawBehind {
-                                drawRect(
-                                    color = DRAWER_COLOR,
-                                    topLeft = Offset(x = 0f, y = size.height - 2f),
-                                    size = Size(width = size.width, height = size.height)
-                                )
-                            },
-                    )
-                    Cards(
-                        news = news,
-                        onClick = { index ->
-                            cardIndex = index
-                            dismissedCardIndex = null
-                        },
-                        colorType = colorType,
-                        onCardsHeight = { height ->
-                            if (cardsHeight > 0.dp) return@Cards
-
-                            cardsHeight = height.dp
-                        },
-                        dialogVisible = cardIndex != null,
-                        onCardHidden = { onCardHidden = true },
-                        dismissedCardIndex = dismissedCardIndex,
-                        onDismissAnimationFinished = { dismissedCardIndex = null }
-                    )
-                }
+                        cardsHeight = height.dp
+                    },
+                    modifier = Modifier
+                        .sizeIn(maxWidth = 432.dp)
+                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
+                        .fillMaxWidth(),
+                    dialogVisible = cardIndex != null,
+                    onCardHidden = { onCardHidden = true },
+                    dismissedCardIndex = dismissedCardIndex,
+                    onDismissAnimationFinished = { dismissedCardIndex = null }
+                )
             }
-
         }
     }
 
@@ -388,7 +325,77 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun Timer() {
+private fun ColumnScope.Title(variant: HomeTitleVariant) {
+    val today = LocalDate.now()
+
+    val titleResId = when (variant) {
+        HomeTitleVariant.EXISTING -> R.string.home_title
+        HomeTitleVariant.NEW -> R.string.home_title_b
+    }
+    Text(
+        modifier = Modifier
+            .padding(horizontal = 20.dp),
+        text = stringResource(
+            titleResId,
+            today.year,
+            today.monthValue.toString().padStart(2, '0'),
+            today.dayOfMonth.toString().padStart(2, '0')
+        ),
+        style = SoakTheme.typography.title.copy(
+            textAlign = TextAlign.Center,
+            fontSize = 24.sp,
+        ),
+        color = SoakTheme.colors.textStrong,
+    )
+
+    when (variant) {
+        HomeTitleVariant.NEW -> Spacer(Modifier.height(12.dp))
+        HomeTitleVariant.EXISTING -> Spacer(Modifier.height(8.dp))
+    }
+
+    if (variant == HomeTitleVariant.NEW) {
+        Text(
+            text = stringResource(R.string.home_update_notice_b),
+            style = SoakTheme.typography.body15.copy(
+                fontWeight = FontWeight.SemiBold,
+                color = SoakTheme.colors.textStrong,
+            )
+        )
+    }
+
+    if (variant == HomeTitleVariant.NEW) Spacer(Modifier.height(4.dp))
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(1.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        if (variant == HomeTitleVariant.NEW) {
+            Text(
+                modifier = Modifier.padding(end = 2.dp),
+                text = stringResource(R.string.home_limited_time_notice_prefix_b),
+                style = SoakTheme.typography.body15.copy(
+                    fontWeight = FontWeight.Medium,
+                    color = SoakTheme.colors.textSecondary,
+                )
+            )
+        }
+
+        RemainingTime()
+
+        val suffixString = stringResource(R.string.home_limited_time_notice)
+        Text(
+            modifier = Modifier.padding(start = 2.dp),
+            text = suffixString,
+            style = SoakTheme.typography.body15.copy(
+                fontWeight = FontWeight.Medium,
+                color = SoakTheme.colors.textSecondary,
+            )
+        )
+    }
+}
+
+@Composable
+private fun RowScope.RemainingTime() {
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()
@@ -405,39 +412,24 @@ private fun Timer() {
         }
     }.collectAsStateWithLifecycle(Triple(0L, 0L, 0L))
 
-    Row(
-        modifier = Modifier.padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(1.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        val suffixString = stringResource(R.string.home_limited_time_notice)
-        val numberStyle = SoakTheme.typography.body16.copy(
-            fontWeight = FontWeight.SemiBold,
-            color = SoakTheme.colors.stateNegativePrimary
-        )
-        val colonStyle = SoakTheme.typography.body15.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.stateNegativePrimary
-        )
+    val numberStyle = SoakTheme.typography.body16.copy(
+        fontWeight = FontWeight.SemiBold,
+        color = SoakTheme.colors.stateNegativePrimary
+    )
+    val colonStyle = SoakTheme.typography.body15.copy(
+        fontWeight = FontWeight.Bold,
+        color = SoakTheme.colors.stateNegativePrimary
+    )
 
-        val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
-        val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
-        val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
+    val hh = remainingUntilTomorrow.first.toString().padStart(2, '0')
+    val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
+    val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
 
-        Text(hh, style = numberStyle)
-        Text(":", style = colonStyle)
-        Text(mm, style = numberStyle)
-        Text(":", style = colonStyle)
-        Text(ss, style = numberStyle)
-        Text(
-            modifier = Modifier.padding(start = 2.dp),
-            text = suffixString,
-            style = SoakTheme.typography.body15.copy(
-                fontWeight = FontWeight.Medium,
-                color = SoakTheme.colors.textSecondary,
-            )
-        )
-    }
+    Text(hh, style = numberStyle)
+    Text(":", style = colonStyle)
+    Text(mm, style = numberStyle)
+    Text(":", style = colonStyle)
+    Text(ss, style = numberStyle)
 }
 
 @Composable
@@ -530,7 +522,7 @@ private fun Cards(
     LaunchedEffect(cardOffsets) {
         if (news.isEmpty()) return@LaunchedEffect
 
-        onCardsHeight(cardOffsets[news.size - 1])
+        onCardsHeight(cardOffsets.last())
     }
 
     var frontMostIndex by remember { mutableStateOf<Int?>(null) }
@@ -561,7 +553,6 @@ private fun Cards(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
             .scrollable(orientation = Orientation.Vertical, state = scrollState),
         contentAlignment = Alignment.BottomCenter
     ) {
@@ -870,7 +861,7 @@ private fun HomeScreenPreview() {
                 ),
             ),
             colorType = "B",
-            isWide = false,
+            homeTitleVariant = HomeTitleVariant.NEW,
         )
     }
 }
