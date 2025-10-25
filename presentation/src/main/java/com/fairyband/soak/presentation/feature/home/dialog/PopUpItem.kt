@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -77,7 +78,19 @@ internal fun PopUpItem(
         Row(
             modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "한국어", // todo: 서버통신 값으로 바꾸기
+                style = SoakTheme.typography.caption11.copy(fontWeight = FontWeight.Bold),
+                color = SoakTheme.colors.textStrongInverse,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(titleColor)
+                    .padding(horizontal = 6.dp)
+                    .padding(vertical = 2.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = newsFeed.keyword,
                 style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
