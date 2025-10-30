@@ -29,7 +29,7 @@ enum class Preference(
     ),
     DEVOPS(
         label = "DEVOPS",
-        icon = R.drawable.ic_home_backend, // todo: 수정하기
+        icon = R.drawable.ic_home_devops, // todo: 수정하기
         stringValue = "DEVOPS"
     )
 }
