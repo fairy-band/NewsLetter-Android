@@ -5,7 +5,9 @@ import com.fairyband.soak.core.extension.isJsonArray
 import com.fairyband.soak.core.extension.isJsonObject
 import com.fairyband.soak.data.BuildConfig.BASE_URL
 import com.fairyband.soak.data.di.qualifier.JWT
+import com.fairyband.soak.data.di.qualifier.Locale
 import com.fairyband.soak.data.remote.AuthInterceptor
+import com.fairyband.soak.data.remote.LocaleInterceptor
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -52,12 +54,18 @@ class RetrofitModule {
     fun provideAuthInterceptor(authInterceptor: AuthInterceptor): Interceptor = authInterceptor
 
     @Single
+    @Locale
+    fun provideLocaleInterceptor(localeInterceptor: LocaleInterceptor): Interceptor = localeInterceptor
+
+    @Single
     @JWT
     fun provideJWTOkHttpClient(
         loggingInterceptor: Interceptor,
         @JWT authInterceptor: Interceptor,
+        @Locale localeInterceptor: Interceptor,
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
+        .addInterceptor(localeInterceptor)
         .addInterceptor(authInterceptor)
         .build()
 

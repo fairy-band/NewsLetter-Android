@@ -4,3 +4,6 @@ import org.koin.core.annotation.Qualifier
 
 @Qualifier
 annotation class JWT
+
+@Qualifier
+annotation class Locale
