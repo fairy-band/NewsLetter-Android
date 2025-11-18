@@ -144,7 +144,8 @@ internal fun PopUpDialog(
                                 keyword = item.keyword,
                                 letter = item.letter,
                                 summary = item.summary,
-                                url = item.url
+                                url = item.url,
+                                language = item.language,
                             ),
                             titleColor = titleColors[pageIndex],
                             onWebClick = { onWebClick(item, pageIndex) },

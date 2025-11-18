@@ -9,6 +9,7 @@ data class NewsFeed(
     val letter: String,
     val summary: String,
     val url: String,
+    val language: String,
 )
 
 fun NewsResponse.toNewsFeed(): NewsFeed {
@@ -19,5 +20,6 @@ fun NewsResponse.toNewsFeed(): NewsFeed {
         letter = newsletterName,
         summary = summary,
         url = contentUrl,
+        language = language,
     )
 }

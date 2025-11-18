@@ -817,7 +817,8 @@ private fun HomeScreenPreview() {
                     keyword = "Kotlin",
                     letter = "Android Weekly",
                     summary = "",
-                    url = "https://naver.com"
+                    url = "https://naver.com",
+                    language = "한국어"
                 ),
                 NewsFeed(
                     id = 1,
@@ -825,7 +826,8 @@ private fun HomeScreenPreview() {
                     keyword = "Kotlin",
                     letter = "Android Weekly",
                     summary = "",
-                    url = "https://naver.com"
+                    url = "https://naver.com",
+                    language = "한국어"
                 ),
                 NewsFeed(
                     id = 1,
@@ -833,7 +835,8 @@ private fun HomeScreenPreview() {
                     keyword = "Kotlin",
                     letter = "Android Weekly",
                     summary = "",
-                    url = "https://naver.com"
+                    url = "https://naver.com",
+                    language = "한국어"
                 ),
                 NewsFeed(
                     id = 1,
@@ -841,7 +844,8 @@ private fun HomeScreenPreview() {
                     keyword = "Kotlin",
                     letter = "Android Weekly",
                     summary = "",
-                    url = "https://naver.com"
+                    url = "https://naver.com",
+                    language = "한국어"
                 ),
                 NewsFeed(
                     id = 1,
@@ -849,7 +853,8 @@ private fun HomeScreenPreview() {
                     keyword = "Kotlin",
                     letter = "Android Weekly",
                     summary = "",
-                    url = "https://naver.com"
+                    url = "https://naver.com",
+                    language = "한국어"
                 ),
                 NewsFeed(
                     id = 1,
@@ -857,7 +862,8 @@ private fun HomeScreenPreview() {
                     keyword = "Kotlin",
                     letter = "Android Weekly",
                     summary = "",
-                    url = "https://naver.com"
+                    url = "https://naver.com",
+                    language = "한국어"
                 ),
             ),
             colorType = "B",
