@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.setting
 
+import android.content.ClipData
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,20 +15,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.designsystem.dialog.BaseDialog
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
@@ -39,7 +47,10 @@ import com.fairyband.soak.presentation.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
+import com.google.firebase.installations.FirebaseInstallations
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
 
 @Composable
 internal fun SettingScreen(
@@ -88,6 +99,24 @@ private fun SettingScreen(
     onServiceClick: () -> Unit,
     onPersonalClick: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    var showInstallationToken by rememberSaveable { mutableStateOf(false) }
+    var installationToken by rememberSaveable { mutableStateOf("알 수 없음") }
+
+    LaunchedEffect(Unit) {
+        FirebaseInstallations.getInstance().getToken(true)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Timber.d("설치 인증 토큰: ${task.result?.token}")
+                    task.result?.token?.let { token ->
+                        installationToken = token
+                    }
+                } else {
+                    Timber.w("AB 테스트를 위한 파이어베이스 설치 토큰을 받지 못했어요.")
+                }
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -130,6 +159,9 @@ private fun SettingScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             SettingText(
+                modifier = Modifier.noRippleClickable {
+                    showInstallationToken = true // TODO: 열 번 클릭 시로 바꾸기.
+                },
                 title = stringResource(R.string.setting_version_current),
                 subText = BuildConfig.VERSION_NAME
             )
@@ -164,6 +196,43 @@ private fun SettingScreen(
                 title = stringResource(R.string.setting_policy_personal),
                 modifier = Modifier.clickable(onClick = onPersonalClick)
             )
+        }
+    }
+
+    if (showInstallationToken) {
+        val clipboard = LocalClipboard.current
+
+        BaseDialog {
+            Text(installationToken)
+            Row(
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    onClick = {
+                        showInstallationToken = false
+                    }
+                ) {
+                    Text(
+                        modifier = Modifier.clickable {
+                            showInstallationToken = false
+                        },
+                        text = "닫기",
+                    )
+                }
+
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            val clipData = ClipData.newPlainText("설치 토큰", installationToken)
+                            clipboard.setClipEntry(clipData.toClipEntry())
+                        }
+                    }
+                ) {
+                    Text(
+                        text = "복사하기",
+                    )
+                }
+            }
         }
     }
 }
