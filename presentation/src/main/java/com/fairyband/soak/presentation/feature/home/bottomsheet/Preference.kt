@@ -26,5 +26,10 @@ enum class Preference(
         label = "BE",
         icon = R.drawable.ic_home_backend,
         stringValue = "BACKEND"
+    ),
+    DEVOPS(
+        label = "DEVOPS",
+        icon = R.drawable.ic_home_devops,
+        stringValue = "DEVOPS"
     )
 }
