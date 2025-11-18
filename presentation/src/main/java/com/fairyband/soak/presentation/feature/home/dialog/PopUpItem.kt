@@ -81,7 +81,7 @@ internal fun PopUpItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "한국어", // todo: 서버통신 값으로 바꾸기
+                text = stringResource(Language.fromKey(newsFeed.language).label),
                 style = SoakTheme.typography.caption11.copy(fontWeight = FontWeight.Bold),
                 color = SoakTheme.colors.textStrongInverse,
                 modifier = Modifier
@@ -181,7 +181,8 @@ private fun PopUpItemPreview() {
                 keyword = "Kotlin",
                 letter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
-                url = ""
+                url = "",
+                language = "한국어"
             ),
             titleColor = SoakTheme.colors.statePositivePrimary,
             onWebClick = {},
