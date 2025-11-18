@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,8 +101,9 @@ private fun SettingScreen(
     onPersonalClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    var showInstallationToken by rememberSaveable { mutableStateOf(false) }
     var installationToken by rememberSaveable { mutableStateOf("알 수 없음") }
+    var versionClickCount by rememberSaveable { mutableStateOf(0) }
+    val showInstallationToken by remember { derivedStateOf { versionClickCount >= 10 } }
 
     LaunchedEffect(Unit) {
         FirebaseInstallations.getInstance().getToken(true)
@@ -160,7 +162,7 @@ private fun SettingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SettingText(
                 modifier = Modifier.noRippleClickable {
-                    showInstallationToken = true // TODO: 열 번 클릭 시로 바꾸기.
+                    versionClickCount++
                 },
                 title = stringResource(R.string.setting_version_current),
                 subText = BuildConfig.VERSION_NAME
@@ -209,13 +211,10 @@ private fun SettingScreen(
             ) {
                 TextButton(
                     onClick = {
-                        showInstallationToken = false
+                        versionClickCount = 0
                     }
                 ) {
                     Text(
-                        modifier = Modifier.clickable {
-                            showInstallationToken = false
-                        },
                         text = "닫기",
                     )
                 }
