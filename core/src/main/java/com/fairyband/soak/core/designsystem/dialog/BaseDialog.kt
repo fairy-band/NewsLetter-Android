@@ -15,8 +15,8 @@ import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun BaseDialog(
-    modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     content: @Composable ColumnScope.() -> Unit,
 ) {
