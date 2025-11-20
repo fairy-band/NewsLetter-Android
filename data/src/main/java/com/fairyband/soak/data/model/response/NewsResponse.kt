@@ -10,4 +10,5 @@ data class NewsResponse(
     val summary: String,
     val contentUrl: String,
     val newsletterName: String,
+    val language: String,
 )
