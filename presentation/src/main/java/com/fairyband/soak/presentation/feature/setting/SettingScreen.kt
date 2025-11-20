@@ -1,6 +1,7 @@
 package com.fairyband.soak.presentation.feature.setting
 
 import android.content.ClipData
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -101,6 +102,7 @@ private fun SettingScreen(
     onPersonalClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var installationToken by rememberSaveable { mutableStateOf("알 수 없음") }
     var versionClickCount by rememberSaveable { mutableStateOf(0) }
     val showInstallationToken by remember { derivedStateOf { versionClickCount >= 10 } }
@@ -227,6 +229,7 @@ private fun SettingScreen(
                         scope.launch {
                             val clipData = ClipData.newPlainText("설치 토큰", installationToken)
                             clipboard.setClipEntry(clipData.toClipEntry())
+                            Toast.makeText(context, "설치토큰이 복사되었습니다", Toast.LENGTH_SHORT).show()
                         }
                     }
                 ) {
