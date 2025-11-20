@@ -204,7 +204,9 @@ private fun SettingScreen(
     if (showInstallationToken) {
         val clipboard = LocalClipboard.current
 
-        BaseDialog {
+        BaseDialog(
+            onDismiss = { versionClickCount = 0 }
+        ) {
             Text(installationToken)
             Row(
                 horizontalArrangement = Arrangement.End
