@@ -209,7 +209,8 @@ private fun SettingScreen(
         ) {
             Text(installationToken)
             Row(
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(
                     onClick = {
