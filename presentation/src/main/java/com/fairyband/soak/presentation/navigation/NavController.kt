@@ -30,8 +30,8 @@ class NavController(val backStack: NavBackStack) {
 }
 
 @Composable
-fun rememberNavController(): NavController {
-    val backStack = rememberNavBackStack(Screen.Splash)
+fun rememberNavController(startDestination: NavKey): NavController {
+    val backStack = rememberNavBackStack(startDestination)
 
     LaunchedEffect(backStack) {
         val analytics = Firebase.analytics

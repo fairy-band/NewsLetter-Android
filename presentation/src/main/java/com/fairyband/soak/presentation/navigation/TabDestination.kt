@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
  * @param name firebase analytics에 기록할 화면 이름을 의미합니다.
  */
 @Serializable
-sealed class TabScreen(val name: String) : NavKey {
+sealed class TabDestination(val name: String) : NavKey {
     @Serializable
-    data object Home : Screen("main")
+    data object Main : Screen("main")
 
     @Serializable
     data object Search : Screen("search")
