@@ -14,7 +14,7 @@ sealed class Screen(val name: String) : NavKey {
     data object Splash : Screen("splash")
 
     @Serializable
-    data object Home : Screen("main")
+    data object Home : Screen("tab")
 
     @Serializable
     data class WebView(
