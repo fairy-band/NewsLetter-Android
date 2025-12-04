@@ -23,6 +23,18 @@ import com.fairyband.soak.core.theme.SoakTheme
 
 @Composable
 fun SearchScreen() {
+    val soakColors = remember { SoakColors() }
+    val cardColors = remember {
+        listOf(
+            soakColors.greenBackgroundPrimary,
+            soakColors.pinkBackgroundPrimary,
+            soakColors.lemonYellowBackgroundPrimary,
+            soakColors.blueBackgroundPrimary,
+            soakColors.orangeBackgroundPrimary,
+            soakColors.purpleBackgroundPrimary,
+        )
+    }
+
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -32,23 +44,21 @@ fun SearchScreen() {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(14) {
-                Card()
+            items(14) { index ->
+                Card(cardColors[index % 6])
             }
         }
     }
 }
 
 @Composable
-private fun Card() {
-    val soakColors = remember { SoakColors() }
-
+private fun Card(containerColor: Color) {
     Column(
         modifier = Modifier
             .height(176.dp)
             .background(
                 shape = RoundedCornerShape(16.dp),
-                color = soakColors.lemonYellowBackgroundPrimary
+                color = containerColor
             )
             .padding(16.dp)
     ) {
