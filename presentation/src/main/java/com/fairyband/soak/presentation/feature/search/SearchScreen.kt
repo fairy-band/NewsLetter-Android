@@ -64,7 +64,10 @@ private fun Card(containerColor: Color) {
     ) {
         Text(
             "네온, PostgreSQL 전문가도 놓친 치명적 실수",
-            style = SoakTheme.typography.body15.copy(color = SoakTheme.colors.textStrong)
+            style = SoakTheme.typography.body15.copy(
+                color = SoakTheme.colors.textStrong,
+                fontWeight = FontWeight.Bold
+            )
         )
         Spacer(modifier = Modifier.weight(1f))
         Row(
