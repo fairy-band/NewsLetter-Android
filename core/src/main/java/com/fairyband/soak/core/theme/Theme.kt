@@ -38,7 +38,7 @@ fun SoakTheme(
         MaterialTheme(
             content = content,
             colorScheme = MaterialTheme.colorScheme.copy(
-                background = Color.White
+                background = SoakTheme.colors.fillSecondary
             )
         )
     }

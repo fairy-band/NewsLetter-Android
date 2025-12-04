@@ -236,20 +236,6 @@ private fun HomeScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
-                contentDescription = "setting button",
-                modifier = Modifier
-                    .padding(
-                        top = 8.dp,
-                        end = 8.dp
-                    )
-                    .align(Alignment.End)
-                    .noRippleClickable {
-                        navController.navigate(Screen.Setting)
-                    }
-            )
-
             Spacer(modifier = Modifier.weight(1f))
             Title(variant = homeTitleVariant)
             Spacer(modifier = Modifier.weight(2f))
