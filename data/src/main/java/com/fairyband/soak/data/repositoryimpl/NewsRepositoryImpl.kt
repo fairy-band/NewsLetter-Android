@@ -55,7 +55,7 @@ class NewsRepositoryImpl(
         refreshFlow.emit(Unit)
     }
 
-    fun getExploreContents(page: Int, size: Int): Flow<List<ExploreContentResponse>> = flow {
+    override fun getExploreContents(page: Int, size: Int): Flow<List<ExploreContentResponse>> = flow {
         val response = newsLetterDataSource.getExploreContents(page, size)
         emit(response.contents)
     }

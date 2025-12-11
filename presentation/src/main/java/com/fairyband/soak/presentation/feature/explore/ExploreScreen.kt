@@ -1,4 +1,4 @@
-package com.fairyband.soak.presentation.feature.search
+package com.fairyband.soak.presentation.feature.explore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,16 +13,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.data.model.response.ExploreContentResponse
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ExploreScreen() {
+fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
+    val news by viewModel.news.collectAsStateWithLifecycle()
     val soakColors = remember { SoakColors() }
     val cardColors = remember {
         listOf(
@@ -38,21 +43,21 @@ fun ExploreScreen() {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        Text("전체 (100)")
+        Text("전체 (${news.size})")
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(14) { index ->
-                Card(cardColors[index % 6])
+            items(news.size) { index ->
+                Card(news[index], cardColors[index % 6])
             }
         }
     }
 }
 
 @Composable
-private fun Card(containerColor: Color) {
+private fun Card(content: ExploreContentResponse, containerColor: Color) {
     Column(
         modifier = Modifier
             .height(176.dp)
@@ -63,7 +68,7 @@ private fun Card(containerColor: Color) {
             .padding(16.dp)
     ) {
         Text(
-            "네온, PostgreSQL 전문가도 놓친 치명적 실수",
+            content.provocativeHeadline,
             style = SoakTheme.typography.body15.copy(
                 color = SoakTheme.colors.textStrong,
                 fontWeight = FontWeight.Bold
@@ -74,7 +79,7 @@ private fun Card(containerColor: Color) {
             modifier = Modifier.height(18.dp)
         ) {
             Text(
-                "Kotlin", style = SoakTheme.typography.body13.copy(
+                content.provocativeKeyword, style = SoakTheme.typography.body13.copy(
                     color = Color(0x80121212),
                     fontWeight = FontWeight.Bold,
                 )
@@ -88,7 +93,7 @@ private fun Card(containerColor: Color) {
                 color = Color(0x80121212)
             )
             Text(
-                "안드로이드 위클리", style = SoakTheme.typography.body13.copy(
+                content.newsletterName, style = SoakTheme.typography.body13.copy(
                     color = Color(0x80121212)
                 )
             )

@@ -13,7 +13,7 @@ interface NewsLetterService {
         @Query("publishedDate") publishedDate: String? = null,
     ): LetterResponse
 
-    @GET("api/newsletters/contents/{userId}")
+    @GET("api/newsletters/explore/contents")
     suspend fun getExploreContents(
         @Query("lastSeenOffset")
         lastSeenOffset: Long = 0,
