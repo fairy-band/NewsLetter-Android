@@ -32,7 +32,7 @@ import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.HomeScreen
-import com.fairyband.soak.presentation.feature.search.SearchScreen
+import com.fairyband.soak.presentation.feature.search.ExploreScreen
 import com.fairyband.soak.presentation.navigation.Screen
 import com.fairyband.soak.presentation.navigation.TabDestination
 import com.fairyband.soak.presentation.navigation.rememberNavController
@@ -71,7 +71,7 @@ fun TabScreen() {
                 )
                 Text(
                     modifier = Modifier.clickable {
-                        navController.navigate(TabDestination.Search)
+                        navController.navigate(TabDestination.Explore)
                     },
                     text = "탐색"
                 )
@@ -111,8 +111,8 @@ private fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
             HomeScreen()
         }
 
-        entry<TabDestination.Search> { main ->
-            SearchScreen()
+        entry<TabDestination.Explore> { main ->
+            ExploreScreen()
         }
     }
 }

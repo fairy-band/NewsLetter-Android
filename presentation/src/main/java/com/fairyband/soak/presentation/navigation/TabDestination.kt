@@ -12,5 +12,5 @@ sealed class TabDestination(val name: String) : NavKey {
     data object Main : Screen("main")
 
     @Serializable
-    data object Search : Screen("search")
+    data object Explore : Screen("explore")
 }

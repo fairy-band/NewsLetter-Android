@@ -22,7 +22,7 @@ import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 
 @Composable
-fun SearchScreen() {
+fun ExploreScreen() {
     val soakColors = remember { SoakColors() }
     val cardColors = remember {
         listOf(
