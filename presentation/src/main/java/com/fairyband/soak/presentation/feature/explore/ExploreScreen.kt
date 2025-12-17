@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.response.ExploreContentResponse
@@ -29,7 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val soakColors = remember { SoakColors() }
+    val soakColors = LocalSoakColors.current
     val cardColors = remember {
         listOf(
             soakColors.greenBackgroundPrimary,

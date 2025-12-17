@@ -35,10 +35,10 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
 import com.fairyband.soak.presentation.feature.home.HomeScreen
-import com.fairyband.soak.presentation.navigation.NavController
 import com.fairyband.soak.presentation.navigation.Screen
 import com.fairyband.soak.presentation.navigation.TabDestination
 import com.fairyband.soak.presentation.navigation.rememberNavController
@@ -46,13 +46,13 @@ import com.fairyband.soak.presentation.navigation.rememberNavController
 @Composable
 fun TabScreen() {
     val soakColors = LocalSoakColors.current
-    val navController = rememberNavController(TabDestination.Main)
+    val tabNavController = rememberNavController(TabDestination.Main)
     val isMain by remember {
         derivedStateOf {
-            navController.backStack.last() == TabDestination.Main
+            tabNavController.backStack.last() == TabDestination.Main
         }
     }
-    val backgroundColor by remember(navController.backStack) {
+    val backgroundColor by remember(tabNavController.backStack) {
         derivedStateOf {
             if (isMain) soakColors.fillSecondary else soakColors.backgroundSurfaceInverse
         }
@@ -63,11 +63,11 @@ fun TabScreen() {
             .statusBarsPadding()
             .background(backgroundColor)
     ) {
-        SoakTab(navController = navController, isMain = isMain)
+        SoakTab(isMain = isMain)
 
         NavDisplay(
-            backStack = navController.backStack,
-            onBack = { navController.pop() },
+            backStack = tabNavController.backStack,
+            onBack = { tabNavController.pop() },
             entryProvider = createEntryProvider(),
             entryDecorators = listOf(
                 rememberSavedStateNavEntryDecorator(),
@@ -79,13 +79,10 @@ fun TabScreen() {
 
 @Composable
 private fun SoakTab(
-    navController: NavController,
     isMain: Boolean,
 ) {
+    val navController = LocalNavController.current
     val soakColors = LocalSoakColors.current
-    val textColor = remember(isMain) {
-        if (isMain) soakColors.textStrong else soakColors.textStrongInverse
-    }
 
     Box(
         modifier = Modifier
