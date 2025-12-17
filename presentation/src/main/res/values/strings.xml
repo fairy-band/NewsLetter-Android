@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--home-->
+    <!--tab-->
+    <string name="tab_recommend">추천</string>
+    <string name="tab_explore">탐색</string>
+
+    <!--main-->
     <string name="home_title">"%s.%s.%s\nToday's Hot News"</string>
     <string name="home_title_b">%s.%s.%s</string>
     <string name="home_popup_button_text">원문 보기</string>
