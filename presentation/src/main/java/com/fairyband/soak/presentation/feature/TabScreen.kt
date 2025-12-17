@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -20,9 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
@@ -81,17 +83,14 @@ private fun SoakTab(
     isMain: Boolean,
 ) {
     val soakColors = LocalSoakColors.current
-    val textColor by remember(navController.backStack) {
-        derivedStateOf {
-            if (isMain) soakColors.textStrong else soakColors.textStrongInverse
-        }
+    val textColor = remember(isMain) {
+        if (isMain) soakColors.textStrong else soakColors.textStrongInverse
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
-            .background(soakColors.purpleBackgroundPrimary),
+            .height(48.dp),
         contentAlignment = Alignment.BottomEnd,
     ) {
         Row(
@@ -105,26 +104,52 @@ private fun SoakTab(
                     .clickable {
                         navController.navigate(TabDestination.Main)
                     }
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 2.dp)
+                    .padding(horizontal = 8.dp),
+                contentAlignment = Alignment.BottomCenter,
             ) {
                 Text(
+                    modifier = Modifier.padding(bottom = 2.dp),
                     text = stringResource(R.string.tab_recommend),
-                    style = SoakTheme.typography.body15.copy(color = textColor),
+                    style = SoakTheme.typography.body15.copy(
+                        color = if (isMain) soakColors.textStrong else soakColors.textStrongInverse,
+                        fontWeight = if (isMain) FontWeight.Bold else FontWeight.Normal
+                    ),
                 )
+
+                if (isMain) {
+                    Box(
+                        modifier = Modifier
+                            .size(width = 16.dp, height = 2.dp)
+                            .background(color = soakColors.iconStrong)
+                            .clip(shape = CircleShape)
+                    )
+                }
             }
             Box(
                 modifier = Modifier
                     .clickable {
                         navController.navigate(TabDestination.Explore)
                     }
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 2.dp)
+                    .padding(horizontal = 8.dp),
+                contentAlignment = Alignment.BottomCenter,
             ) {
                 Text(
+                    modifier = Modifier.padding(bottom = 2.dp),
                     text = stringResource(R.string.tab_explore),
-                    style = SoakTheme.typography.body15.copy(color = textColor),
+                    style = SoakTheme.typography.body15.copy(
+                        color = if (!isMain) soakColors.textStrongInverse else soakColors.textTertiary,
+                        fontWeight = if (!isMain) FontWeight.Bold else FontWeight.Normal
+                    ),
                 )
+
+                if (!isMain) {
+                    Box(
+                        modifier = Modifier
+                            .size(width = 16.dp, height = 2.dp)
+                            .background(color = soakColors.iconStrongInverse)
+                            .clip(shape = CircleShape)
+                    )
+                }
             }
         }
 
