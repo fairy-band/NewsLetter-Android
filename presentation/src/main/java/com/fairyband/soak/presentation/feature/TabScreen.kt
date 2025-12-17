@@ -39,6 +39,7 @@ import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
 import com.fairyband.soak.presentation.feature.home.HomeScreen
+import com.fairyband.soak.presentation.navigation.NavController
 import com.fairyband.soak.presentation.navigation.Screen
 import com.fairyband.soak.presentation.navigation.TabDestination
 import com.fairyband.soak.presentation.navigation.rememberNavController
@@ -63,7 +64,7 @@ fun TabScreen() {
             .statusBarsPadding()
             .background(backgroundColor)
     ) {
-        SoakTab(isMain = isMain)
+        SoakTab(tabNavController = tabNavController, isMain = isMain)
 
         NavDisplay(
             backStack = tabNavController.backStack,
@@ -79,6 +80,7 @@ fun TabScreen() {
 
 @Composable
 private fun SoakTab(
+    tabNavController: NavController,
     isMain: Boolean,
 ) {
     val navController = LocalNavController.current
@@ -99,7 +101,7 @@ private fun SoakTab(
             Box(
                 modifier = Modifier
                     .clickable {
-                        navController.navigate(TabDestination.Main)
+                        tabNavController.navigate(TabDestination.Main)
                     }
                     .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.BottomCenter,
@@ -125,7 +127,7 @@ private fun SoakTab(
             Box(
                 modifier = Modifier
                     .clickable {
-                        navController.navigate(TabDestination.Explore)
+                        tabNavController.navigate(TabDestination.Explore)
                     }
                     .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.BottomCenter,
