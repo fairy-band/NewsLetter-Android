@@ -53,7 +53,7 @@ fun TabScreen() {
             tabNavController.backStack.last() == TabDestination.Main
         }
     }
-    val backgroundColor by remember(tabNavController.backStack) {
+    val backgroundColor by remember(isMain) {
         derivedStateOf {
             if (isMain) soakColors.fillSecondary else soakColors.backgroundSurfaceInverse
         }

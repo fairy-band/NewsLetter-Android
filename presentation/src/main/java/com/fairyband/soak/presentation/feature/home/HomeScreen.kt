@@ -259,6 +259,10 @@ private fun HomeScreen(
                         },
                 )
                 Cards(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .sizeIn(maxWidth = 432.dp),
+                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
                     news = news,
                     onClick = { index ->
                         cardIndex = index
@@ -270,10 +274,6 @@ private fun HomeScreen(
 
                         cardsHeight = height.dp
                     },
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 432.dp)
-                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
-                        .fillMaxWidth(),
                     dialogVisible = cardIndex != null,
                     onCardHidden = { onCardHidden = true },
                     dismissedCardIndex = dismissedCardIndex,
