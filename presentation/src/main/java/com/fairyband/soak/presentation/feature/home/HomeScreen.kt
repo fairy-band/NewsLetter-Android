@@ -1,7 +1,9 @@
 package com.fairyband.soak.presentation.feature.home
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -31,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -56,6 +59,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -68,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -110,6 +115,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
+    val activity = LocalActivity.current
 
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
@@ -120,6 +127,19 @@ fun HomeScreen(
     var bottomSheetVisibility by remember { mutableStateOf(false) }
     val showNotificationBottomSheet by
     viewModel.shouldShowNotificationSetting.collectAsStateWithLifecycle()
+
+    DisposableEffect(Unit) {
+        val window = activity?.window
+        window?.let {
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = true
+        }
+
+        onDispose {
+            window?.let {
+                WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false
+            }
+        }
+    }
 
     LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
         viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
