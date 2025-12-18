@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.explore
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,13 +18,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
@@ -45,6 +50,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             soakColors.purpleBackgroundPrimary,
         )
     }
+
+    DarkSystemBar()
 
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -115,6 +122,31 @@ private fun Card(content: ExploreContentResponse, containerColor: Color) {
                     color = Color(0x80121212)
                 )
             )
+        }
+    }
+}
+
+@Composable
+private fun DarkSystemBar() {
+    val view = LocalView.current
+    val activity = LocalActivity.current
+
+    DisposableEffect(Unit) {
+        val window = activity?.window
+
+        window?.let {
+            val controller = WindowInsetsControllerCompat(window, view)
+            controller.isAppearanceLightStatusBars = false
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false
+        }
+
+        onDispose {
+            window?.let {
+                val controller = WindowInsetsControllerCompat(window, view)
+                controller.isAppearanceLightStatusBars = true
+                WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
+                    true
+            }
         }
     }
 }

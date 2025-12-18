@@ -115,8 +115,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-    val view = LocalView.current
-    val activity = LocalActivity.current
 
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
@@ -127,19 +125,6 @@ fun HomeScreen(
     var bottomSheetVisibility by remember { mutableStateOf(false) }
     val showNotificationBottomSheet by
     viewModel.shouldShowNotificationSetting.collectAsStateWithLifecycle()
-
-    DisposableEffect(Unit) {
-        val window = activity?.window
-        window?.let {
-            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = true
-        }
-
-        onDispose {
-            window?.let {
-                WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false
-            }
-        }
-    }
 
     LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
         viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
