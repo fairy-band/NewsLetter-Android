@@ -57,7 +57,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         Text(
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(vertical = 8.dp),
             text = stringResource(R.string.explore_count_of_articles, news.size),
             style = SoakTheme.typography.body14.copy(
                 color = soakColors.textStrongInverse,
