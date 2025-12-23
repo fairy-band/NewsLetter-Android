@@ -111,7 +111,10 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     showFeed?.let { index ->
         PopUpItem(
             feed = feeds[index],
-            titleColor = SoakTheme.colors.statePositivePrimary,
+            titleColor = SoakTheme.colors.statePositivePrimary, // TODO: 색깔 넣어야 함.
+            onDismissRequest = {
+                showFeed = null
+            }
         )
     }
 }
@@ -194,14 +197,13 @@ private fun DarkSystemBar() {
 private fun PopUpItem(
     feed: ExploreFeed,
     titleColor: Color,
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = LocalNavController.current
 
     Dialog(
-        onDismissRequest = {
-            // TODO
-        }
+        onDismissRequest = onDismissRequest
     ) {
         Column(
             modifier = modifier
