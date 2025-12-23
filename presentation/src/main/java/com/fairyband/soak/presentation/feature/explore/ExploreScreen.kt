@@ -46,17 +46,20 @@ import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.response.ExploreContentResponse
+import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.Language
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
+import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.model.NewsFeed
+import com.fairyband.soak.presentation.navigation.Screen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
-    val news by viewModel.news.collectAsStateWithLifecycle()
+    val feeds by viewModel.news.collectAsStateWithLifecycle()
     val soakColors = LocalSoakColors.current
     val cardColors = remember {
         listOf(
@@ -68,7 +71,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             soakColors.purpleBackgroundPrimary,
         )
     }
-    var showDialog by remember { mutableStateOf(false) }
+    var showFeed: Int? by remember { mutableStateOf(null) }
 
     DarkSystemBar()
 
@@ -77,7 +80,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     ) {
         Text(
             modifier = Modifier.padding(vertical = 8.dp),
-            text = stringResource(R.string.explore_count_of_articles, news.size),
+            text = stringResource(R.string.explore_count_of_articles, feeds.size),
             style = SoakTheme.typography.body14.copy(
                 color = soakColors.textStrongInverse,
                 fontWeight = FontWeight.Bold
@@ -93,31 +96,21 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
             )
         ) {
-            items(news.size) { index ->
+            items(feeds.size) { index ->
                 Card(
                     modifier = Modifier.clickable {
-                        showDialog = true
+                        showFeed = index
                     },
-                    content = news[index],
+                    content = feeds[index],
                     containerColor = cardColors[index % 6],
                 )
             }
         }
     }
 
-    if (showDialog) {
+    showFeed?.let { index ->
         PopUpItem(
-            newsFeed = NewsFeed(
-                id = 1,
-                title = "SwiftUI 커스텀 뷰, 유리처럼 만드는 비법!",
-                keyword = "SwiftUI",
-                letter = "DZon Newsletters",
-                summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\n" +
-                        "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
-                url = "",
-                language = "",
-            ),
-            onWebClick = {},
+            feed = feeds[index],
             titleColor = SoakTheme.colors.statePositivePrimary,
         )
     }
@@ -125,7 +118,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
 
 @Composable
 private fun Card(
-    content: ExploreContentResponse,
+    content: ExploreFeed,
     containerColor: Color,
     modifier: Modifier = Modifier,
 ) {
@@ -139,7 +132,7 @@ private fun Card(
             .padding(16.dp)
     ) {
         Text(
-            content.provocativeHeadline,
+            content.title,
             style = SoakTheme.typography.body15.copy(
                 color = SoakTheme.colors.textStrong,
                 fontWeight = FontWeight.Bold
@@ -150,7 +143,7 @@ private fun Card(
             modifier = Modifier.height(18.dp)
         ) {
             Text(
-                content.provocativeKeyword, style = SoakTheme.typography.body13.copy(
+                content.keyword, style = SoakTheme.typography.body13.copy(
                     color = Color(0x80121212),
                     fontWeight = FontWeight.Bold,
                 )
@@ -164,7 +157,7 @@ private fun Card(
                 color = Color(0x80121212)
             )
             Text(
-                content.newsletterName, style = SoakTheme.typography.body13.copy(
+                content.letter, style = SoakTheme.typography.body13.copy(
                     color = Color(0x80121212)
                 )
             )
@@ -199,13 +192,16 @@ private fun DarkSystemBar() {
 
 @Composable
 private fun PopUpItem(
-    newsFeed: NewsFeed,
+    feed: ExploreFeed,
     titleColor: Color,
-    onWebClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val navController = LocalNavController.current
+
     Dialog(
-        onDismissRequest = {}
+        onDismissRequest = {
+            // TODO
+        }
     ) {
         Column(
             modifier = modifier
@@ -220,7 +216,7 @@ private fun PopUpItem(
             var titleLineCount by remember { mutableIntStateOf(1) }
 
             Text(
-                text = newsFeed.title,
+                text = feed.title,
                 style = SoakTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
                 color = titleColor,
                 maxLines = TITLE_MAX_LINE,
@@ -235,7 +231,7 @@ private fun PopUpItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = newsFeed.keyword,
+                    text = feed.keyword,
                     style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
                     color = titleColor
                 )
@@ -243,14 +239,14 @@ private fun PopUpItem(
                 VerticalDivider(color = titleColor)
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = newsFeed.letter,
+                    text = feed.letter,
                     style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
                     color = titleColor
                 )
             }
             Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
             Text(
-                text = newsFeed.summary,
+                text = feed.summary,
                 style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
                 color = SoakTheme.colors.textPrimary,
                 maxLines = SUMMARY_MAX_LINE,
@@ -260,7 +256,10 @@ private fun PopUpItem(
             Spacer(modifier = Modifier.weight(1f))
             BaseButton(
                 paddingVertical = 12.dp,
-                onClick = onWebClick,
+                onClick = {
+                    // TODO: 애널리틱스 로깅
+                    navController.navigate(Screen.WebView(url = feed.url))
+                },
                 shape = CircleShape,
                 borderWidth = 1.dp,
                 borderColor = SoakTheme.colors.borderSecondary
