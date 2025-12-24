@@ -18,20 +18,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -45,21 +48,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
-import com.fairyband.soak.data.model.response.ExploreContentResponse
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.feature.home.dialog.Language
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.fairyband.soak.presentation.model.ExploreFeed
-import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.Screen
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
-    val feeds by viewModel.news.collectAsStateWithLifecycle()
     val soakColors = LocalSoakColors.current
     val cardColors = remember {
         listOf(
@@ -71,7 +72,29 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             soakColors.purpleBackgroundPrimary,
         )
     }
+
+    val feeds by viewModel.news.collectAsStateWithLifecycle()
     var showFeed: Int? by remember { mutableStateOf(null) }
+    val lazyState = rememberLazyGridState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val threshold = 4
+            val totalItemsCount = lazyState.layoutInfo.totalItemsCount
+            val lastVisibleItemIndex =
+                lazyState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            (lastVisibleItemIndex) >= totalItemsCount - threshold
+        }
+    }
+
+    LaunchedEffect(lazyState) {
+        snapshotFlow {
+            shouldLoadMore
+        }.distinctUntilChanged()
+            .filter { it }
+            .collect {
+                viewModel.loadFeeds()
+            }
+    }
 
     DarkSystemBar()
 
@@ -88,6 +111,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
         )
 
         LazyVerticalGrid(
+            state = lazyState,
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

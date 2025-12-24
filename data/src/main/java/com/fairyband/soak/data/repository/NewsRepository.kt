@@ -8,5 +8,5 @@ interface NewsRepository {
     val news: Flow<List<NewsResponse>>
 
     suspend fun invalidateNews()
-    fun getExploreContents(page: Int = 0, size: Int = 20): Flow<List<ExploreContentResponse>>
+    suspend fun getExploreContents(page: Int = 0, size: Int = 20): List<ExploreContentResponse>
 }
