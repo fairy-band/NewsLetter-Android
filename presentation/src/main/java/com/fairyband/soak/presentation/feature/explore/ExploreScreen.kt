@@ -73,7 +73,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
         )
     }
 
-    val feeds by viewModel.news.collectAsStateWithLifecycle()
+    val feeds by viewModel.feeds.collectAsStateWithLifecycle()
     var showFeed: Int? by remember { mutableStateOf(null) }
     val lazyState = rememberLazyGridState()
     val shouldLoadMore by remember {
