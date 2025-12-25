@@ -1,9 +1,7 @@
 package com.fairyband.soak.presentation.feature.home
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.activity.compose.LocalActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -33,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -54,15 +51,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,12 +66,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.extension.bounceClick
-import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
@@ -90,7 +82,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
-import com.fairyband.soak.presentation.navigation.Screen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
@@ -298,7 +290,7 @@ private fun HomeScreen(
             onCardHidden = false
         },
         onWebClick = { item, pageIndex ->
-            navController.navigate(Screen.WebView(url = item.url))
+            navController.navigate(MainDestination.WebView(url = item.url))
             webClickEvent(id = item.id, page = pageIndex.toLong())
         },
         onShareClick = { id, title, color ->

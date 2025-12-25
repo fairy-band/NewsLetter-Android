@@ -40,7 +40,7 @@ fun rememberNavController(startDestination: NavKey): NavController {
         snapshotFlow { backStack.lastOrNull() }
             .filterNotNull()
             .collect {
-                val screenName = (it as? Screen)?.name ?: "Unknown"
+                val screenName = (it as? MainDestination)?.name ?: "Unknown"
 
                 analytics.logEvent("page_view") {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)

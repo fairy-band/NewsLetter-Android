@@ -42,7 +42,7 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
 import com.fairyband.soak.presentation.feature.home.HomeScreen
 import com.fairyband.soak.presentation.navigation.NavController
-import com.fairyband.soak.presentation.navigation.Screen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.navigation.TabDestination
 import com.fairyband.soak.presentation.navigation.rememberNavController
 
@@ -158,7 +158,7 @@ private fun SoakTab(
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    navController.navigate(Screen.Setting)
+                    navController.navigate(MainDestination.Setting)
                 },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
             contentDescription = "설정 화면으로 이동하기",

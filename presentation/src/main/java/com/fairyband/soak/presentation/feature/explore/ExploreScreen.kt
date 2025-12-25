@@ -54,13 +54,14 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.C
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.fairyband.soak.presentation.model.ExploreFeed
-import com.fairyband.soak.presentation.navigation.Screen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
+    val navController = LocalNavController.current
     val soakColors = LocalSoakColors.current
     val cardColors = remember {
         listOf(
@@ -124,6 +125,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 Card(
                     modifier = Modifier.clickable {
                         showFeed = index
+//                        navController.navigate(MainDestination.ExploreDetail)
                     },
                     content = feeds[index],
                     containerColor = cardColors[index % 6],
@@ -284,7 +286,7 @@ private fun PopUpItem(
                 paddingVertical = 12.dp,
                 onClick = {
                     // TODO: 애널리틱스 로깅
-                    navController.navigate(Screen.WebView(url = feed.url))
+                    navController.navigate(MainDestination.WebView(url = feed.url))
                 },
                 shape = CircleShape,
                 borderWidth = 1.dp,

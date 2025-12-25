@@ -9,8 +9,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class TabDestination(val name: String) : NavKey {
     @Serializable
-    data object Main : Screen("main")
+    data object Main : MainDestination("main")
 
     @Serializable
-    data object Explore : Screen("explore")
+    data object Explore : MainDestination("explore")
 }

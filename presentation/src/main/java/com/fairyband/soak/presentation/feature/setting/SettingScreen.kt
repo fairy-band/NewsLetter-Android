@@ -45,7 +45,7 @@ import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
-import com.fairyband.soak.presentation.navigation.Screen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
@@ -85,10 +85,10 @@ internal fun SettingScreen(
         onNotificationClick = (context::openAppNotificationSettings),
         onBackClick = (navController::pop),
         onServiceClick = {
-            navController.navigate(Screen.SettingService)
+            navController.navigate(MainDestination.SettingService)
         },
         onPersonalClick = {
-            navController.navigate(Screen.SettingPersonal)
+            navController.navigate(MainDestination.SettingPersonal)
         },
     )
 }
