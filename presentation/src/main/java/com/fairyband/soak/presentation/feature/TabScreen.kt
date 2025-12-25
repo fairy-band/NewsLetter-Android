@@ -1,6 +1,5 @@
 package com.fairyband.soak.presentation.feature
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -56,10 +56,8 @@ fun TabScreen() {
             tabNavController.backStack.last() == TabDestination.Main
         }
     }
-    val backgroundColor by remember(isMain) {
-        derivedStateOf {
-            if (isMain) soakColors.fillSecondary else soakColors.backgroundSurfaceInverse
-        }
+    val backgroundColor = remember(isMain) {
+        if (isMain) soakColors.fillSecondary else soakColors.backgroundSurfaceInverse
     }
 
     Column(
@@ -85,7 +83,6 @@ private fun SoakTab(
     isMain: Boolean,
 ) {
     val navController = LocalNavController.current
-    val soakColors = LocalSoakColors.current
     val density = LocalDensity.current
     val insets = WindowInsets.statusBars
     val statusBarHeight = with(density) { insets.getTop(density).toDp() }
@@ -114,7 +111,7 @@ private fun SoakTab(
                     modifier = Modifier.padding(bottom = 2.dp),
                     text = stringResource(R.string.tab_recommend),
                     style = SoakTheme.typography.body15.copy(
-                        color = if (isMain) soakColors.textStrong else soakColors.textStrongInverse,
+                        color = if (isMain) SoakTheme.colors.textStrong else SoakTheme.colors.textStrongInverse,
                         fontWeight = if (isMain) FontWeight.Bold else FontWeight.Normal
                     ),
                 )
@@ -123,7 +120,7 @@ private fun SoakTab(
                     Box(
                         modifier = Modifier
                             .size(width = 16.dp, height = 2.dp)
-                            .background(color = soakColors.iconStrong)
+                            .background(color = SoakTheme.colors.iconStrong)
                             .clip(shape = CircleShape)
                     )
                 }
@@ -140,7 +137,7 @@ private fun SoakTab(
                     modifier = Modifier.padding(bottom = 2.dp),
                     text = stringResource(R.string.tab_explore),
                     style = SoakTheme.typography.body15.copy(
-                        color = if (!isMain) soakColors.textStrongInverse else soakColors.textTertiary,
+                        color = if (!isMain) SoakTheme.colors.textStrongInverse else SoakTheme.colors.textTertiary,
                         fontWeight = if (!isMain) FontWeight.Bold else FontWeight.Normal
                     ),
                 )
@@ -149,14 +146,14 @@ private fun SoakTab(
                     Box(
                         modifier = Modifier
                             .size(width = 16.dp, height = 2.dp)
-                            .background(color = soakColors.iconStrongInverse)
+                            .background(color = SoakTheme.colors.iconStrongInverse)
                             .clip(shape = CircleShape)
                     )
                 }
             }
         }
 
-        Image(
+        Icon(
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
@@ -164,6 +161,7 @@ private fun SoakTab(
                 },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
             contentDescription = "설정 화면으로 이동하기",
+            tint = if (isMain) SoakTheme.colors.iconPrimary else SoakTheme.colors.iconStrongInverse
         )
 
     }
