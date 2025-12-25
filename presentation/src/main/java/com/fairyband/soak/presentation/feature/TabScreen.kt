@@ -90,7 +90,8 @@ private fun SoakTab(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp + statusBarHeight),
+            .height(48.dp + statusBarHeight)
+            .padding(horizontal = 8.dp),
         contentAlignment = Alignment.BottomEnd,
     ) {
         Row(
