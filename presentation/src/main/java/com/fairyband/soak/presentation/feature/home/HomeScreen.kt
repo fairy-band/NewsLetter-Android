@@ -69,6 +69,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
@@ -170,6 +171,8 @@ fun HomeScreen(
             }
         )
     }
+
+    LightSystemBar()
 
     HomeScreen(
         onDismissRequest = {

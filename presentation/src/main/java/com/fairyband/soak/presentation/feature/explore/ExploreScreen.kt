@@ -46,6 +46,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.designsystem.button.BaseButton
+import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
@@ -124,8 +125,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             items(feeds.size) { index ->
                 Card(
                     modifier = Modifier.clickable {
-                        showFeed = index
-//                        navController.navigate(MainDestination.ExploreDetail)
+//                        showFeed = index
+                        navController.navigate(MainDestination.ExploreDetail)
                     },
                     content = feeds[index],
                     containerColor = cardColors[index % 6],
@@ -190,31 +191,6 @@ private fun Card(
                     color = Color(0x80121212)
                 )
             )
-        }
-    }
-}
-
-@Composable
-private fun DarkSystemBar() {
-    val view = LocalView.current
-    val activity = LocalActivity.current
-
-    DisposableEffect(Unit) {
-        val window = activity?.window
-
-        window?.let {
-            val controller = WindowInsetsControllerCompat(window, view)
-            controller.isAppearanceLightStatusBars = false
-            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = false
-        }
-
-        onDispose {
-            window?.let {
-                val controller = WindowInsetsControllerCompat(window, view)
-                controller.isAppearanceLightStatusBars = true
-                WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
-                    true
-            }
         }
     }
 }

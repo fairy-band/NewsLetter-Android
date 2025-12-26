@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
             }
 
             entry<MainDestination.ExploreDetail> {
-                ExploreDetailScreen()
+                ExploreDetailScreen(0, emptyList())
             }
         }
     }
