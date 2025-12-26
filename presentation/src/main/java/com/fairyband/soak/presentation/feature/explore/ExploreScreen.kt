@@ -120,7 +120,6 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             items(feeds.size) { index ->
                 Card(
                     modifier = Modifier.clickable {
-//                        showFeed = index
                         navController.navigate(
                             MainDestination.ExploreDetail(
                                 feeds = feeds,
