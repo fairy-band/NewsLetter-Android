@@ -1,6 +1,7 @@
 package com.fairyband.soak.presentation.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.fairyband.soak.presentation.model.ExploreFeed
 import kotlinx.serialization.Serializable
 
 /**
@@ -40,5 +41,8 @@ sealed class MainDestination(val name: String) : NavKey {
     data object BottomSheetCustom : MainDestination("bottom_sheet_custom")
 
     @Serializable
-    data object ExploreDetail : MainDestination("explore_detail")
+    data class ExploreDetail(
+        val index: Int,
+        val feeds: List<ExploreFeed>,
+    ) : MainDestination("explore_detail")
 }

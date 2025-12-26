@@ -1,6 +1,5 @@
 package com.fairyband.soak.presentation.feature.explore
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,14 +34,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
@@ -126,7 +121,12 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 Card(
                     modifier = Modifier.clickable {
 //                        showFeed = index
-                        navController.navigate(MainDestination.ExploreDetail)
+                        navController.navigate(
+                            MainDestination.ExploreDetail(
+                                feeds = feeds,
+                                index = index
+                            )
+                        )
                     },
                     content = feeds[index],
                     containerColor = cardColors[index % 6],
