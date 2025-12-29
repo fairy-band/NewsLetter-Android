@@ -1,8 +1,6 @@
 package com.fairyband.soak.presentation.model
 
-import com.fairyband.soak.data.model.response.ExploreContentResponse
 import com.fairyband.soak.data.model.response.NewsResponse
-import kotlinx.serialization.Serializable
 
 data class NewsFeed(
     val id: Int,
