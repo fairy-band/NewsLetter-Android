@@ -111,7 +111,8 @@ fun ExploreDetailScreen(
             val totalItemsCount = lazyState.layoutInfo.totalItemsCount
             val lastVisibleItemIndex =
                 lazyState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            (lastVisibleItemIndex) >= totalItemsCount - threshold
+
+            lastVisibleItemIndex >= totalItemsCount - threshold
         }
     }
 
@@ -120,7 +121,7 @@ fun ExploreDetailScreen(
             shouldLoadMore
         }.distinctUntilChanged()
             .filter { it }
-            .collect { loadMoreFeed }
+            .collect { loadMoreFeed() }
     }
 
     LaunchedEffect(Unit) {
@@ -184,7 +185,7 @@ fun ExploreDetailScreen(
             Row(
                 modifier = Modifier.height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top,
             ) {
                 Text(
                     text = feed.keyword,
@@ -202,6 +203,7 @@ fun ExploreDetailScreen(
             }
             Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
             Text(
+                modifier = Modifier.padding(bottom = 16.dp),
                 text = feed.summary,
                 style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
                 color = SoakTheme.colors.textPrimary,

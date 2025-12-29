@@ -64,7 +64,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             val totalItemsCount = lazyState.layoutInfo.totalItemsCount
             val lastVisibleItemIndex =
                 lazyState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            (lastVisibleItemIndex) >= totalItemsCount - threshold
+
+            lastVisibleItemIndex >= totalItemsCount - threshold
         }
     }
 
