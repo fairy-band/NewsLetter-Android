@@ -51,6 +51,9 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.C
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.fairyband.soak.presentation.navigation.MainDestination
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -149,8 +152,8 @@ fun ExploreDetailScreen(
             BaseButton(
                 paddingVertical = 12.dp,
                 onClick = {
-                    // TODO: 애널리틱스 로깅
                     navController.navigate(MainDestination.WebView(url = feed.url))
+                    webClickEvent(id = feed.id, index = index)
                 },
                 shape = CircleShape,
                 borderWidth = 1.dp,
@@ -198,5 +201,15 @@ private fun DetailBackground() {
                 )
 
         )
+    }
+}
+
+private fun webClickEvent(id: Int, index: Int) {
+    // 카드 내 ‘원문 보기’ 버튼 클릭
+    Firebase.analytics.logEvent("click_newsletter_carousel") {
+        param("object_section", "newsletter_card")
+        param("object_type", "button")
+        param("object_id", id.toString())
+        param("card_index", "explore-${index}")
     }
 }

@@ -14,6 +14,6 @@ class ExploreDetailViewModel(
     private val _feeds = MutableStateFlow<List<ExploreFeed>>(detail.feeds)
     val feeds = _feeds.asStateFlow()
 
-    private val _selectedIndex = MutableStateFlow<Int?>(detail.index)
+    private val _selectedIndex = MutableStateFlow(detail.index)
     val selectedIndex = _selectedIndex.asStateFlow()
 }
