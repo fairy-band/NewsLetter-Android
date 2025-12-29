@@ -50,24 +50,17 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
-import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import org.koin.androidx.compose.koinViewModel
 
-// TODO: nav3에서 넘겨 받은 상태를 ViewModel에서 바로 관리하는 방법 찾아보기 (like savedStateHandle)
 @Composable
 fun ExploreDetailScreen(
-    feeds: List<ExploreFeed>,
-    index: Int,
     viewModel: ExploreDetailViewModel = koinViewModel(),
 ) {
     val navController = LocalNavController.current
-    val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
-    // TODO: feeds 안정성 확인하기
-    LaunchedEffect(index, feeds) {
-        viewModel.initialize(feeds = feeds, index = index)
-    }
+    val feeds by viewModel.feeds.collectAsStateWithLifecycle()
+    val index by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
     DetailBackground()
 
@@ -111,7 +104,7 @@ fun ExploreDetailScreen(
         ) {
             // todo: 색깔 바꾸기
             val titleColor = SoakTheme.colors.statePositivePrimary
-            val feed = feeds[index]
+            val feed = feeds[index!!]
             var titleLineCount by remember { mutableIntStateOf(1) }
 
             Text(

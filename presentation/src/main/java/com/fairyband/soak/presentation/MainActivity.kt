@@ -26,6 +26,8 @@ import com.fairyband.soak.presentation.feature.webview.WebViewScreen
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.navigation.NavController
 import com.fairyband.soak.presentation.navigation.rememberNavController
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController가 주입되지 않았습니다.")
@@ -88,7 +90,9 @@ class MainActivity : ComponentActivity() {
             }
 
             entry<MainDestination.ExploreDetail> {
-                ExploreDetailScreen(feeds = it.feeds, index = it.index)
+                ExploreDetailScreen(koinViewModel(
+                    parameters = { parametersOf(it) }
+                ))
             }
         }
     }
