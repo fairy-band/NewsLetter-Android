@@ -71,7 +71,6 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     }
 
     val feeds by viewModel.feeds.collectAsStateWithLifecycle()
-    var showFeed: Int? by remember { mutableStateOf(null) }
     val lazyState = rememberLazyGridState()
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -133,16 +132,6 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             }
         }
     }
-
-    showFeed?.let { index ->
-        PopUpItem(
-            feed = feeds[index],
-            titleColor = SoakTheme.colors.statePositivePrimary, // TODO: 색깔 넣어야 함.
-            onDismissRequest = {
-                showFeed = null
-            }
-        )
-    }
 }
 
 @Composable
@@ -190,88 +179,6 @@ private fun Card(
                     color = Color(0x80121212)
                 )
             )
-        }
-    }
-}
-
-@Composable
-private fun PopUpItem(
-    feed: ExploreFeed,
-    titleColor: Color,
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val navController = LocalNavController.current
-
-    Dialog(
-        onDismissRequest = onDismissRequest
-    ) {
-        Column(
-            modifier = modifier
-                .background(
-                    color = SoakTheme.colors.backgroundBase,
-                    shape = RoundedCornerShape(16.dp),
-                )
-                .fillMaxWidth()
-                .height(CARD_HEIGHT)
-                .padding(24.dp),
-        ) {
-            var titleLineCount by remember { mutableIntStateOf(1) }
-
-            Text(
-                text = feed.title,
-                style = SoakTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
-                color = titleColor,
-                maxLines = TITLE_MAX_LINE,
-                onTextLayout = { textLayout ->
-                    titleLineCount = textLayout.lineCount
-                }
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = feed.keyword,
-                    style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
-                    color = titleColor
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                VerticalDivider(color = titleColor)
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = feed.letter,
-                    style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
-                    color = titleColor
-                )
-            }
-            Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
-            Text(
-                text = feed.summary,
-                style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.Normal),
-                color = SoakTheme.colors.textPrimary,
-                maxLines = SUMMARY_MAX_LINE,
-                minLines = SUMMARY_MAX_LINE,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            BaseButton(
-                paddingVertical = 12.dp,
-                onClick = {
-                    // TODO: 애널리틱스 로깅
-                    navController.navigate(MainDestination.WebView(url = feed.url))
-                },
-                shape = CircleShape,
-                borderWidth = 1.dp,
-                borderColor = SoakTheme.colors.borderSecondary
-            ) {
-                Text(
-                    text = stringResource(id = R.string.home_popup_button_text),
-                    style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
-                )
-            }
         }
     }
 }
