@@ -16,15 +16,18 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.SoakTheme
-import com.fairyband.soak.presentation.feature.home.HomeScreen
-import com.fairyband.soak.presentation.feature.splash.SplashScreen
-import com.fairyband.soak.presentation.feature.setting.personal.SettingPersonalScreen
+import com.fairyband.soak.presentation.feature.TabScreen
+import com.fairyband.soak.presentation.feature.exploredetail.ExploreDetailScreen
 import com.fairyband.soak.presentation.feature.setting.SettingScreen
+import com.fairyband.soak.presentation.feature.setting.personal.SettingPersonalScreen
 import com.fairyband.soak.presentation.feature.setting.service.SettingServiceScreen
+import com.fairyband.soak.presentation.feature.splash.SplashScreen
 import com.fairyband.soak.presentation.feature.webview.WebViewScreen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.navigation.NavController
-import com.fairyband.soak.presentation.navigation.Screen
 import com.fairyband.soak.presentation.navigation.rememberNavController
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController가 주입되지 않았습니다.")
@@ -36,7 +39,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SoakTheme {
-                val navController = rememberNavController()
+                val navController = rememberNavController(MainDestination.Splash)
 
                 CompositionLocalProvider(
                     LocalDensity provides Density(
@@ -62,28 +65,34 @@ class MainActivity : ComponentActivity() {
     private fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
         return entryProvider {
 
-            entry<Screen.Splash> { main ->
+            entry<MainDestination.Splash> { main ->
                 SplashScreen()
             }
 
-            entry<Screen.Home> { main ->
-                HomeScreen()
+            entry<MainDestination.Home> { main ->
+                TabScreen()
             }
 
-            entry<Screen.WebView> { webView ->
+            entry<MainDestination.WebView> { webView ->
                 WebViewScreen(url = webView.url)
             }
 
-            entry<Screen.Setting> {
+            entry<MainDestination.Setting> {
                 SettingScreen()
             }
 
-            entry<Screen.SettingService> {
+            entry<MainDestination.SettingService> {
                 SettingServiceScreen()
             }
 
-            entry<Screen.SettingPersonal> {
+            entry<MainDestination.SettingPersonal> {
                 SettingPersonalScreen()
+            }
+
+            entry<MainDestination.ExploreDetail> {
+                ExploreDetailScreen(koinViewModel(
+                    parameters = { parametersOf(it) }
+                ))
             }
         }
     }

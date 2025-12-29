@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.navigation.Screen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -25,7 +25,7 @@ fun SplashScreen(viewModel: SplashViewModel = koinViewModel()) {
 
     LaunchedEffect(isLoaded) {
         if (isLoaded) {
-            navController.replace(Screen.Home)
+            navController.replace(MainDestination.Home)
         }
     }
 

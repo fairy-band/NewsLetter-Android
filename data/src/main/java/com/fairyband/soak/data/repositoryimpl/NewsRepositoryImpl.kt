@@ -3,6 +3,7 @@ package com.fairyband.soak.data.repositoryimpl
 import com.fairyband.soak.core.extension.toPattern
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.NewsLetterDataSource
+import com.fairyband.soak.data.model.response.ExploreContentResponse
 import com.fairyband.soak.data.model.response.NewsResponse
 import com.fairyband.soak.data.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
@@ -52,5 +53,9 @@ class NewsRepositoryImpl(
 
     override suspend fun invalidateNews() {
         refreshFlow.emit(Unit)
+    }
+
+    override suspend fun getExploreContents(page: Int, size: Int): List<ExploreContentResponse> {
+        return newsLetterDataSource.getExploreContents(page, size).contents
     }
 }

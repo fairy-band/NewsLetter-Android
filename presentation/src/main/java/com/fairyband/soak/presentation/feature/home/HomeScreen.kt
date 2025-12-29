@@ -51,14 +51,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -71,8 +69,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.extension.bounceClick
-import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
@@ -85,7 +83,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
-import com.fairyband.soak.presentation.navigation.Screen
+import com.fairyband.soak.presentation.navigation.MainDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
@@ -174,6 +172,8 @@ fun HomeScreen(
         )
     }
 
+    LightSystemBar()
+
     HomeScreen(
         onDismissRequest = {
             viewModel.onCardShown()
@@ -236,20 +236,6 @@ private fun HomeScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
-                contentDescription = "setting button",
-                modifier = Modifier
-                    .padding(
-                        top = 8.dp,
-                        end = 8.dp
-                    )
-                    .align(Alignment.End)
-                    .noRippleClickable {
-                        navController.navigate(Screen.Setting)
-                    }
-            )
-
             Spacer(modifier = Modifier.weight(1f))
             Title(variant = homeTitleVariant)
             Spacer(modifier = Modifier.weight(2f))
@@ -273,6 +259,10 @@ private fun HomeScreen(
                         },
                 )
                 Cards(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .sizeIn(maxWidth = 432.dp),
+                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
                     news = news,
                     onClick = { index ->
                         cardIndex = index
@@ -284,10 +274,6 @@ private fun HomeScreen(
 
                         cardsHeight = height.dp
                     },
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 432.dp)
-                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
-                        .fillMaxWidth(),
                     dialogVisible = cardIndex != null,
                     onCardHidden = { onCardHidden = true },
                     dismissedCardIndex = dismissedCardIndex,
@@ -307,7 +293,7 @@ private fun HomeScreen(
             onCardHidden = false
         },
         onWebClick = { item, pageIndex ->
-            navController.navigate(Screen.WebView(url = item.url))
+            navController.navigate(MainDestination.WebView(url = item.url))
             webClickEvent(id = item.id, page = pageIndex.toLong())
         },
         onShareClick = { id, title, color ->

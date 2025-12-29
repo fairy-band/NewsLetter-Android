@@ -51,6 +51,7 @@ kotest = "6.0.3"
 
 ## Kakao
 kakaoVersion = "2.20.1"
+core = "1.17.0"
 
 [libraries]
 # core
@@ -120,6 +121,7 @@ kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref 
 # kakao
 kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakaoVersion" }
 kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakaoVersion" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [bundles]
 compose-ui = [

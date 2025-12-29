@@ -30,8 +30,8 @@ class NavController(val backStack: NavBackStack) {
 }
 
 @Composable
-fun rememberNavController(): NavController {
-    val backStack = rememberNavBackStack(Screen.Splash)
+fun rememberNavController(startDestination: NavKey): NavController {
+    val backStack = rememberNavBackStack(startDestination)
 
     LaunchedEffect(backStack) {
         val analytics = Firebase.analytics
@@ -40,7 +40,7 @@ fun rememberNavController(): NavController {
         snapshotFlow { backStack.lastOrNull() }
             .filterNotNull()
             .collect {
-                val screenName = (it as? Screen)?.name ?: "Unknown"
+                val screenName = (it as? MainDestination)?.name ?: "Unknown"
 
                 analytics.logEvent("page_view") {
                     param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
