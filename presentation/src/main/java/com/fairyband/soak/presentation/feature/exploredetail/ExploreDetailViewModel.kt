@@ -50,4 +50,8 @@ class ExploreDetailViewModel(
             loadingJob = null
         }
     }
+
+    fun selectFeed(index: Int) {
+        _selectedIndex.update { index }
+    }
 }

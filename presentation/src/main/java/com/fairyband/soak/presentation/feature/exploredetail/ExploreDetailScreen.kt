@@ -3,6 +3,7 @@ package com.fairyband.soak.presentation.feature.exploredetail
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +73,24 @@ import org.koin.androidx.compose.koinViewModel
 fun ExploreDetailScreen(
     viewModel: ExploreDetailViewModel = koinViewModel(),
 ) {
+    val feeds by viewModel.feeds.collectAsStateWithLifecycle()
+    val index by viewModel.selectedIndex.collectAsStateWithLifecycle()
+
+    ExploreDetailScreen(
+        feeds = feeds,
+        index = index,
+        loadMoreFeed = viewModel::loadFeeds,
+        selectFeed = viewModel::selectFeed,
+    )
+}
+
+@Composable
+fun ExploreDetailScreen(
+    feeds: List<ExploreFeed>,
+    index: Int,
+    loadMoreFeed: () -> Unit,
+    selectFeed: (index: Int) -> Unit,
+) {
     val navController = LocalNavController.current
     val soakColors = LocalSoakColors.current
     val titleColors = remember {
@@ -84,9 +103,6 @@ fun ExploreDetailScreen(
             soakColors.purpleText,
         )
     }
-
-    val feeds by viewModel.feeds.collectAsStateWithLifecycle()
-    val index by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
     val lazyState = rememberLazyListState()
     val shouldLoadMore by remember {
@@ -104,9 +120,11 @@ fun ExploreDetailScreen(
             shouldLoadMore
         }.distinctUntilChanged()
             .filter { it }
-            .collect {
-                viewModel.loadFeeds()
-            }
+            .collect { loadMoreFeed }
+    }
+
+    LaunchedEffect(Unit) {
+        lazyState.animateScrollToItem(index = index)
     }
 
     DetailBackground()
@@ -231,7 +249,12 @@ fun ExploreDetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
-                    Feed(feeds[index])
+                    Feed(
+                        modifier = Modifier.clickable {
+                            selectFeed(index)
+                        },
+                        feed = feeds[index]
+                    )
                 }
             }
         }
@@ -260,7 +283,7 @@ private fun DetailBackground() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
-                .blur(20.dp)
+                .blur(20.dp) // FIXME: 예상대로 적용 안 됨
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -269,15 +292,17 @@ private fun DetailBackground() {
                         )
                     )
                 )
-
         )
     }
 }
 
 @Composable
-private fun Feed(feed: ExploreFeed) {
+private fun Feed(
+    feed: ExploreFeed,
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(width = 166.dp, height = 98.dp)
             .clip(shape = RoundedCornerShape(16.dp))
             .background(color = Color.Black.copy(alpha = 0.1f))
