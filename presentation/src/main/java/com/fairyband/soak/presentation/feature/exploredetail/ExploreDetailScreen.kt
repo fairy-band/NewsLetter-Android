@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
+import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
@@ -61,6 +62,17 @@ fun ExploreDetailScreen(
     viewModel: ExploreDetailViewModel = koinViewModel(),
 ) {
     val navController = LocalNavController.current
+    val soakColors = LocalSoakColors.current
+    val titleColors = remember {
+        listOf(
+            soakColors.greenText,
+            soakColors.pinkText,
+            soakColors.lemonYellowText,
+            soakColors.blueText,
+            soakColors.orangeText,
+            soakColors.purpleText,
+        )
+    }
 
     val feeds by viewModel.feeds.collectAsStateWithLifecycle()
     val index by viewModel.selectedIndex.collectAsStateWithLifecycle()
@@ -105,9 +117,8 @@ fun ExploreDetailScreen(
                 .height(CARD_HEIGHT)
                 .padding(24.dp),
         ) {
-            // todo: 색깔 바꾸기
-            val titleColor = SoakTheme.colors.statePositivePrimary
-            val feed = feeds[index!!]
+            val titleColor = titleColors[index % 6]
+            val feed = feeds[index]
             var titleLineCount by remember { mutableIntStateOf(1) }
 
             Text(
