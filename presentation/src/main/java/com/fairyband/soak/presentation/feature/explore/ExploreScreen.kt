@@ -100,9 +100,9 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             contentPadding = PaddingValues(
                 top = 8.dp,
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-            )
+            ),
         ) {
-            items(feeds.size) { index ->
+            items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
                 Card(
                     modifier = Modifier.clickable {
                         navController.navigate(

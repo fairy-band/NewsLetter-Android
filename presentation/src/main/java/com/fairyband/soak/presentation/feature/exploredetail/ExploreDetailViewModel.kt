@@ -1,19 +1,53 @@
 package com.fairyband.soak.presentation.feature.exploredetail
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.presentation.model.ExploreFeed
+import com.fairyband.soak.presentation.model.toExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class ExploreDetailViewModel(
-    detail: MainDestination.ExploreDetail
+    detail: MainDestination.ExploreDetail,
+    private val newsRepository: NewsRepository,
 ) : ViewModel() {
-    private val _feeds = MutableStateFlow<List<ExploreFeed>>(detail.feeds)
+    private val _feeds: MutableStateFlow<List<ExploreFeed>> = MutableStateFlow(detail.feeds)
     val feeds = _feeds.asStateFlow()
 
     private val _selectedIndex = MutableStateFlow(detail.index)
     val selectedIndex = _selectedIndex.asStateFlow()
+
+    private var isLastPage = false
+    private var loadingJob: Job? = null
+
+    fun loadFeeds() {
+        if (loadingJob != null || isLastPage) return
+
+        val pageSize = 20
+        val nextPage = feeds.value.size / 20
+
+        loadingJob = viewModelScope.launch {
+            val newFeeds = newsRepository.getExploreContents(page = nextPage, size = pageSize)
+                .map { it.toExploreFeed() }
+
+            if (newFeeds.size < pageSize) {
+                isLastPage = true
+            }
+
+            _feeds.update { existing ->
+                existing + newFeeds
+            }
+        }
+
+        loadingJob?.invokeOnCompletion {
+            loadingJob = null
+        }
+    }
 }

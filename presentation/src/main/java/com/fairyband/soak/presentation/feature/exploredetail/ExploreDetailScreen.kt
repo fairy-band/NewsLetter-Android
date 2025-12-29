@@ -2,20 +2,25 @@ package com.fairyband.soak.presentation.feature.exploredetail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -24,13 +29,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -51,10 +59,13 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
+import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -76,6 +87,27 @@ fun ExploreDetailScreen(
 
     val feeds by viewModel.feeds.collectAsStateWithLifecycle()
     val index by viewModel.selectedIndex.collectAsStateWithLifecycle()
+
+    val lazyState = rememberLazyListState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val threshold = 4
+            val totalItemsCount = lazyState.layoutInfo.totalItemsCount
+            val lastVisibleItemIndex =
+                lazyState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            (lastVisibleItemIndex) >= totalItemsCount - threshold
+        }
+    }
+
+    LaunchedEffect(lazyState) {
+        snapshotFlow {
+            shouldLoadMore
+        }.distinctUntilChanged()
+            .filter { it }
+            .collect {
+                viewModel.loadFeeds()
+            }
+    }
 
     DetailBackground()
 
@@ -108,7 +140,7 @@ fun ExploreDetailScreen(
 
         Column(
             modifier = Modifier
-                .padding(top = 140.dp)
+                .padding(top = 88.dp)
                 .background(
                     color = SoakTheme.colors.backgroundBase,
                     shape = RoundedCornerShape(16.dp),
@@ -176,6 +208,33 @@ fun ExploreDetailScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Column(
+            modifier = Modifier
+                .navigationBarsPadding()
+                .padding(bottom = 56.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.explore_count_of_articles, feeds.size),
+                style = SoakTheme.typography.body14.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = SoakTheme.colors.textStrongInverse
+                )
+            )
+            LazyRow(
+                modifier = Modifier.padding(top = 8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                state = lazyState,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
+                    Feed(feeds[index])
+                }
+            }
+        }
     }
 }
 
@@ -211,6 +270,26 @@ private fun DetailBackground() {
                     )
                 )
 
+        )
+    }
+}
+
+@Composable
+private fun Feed(feed: ExploreFeed) {
+    Box(
+        modifier = Modifier
+            .size(width = 166.dp, height = 98.dp)
+            .clip(shape = RoundedCornerShape(16.dp))
+            .background(color = Color.Black.copy(alpha = 0.1f))
+            .border(shape = RoundedCornerShape(16.dp), width = 1.dp, color = Color.White),
+    ) {
+        Text(
+            modifier = Modifier.padding(16.dp),
+            text = feed.title,
+            style = SoakTheme.typography.body15.copy(
+                color = SoakTheme.colors.textStrongInverse,
+                fontWeight = FontWeight.Bold,
+            ),
         )
     }
 }
