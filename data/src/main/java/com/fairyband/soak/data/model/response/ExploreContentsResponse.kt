@@ -7,4 +7,5 @@ data class ExploreContentsResponse(
     val contents: List<ExploreContentResponse>,
     val hasMore: Boolean,
     val nextOffset: Int,
+    val totalCount: Int,
 )

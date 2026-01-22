@@ -4,6 +4,7 @@ import com.fairyband.soak.core.extension.toPattern
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.NewsLetterDataSource
 import com.fairyband.soak.data.model.response.ExploreContentResponse
+import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.NewsResponse
 import com.fairyband.soak.data.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
@@ -55,7 +56,7 @@ class NewsRepositoryImpl(
         refreshFlow.emit(Unit)
     }
 
-    override suspend fun getExploreContents(page: Int, size: Int): List<ExploreContentResponse> {
-        return newsLetterDataSource.getExploreContents(page, size).contents
+    override suspend fun getExploreContents(page: Int, size: Int): ExploreContentsResponse {
+        return newsLetterDataSource.getExploreContents(page, size)
     }
 }

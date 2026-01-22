@@ -75,9 +75,11 @@ fun ExploreDetailScreen(
 ) {
     val feeds by viewModel.feeds.collectAsStateWithLifecycle()
     val index by viewModel.selectedIndex.collectAsStateWithLifecycle()
+    val totalCount by viewModel.totalCount.collectAsStateWithLifecycle()
 
     ExploreDetailScreen(
         feeds = feeds,
+        totalCount = totalCount,
         index = index,
         loadMoreFeed = viewModel::loadFeeds,
         selectFeed = viewModel::selectFeed,
@@ -87,6 +89,7 @@ fun ExploreDetailScreen(
 @Composable
 fun ExploreDetailScreen(
     feeds: List<ExploreFeed>,
+    totalCount: Int,
     index: Int,
     loadMoreFeed: () -> Unit,
     selectFeed: (index: Int) -> Unit,
@@ -238,7 +241,7 @@ fun ExploreDetailScreen(
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = stringResource(R.string.explore_count_of_articles, feeds.size),
+                text = stringResource(R.string.explore_count_of_articles, totalCount),
                 style = SoakTheme.typography.body14.copy(
                     fontWeight = FontWeight.Bold,
                     color = SoakTheme.colors.textStrongInverse
