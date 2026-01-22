@@ -28,11 +28,8 @@ class ExploreViewModel(
     fun loadFeeds() {
         if (loadingJob != null || !hasMore) return
 
-        val pageSize = 20
-        val nextPage = feeds.value.size / 20
-
         loadingJob = viewModelScope.launch {
-            val response = newsRepository.getExploreContents(page = nextPage, size = pageSize)
+            val response = newsRepository.getExploreContents()
             _totalCount.update { response.totalCount }
 
             val newFeeds = response.contents.map { it.toExploreFeed() }

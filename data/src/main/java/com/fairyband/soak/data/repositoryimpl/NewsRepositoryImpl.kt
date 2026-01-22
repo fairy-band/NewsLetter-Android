@@ -25,6 +25,7 @@ class NewsRepositoryImpl(
     private val authDataSource: AuthDataSource,
 ) : NewsRepository {
     private val refreshFlow = MutableSharedFlow<Unit>()
+    private var nextOffset = 0L
 
     // 매일 자정에 뉴스를 새로고침해요.
     private val dayFlow = flow {
@@ -56,7 +57,11 @@ class NewsRepositoryImpl(
         refreshFlow.emit(Unit)
     }
 
-    override suspend fun getExploreContents(page: Int, size: Int): ExploreContentsResponse {
-        return newsLetterDataSource.getExploreContents(page, size)
+    override suspend fun getExploreContents(): ExploreContentsResponse {
+        val response = newsLetterDataSource.getExploreContents(nextOffset)
+
+        nextOffset = response.nextOffset
+
+        return response
     }
 }
