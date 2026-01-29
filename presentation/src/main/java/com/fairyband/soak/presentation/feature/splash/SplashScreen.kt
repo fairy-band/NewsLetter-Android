@@ -105,7 +105,7 @@ private fun ForceUpdateDialog() {
                 Button(
                     onClick = {
                         val intent = Intent(Intent.ACTION_VIEW).apply {
-                            data = "market://details?id=${context.packageName}".toUri()
+                            data = "market://details?id=com.fairyband.soak".toUri()
                         }
                         context.startActivity(intent)
                     },
