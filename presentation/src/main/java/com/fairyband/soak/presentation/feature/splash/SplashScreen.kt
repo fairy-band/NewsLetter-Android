@@ -1,8 +1,6 @@
 package com.fairyband.soak.presentation.feature.splash
 
-import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -24,19 +22,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.navigation.MainDestination
 import org.koin.androidx.compose.koinViewModel
-import androidx.core.net.toUri
 
 @Composable
 fun SplashScreen(viewModel: SplashViewModel = koinViewModel()) {
@@ -92,12 +91,13 @@ private fun ForceUpdateDialog() {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "업데이트 필요",
+                    text = stringResource(R.string.splash_update_title),
                     style = SoakTheme.typography.body18.copy(fontWeight = FontWeight.Bold),
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "안정적인 서비스 이용을 위해 업데이트를 진행해 주세요.",
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.splash_update_description),
                     style = SoakTheme.typography.body16,
                     textAlign = TextAlign.Center,
                 )
@@ -111,7 +111,7 @@ private fun ForceUpdateDialog() {
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(text = "업데이트")
+                    Text(text = stringResource(R.string.splash_update))
                 }
             }
         }

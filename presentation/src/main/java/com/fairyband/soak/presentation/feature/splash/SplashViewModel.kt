@@ -59,9 +59,8 @@ class SplashViewModel(
             }
     }
 
-    // remoteConfig는 캐시되기 때문에 한 번 호출해 두면 이후에 호출할 땐 바로 가져올 것이다.
     private suspend fun fetchRemoteConfigs() {
-        remoteConfigRepository.getCardColorType().first()
+        remoteConfigRepository.getCardColorType().first() // 홈 화면에서 캐시 값을 사용하기 위해 부르기만 한 것으로 보임
         checkRequiredVersion()
     }
 
@@ -70,7 +69,7 @@ class SplashViewModel(
         val currentVersion = BuildConfig.VERSION_NAME
 
         if (isOldVersion(requiredVersion, currentVersion)) {
-            _shouldUpdate.update { true }
+            _shouldUpdate.value = true
         }
     }
 
