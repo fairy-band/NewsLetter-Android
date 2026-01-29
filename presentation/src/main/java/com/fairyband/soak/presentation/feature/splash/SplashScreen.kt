@@ -1,32 +1,57 @@
 package com.fairyband.soak.presentation.feature.splash
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.navigation.MainDestination
 import org.koin.androidx.compose.koinViewModel
+import androidx.core.net.toUri
 
 @Composable
 fun SplashScreen(viewModel: SplashViewModel = koinViewModel()) {
     val isLoaded by viewModel.shouldGoHome.collectAsStateWithLifecycle()
+    val shouldUpdate by viewModel.shouldUpdate.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     LaunchedEffect(isLoaded) {
         if (isLoaded) {
             navController.replace(MainDestination.Home)
         }
+    }
+
+    if (shouldUpdate) {
+        ForceUpdateDialog()
     }
 
     Box(
@@ -38,5 +63,57 @@ fun SplashScreen(viewModel: SplashViewModel = koinViewModel()) {
             imageVector = ImageVector.vectorResource(R.drawable.symbol),
             contentDescription = null,
         )
+    }
+}
+
+@Composable
+private fun ForceUpdateDialog() {
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+
+    Dialog(
+        onDismissRequest = {
+            activity?.finish()
+        },
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false,
+        )
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = "업데이트 필요",
+                    style = SoakTheme.typography.body18.copy(fontWeight = FontWeight.Bold),
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "안정적인 서비스 이용을 위해 업데이트를 진행해 주세요.",
+                    style = SoakTheme.typography.body16,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Button(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            data = "market://details?id=${context.packageName}".toUri()
+                        }
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = "업데이트")
+                }
+            }
+        }
     }
 }
