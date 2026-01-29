@@ -43,6 +43,10 @@ internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
         emit(variant)
     }
 
+    override fun getRequiredVersion(): Flow<String?> = flow {
+        emit(getString("required_version"))
+    }
+
     private suspend fun getString(key: String): String? = suspendCoroutine { continuation ->
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
