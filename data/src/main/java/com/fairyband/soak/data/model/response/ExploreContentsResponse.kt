@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class ExploreContentsResponse(
     val contents: List<ExploreContentResponse>,
     val hasMore: Boolean,
-    val nextOffset: Int,
+    val nextOffset: Long,
+    val totalCount: Int,
 )

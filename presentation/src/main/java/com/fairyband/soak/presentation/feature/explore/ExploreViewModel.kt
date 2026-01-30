@@ -16,25 +16,24 @@ import org.koin.android.annotation.KoinViewModel
 class ExploreViewModel(
     private val newsRepository: NewsRepository,
 ) : ViewModel() {
+    private val _totalCount = MutableStateFlow(0)
+    val totalCount = _totalCount.asStateFlow()
+
     private val _feeds = MutableStateFlow<List<ExploreFeed>>(emptyList())
     val feeds = _feeds.asStateFlow()
 
-    private var isLastPage = false
+    private var hasMore = true
     private var loadingJob: Job? = null
 
     fun loadFeeds() {
-        if (loadingJob != null || isLastPage) return
-
-        val pageSize = 20
-        val nextPage = feeds.value.size / 20
+        if (loadingJob != null || !hasMore) return
 
         loadingJob = viewModelScope.launch {
-            val newFeeds = newsRepository.getExploreContents(page = nextPage, size = pageSize)
-                .map { it.toExploreFeed() }
+            val response = newsRepository.getExploreContents()
+            _totalCount.update { response.totalCount }
 
-            if (newFeeds.size < pageSize) {
-                isLastPage = true
-            }
+            val newFeeds = response.contents.map { it.toExploreFeed() }
+            hasMore = response.hasMore
 
             _feeds.update { existing ->
                 existing + newFeeds

@@ -17,11 +17,8 @@ class NewsLetterDataSource(
     }
 
     suspend fun getExploreContents(
-        page: Int,
-        size: Int,
+        nextOffset: Long
     ): ExploreContentsResponse {
-        val offset = page * size
-
-        return api.getExploreContents(offset.toLong(), size)
+        return api.getExploreContents(lastSeenOffset = nextOffset, size = 20)
     }
 }

@@ -57,6 +57,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     }
 
     val feeds by viewModel.feeds.collectAsStateWithLifecycle()
+    val totalCount by viewModel.totalCount.collectAsStateWithLifecycle()
     val lazyState = rememberLazyGridState()
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -86,7 +87,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     ) {
         Text(
             modifier = Modifier.padding(vertical = 8.dp),
-            text = stringResource(R.string.explore_count_of_articles, feeds.size),
+            text = stringResource(R.string.explore_count_of_articles, totalCount),
             style = SoakTheme.typography.body14.copy(
                 color = soakColors.textStrongInverse,
                 fontWeight = FontWeight.Bold
