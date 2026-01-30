@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteConfigRepository {
     fun getCardColorType(): Flow<String>
     fun getHomeTitleVariant(): Flow<HomeTitleVariant>
+    fun getRequiredVersion(): Flow<String?>
 }

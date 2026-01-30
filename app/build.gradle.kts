@@ -36,8 +36,9 @@ android {
         applicationId = "com.fairyband.soak"
         minSdk = 28
         targetSdk = 36
-        versionCode = project.findProperty("VERSION_CODE")?.toString()?.toInt() ?: 3
-        versionName = project.findProperty("VERSION_NAME")?.toString() ?: "0.1.0"
+        // CI/CD의 매개변수로 버전 정보를 받아 온다.
+        versionCode = project.findProperty("VERSION_CODE")?.toString()?.toInt() ?: 1
+        versionName = project.findProperty("VERSION_NAME")?.toString() ?: "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

@@ -25,7 +25,7 @@ android {
         buildConfigField(
             "String",
             "VERSION_NAME",
-            "\"${project.findProperty("VERSION_CODE") ?: "3"}\""
+            "\"${project.findProperty("VERSION_NAME") ?: "1.0.0"}\""
         )
         buildConfigField(
             "String",

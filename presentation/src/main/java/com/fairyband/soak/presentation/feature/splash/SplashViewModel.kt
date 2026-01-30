@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fairyband.soak.data.repository.AuthRepository
 import com.fairyband.soak.data.repository.RemoteConfigRepository
+import com.fairyband.soak.presentation.BuildConfig
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.async
@@ -25,6 +26,9 @@ class SplashViewModel(
     private val _shouldGoHome = MutableStateFlow(false)
     val shouldGoHome = _shouldGoHome.asStateFlow()
 
+    private val _shouldUpdate = MutableStateFlow(false)
+    val shouldUpdate = _shouldUpdate.asStateFlow()
+
     init {
         fetchData()
     }
@@ -39,6 +43,10 @@ class SplashViewModel(
 
         listOf(login, fetchRemoteConfig).awaitAll()
 
+        if (_shouldUpdate.value) {
+            return@launch
+        }
+
         _shouldGoHome.update { true }
     }
 
@@ -51,8 +59,38 @@ class SplashViewModel(
             }
     }
 
-    // remoteConfig는 캐시되기 때문에 한 번 호출해 두면 이후에 호출할 땐 바로 가져올 것이다.
     private suspend fun fetchRemoteConfigs() {
-        remoteConfigRepository.getCardColorType().first()
+        remoteConfigRepository.getCardColorType().first() // 홈 화면에서 캐시 값을 사용하기 위해 부르기만 한 것으로 보임
+        checkRequiredVersion()
+    }
+
+    private suspend fun checkRequiredVersion() {
+        val requiredVersion = remoteConfigRepository.getRequiredVersion().first() ?: return
+        val currentVersion = BuildConfig.VERSION_NAME
+
+        if (isOldVersion(requiredVersion, currentVersion)) {
+            _shouldUpdate.value = true
+        }
+    }
+
+    private fun isOldVersion(requiredVersion: String, currentVersion: String): Boolean {
+        var innerCurrentVersion = currentVersion
+        if (currentVersion.startsWith("v")) {
+            innerCurrentVersion = currentVersion.substring(1)
+        }
+
+        val requiredParts = requiredVersion.split(".").map { it.toIntOrNull() ?: 0 }
+        val currentParts = innerCurrentVersion.split(".").map { it.toIntOrNull() ?: 0 }
+
+        repeat(3) { index ->
+            val required = requiredParts[index]
+            val current = currentParts[index]
+
+            if (required != current) {
+                return required > current
+            }
+        }
+
+        return false
     }
 }
