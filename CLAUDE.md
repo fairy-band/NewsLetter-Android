@@ -2,6 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Overview
+
+**쏙 (Soak)** — 개발자 대상 뉴스레터 AI 큐레이션 앱
+
+GeekNews, Android Weekly, 개발 블로그 등 개발자가 구독할 만한 뉴스레터를 수집하고, AI가 매일 7개의 아티클을 개인화하여 큐레이팅해 준다. 탐색(Explore) 탭에서는 개인화되지 않은 전체 뉴스레터 목록도 제공한다.
+
+주요 화면 구성:
+- **Home** — AI가 선별한 오늘의 추천 아티클 7개 (개인화)
+- **Explore** — 전체 뉴스레터 탐색 (비개인화), 상세 보기(`ExploreDetail`)
+- **WebView** — 아티클 본문 표시
+- **Setting** — 개인 설정 및 서비스 설정
+
+Firebase Remote Config로 A/B 테스트 및 원격 피처 플래그를 운용하고, FCM으로 새 큐레이션 알림을 발송한다. Kakao SDK는 로그인 및 링크 공유에 사용된다.
+
 ## Build Commands
 
 ```bash
