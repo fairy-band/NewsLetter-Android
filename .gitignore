@@ -26,3 +26,6 @@ google-services.json
 
 # firebase distribution
 firebase-account.json
+
+# Claude
+.claude/settings.local.json
