@@ -1,42 +1,63 @@
 package com.fairyband.soak.presentation.feature.explore
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.feature.explore.bottomsheet.ReportNewsletterBottomSheet
 import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
@@ -45,6 +66,7 @@ import org.koin.androidx.compose.koinViewModel
 fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     val navController = LocalNavController.current
     val soakColors = LocalSoakColors.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val cardColors = remember {
         listOf(
             soakColors.greenBackgroundPrimary,
@@ -70,6 +92,9 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
         }
     }
 
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showSuccessToast by remember { mutableStateOf(false) }
+
     LaunchedEffect(lazyState) {
         snapshotFlow {
             shouldLoadMore
@@ -80,45 +105,157 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             }
     }
 
+    LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
+        viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
+            .collect { event ->
+                when (event) {
+                    is ExploreSideEffect.ShowReportComplete -> {
+                        showSuccessToast = true
+                        delay(2000)
+                        showSuccessToast = false
+                    }
+                }
+            }
+    }
+
     DarkSystemBar()
 
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        Text(
-            modifier = Modifier.padding(vertical = 8.dp),
-            text = stringResource(R.string.explore_count_of_articles, totalCount),
-            style = SoakTheme.typography.body14.copy(
-                color = soakColors.textStrongInverse,
-                fontWeight = FontWeight.Bold
-            )
-        )
-
-        LazyVerticalGrid(
-            state = lazyState,
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(
-                top = 8.dp,
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-            ),
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
-                Card(
-                    modifier = Modifier.clickable {
-                        navController.navigate(
-                            MainDestination.ExploreDetail(
-                                feeds = feeds,
-                                index = index
-                            )
-                        )
-                    },
-                    content = feeds[index],
-                    containerColor = cardColors[index % 6],
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = stringResource(R.string.explore_count_of_articles, totalCount),
+                style = SoakTheme.typography.body14.copy(
+                    color = soakColors.textStrongInverse,
+                    fontWeight = FontWeight.Bold
                 )
+            )
+
+            LazyVerticalGrid(
+                state = lazyState,
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(
+                    top = 8.dp,
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                ),
+            ) {
+                items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
+                    Card(
+                        modifier = Modifier.clickable {
+                            navController.navigate(
+                                MainDestination.ExploreDetail(
+                                    feeds = feeds,
+                                    index = index
+                                )
+                            )
+                        },
+                        content = feeds[index],
+                        containerColor = cardColors[index % 6],
+                    )
+                }
             }
         }
+
+        AnimatedVisibility(
+            visible = showSuccessToast,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 8.dp),
+            enter = fadeIn() + slideInVertically { -it },
+            exit = fadeOut() + slideOutVertically { -it },
+        ) {
+            ReportSuccessToast()
+        }
+
+        ReportFab(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = 16.dp,
+                    bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues()
+                        .calculateBottomPadding(),
+                ),
+            onClick = { showBottomSheet = true },
+        )
+    }
+
+    if (showBottomSheet) {
+        ReportNewsletterBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            onSubmit = { name, url, preferences, language ->
+                showBottomSheet = false
+                viewModel.reportNewsletter(name, url, preferences, language)
+            },
+        )
+    }
+}
+
+@Composable
+private fun ReportFab(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .shadow(elevation = 4.dp, shape = CircleShape)
+            .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(
+            modifier = Modifier.size(16.dp),
+            painter = painterResource(R.drawable.ic_explore_pencil),
+            contentDescription = null,
+            tint = SoakTheme.colors.iconStrong,
+        )
+        Text(
+            text = stringResource(R.string.explore_report_fab),
+            style = SoakTheme.typography.body14.copy(
+                color = SoakTheme.colors.textStrong,
+                fontWeight = FontWeight.SemiBold,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun ReportSuccessToast(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .shadow(elevation = 4.dp, shape = CircleShape)
+            .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .background(color = SoakTheme.colors.statePositivePrimary, shape = CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "✓",
+                style = SoakTheme.typography.body13.copy(
+                    color = SoakTheme.colors.textStrongInverse,
+                    fontWeight = FontWeight.Bold,
+                ),
+            )
+        }
+        Text(
+            text = stringResource(R.string.explore_report_success),
+            style = SoakTheme.typography.body14.copy(
+                color = SoakTheme.colors.textStrong,
+                fontWeight = FontWeight.SemiBold,
+            ),
+        )
     }
 }
 
