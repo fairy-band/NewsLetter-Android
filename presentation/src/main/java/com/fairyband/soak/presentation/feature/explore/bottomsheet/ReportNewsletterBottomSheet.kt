@@ -89,7 +89,7 @@ internal fun ReportNewsletterBottomSheet(
                 ) {
                     Image(
                         modifier = Modifier.size(40.dp),
-                        painter = painterResource(R.drawable.ic_explore_close),
+                        painter = painterResource(R.drawable.ic_close),
                         contentDescription = stringResource(R.string.explore_report_close),
                     )
                 }

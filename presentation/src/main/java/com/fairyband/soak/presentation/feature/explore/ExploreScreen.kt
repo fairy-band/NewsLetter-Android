@@ -211,7 +211,7 @@ private fun ReportFab(
     ) {
         Icon(
             modifier = Modifier.size(16.dp),
-            painter = painterResource(R.drawable.ic_explore_pencil),
+            painter = painterResource(R.drawable.ic_edit),
             contentDescription = null,
             tint = SoakTheme.colors.iconStrong,
         )
@@ -235,20 +235,12 @@ private fun ReportSuccessToast(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .size(20.dp)
-                .background(color = SoakTheme.colors.statePositivePrimary, shape = CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = "✓",
-                style = SoakTheme.typography.body13.copy(
-                    color = SoakTheme.colors.textStrongInverse,
-                    fontWeight = FontWeight.Bold,
-                ),
-            )
-        }
+        Icon(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(R.drawable.ic_check),
+            contentDescription = null,
+            tint = Color.Unspecified,
+        )
         Text(
             text = stringResource(R.string.explore_report_success),
             style = SoakTheme.typography.body14.copy(
