@@ -194,24 +194,25 @@ private fun ReportFab(
 ) {
     Row(
         modifier = modifier
-            .shadow(elevation = 4.dp, shape = CircleShape)
+            // 최신 버전에서는 dropShadow 를 써야 하나, 현재 라이브러리에서는 지원 X
+            .shadow(elevation = 8.dp, shape = CircleShape)
             .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
             .clip(CircleShape)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(24.dp),
             painter = painterResource(R.drawable.ic_edit),
             contentDescription = null,
-            tint = SoakTheme.colors.iconStrong,
+            tint = SoakTheme.colors.iconSecondary,
         )
         Text(
             text = stringResource(R.string.explore_report_fab),
             style = SoakTheme.typography.body14.copy(
-                color = SoakTheme.colors.textStrong,
+                color = SoakTheme.colors.textSecondary,
                 fontWeight = FontWeight.SemiBold,
             ),
         )

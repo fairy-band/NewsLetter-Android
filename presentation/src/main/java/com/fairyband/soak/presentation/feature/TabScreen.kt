@@ -96,9 +96,10 @@ fun TabScreen() {
                         modifier = Modifier
                             .shadow(elevation = 4.dp, shape = CircleShape)
                             .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                            .padding(vertical = 12.dp)
+                            .padding(start = 12.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Icon(
                             modifier = Modifier.size(20.dp),
@@ -108,9 +109,8 @@ fun TabScreen() {
                         )
                         Text(
                             text = snackbarData.visuals.message,
-                            style = SoakTheme.typography.body14.copy(
-                                color = SoakTheme.colors.textStrong,
-                                fontWeight = FontWeight.SemiBold,
+                            style = SoakTheme.typography.body15.copy(
+                                color = SoakTheme.colors.textPrimary,
                             ),
                         )
                     }

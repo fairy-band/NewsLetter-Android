@@ -1,6 +1,7 @@
 package com.fairyband.soak.presentation.feature.explore.bottomsheet
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,21 +17,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.bottomsheet.BaseBottomSheet
 import com.fairyband.soak.core.designsystem.button.BaseButton
-import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
@@ -62,17 +64,17 @@ internal fun ReportNewsletterBottomSheet(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 8.dp, top = 20.dp),
+                    .padding(start = 20.dp, end = 8.dp, top = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top,
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(R.string.explore_report_bottomsheet_title),
-                        color = SoakTheme.colors.textStrong,
-                        style = SoakTheme.typography.head22.copy(fontWeight = FontWeight.Bold),
+                        color = SoakTheme.colors.textPrimary,
+                        style = SoakTheme.typography.head20.copy(fontWeight = FontWeight.Bold),
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = stringResource(R.string.explore_report_bottomsheet_subtitle),
                         color = SoakTheme.colors.textSecondary,
@@ -81,19 +83,28 @@ internal fun ReportNewsletterBottomSheet(
                 }
                 Box(
                     modifier = Modifier
-                        .padding(top = 4.dp)
-                        .noRippleClickable { onDismissRequest() },
+                        .padding(end = 8.dp)
+                        .size(40.dp)
+                        .clickable(onClick = onDismissRequest),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Image(
-                        modifier = Modifier.size(40.dp),
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = stringResource(R.string.explore_report_close),
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(shape = CircleShape)
+                            .background(color = SoakTheme.colors.fillSecondary)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_close),
+                            contentDescription = stringResource(R.string.explore_report_close),
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 // 이름
@@ -198,7 +209,7 @@ private fun FieldLabel(text: String, modifier: Modifier = Modifier) {
         modifier = modifier,
         text = text,
         style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
-        color = SoakTheme.colors.textPrimary,
+        color = SoakTheme.colors.textSecondary,
     )
 }
 
@@ -216,18 +227,18 @@ private fun ReportTextField(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (value.isNotEmpty()) SoakTheme.colors.borderStrong else SoakTheme.colors.borderPrimary,
-                shape = RoundedCornerShape(12.dp),
+                color = SoakTheme.colors.borderPrimary,
+                shape = RoundedCornerShape(16.dp),
             )
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        textStyle = SoakTheme.typography.body15.copy(color = SoakTheme.colors.textStrong),
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        textStyle = SoakTheme.typography.body16.copy(color = SoakTheme.colors.textStrong),
         singleLine = true,
         decorationBox = { innerTextField ->
             Box {
                 if (value.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = SoakTheme.typography.body15.copy(color = SoakTheme.colors.textTertiary),
+                        style = SoakTheme.typography.body16.copy(color = SoakTheme.colors.textTertiary),
                     )
                 }
                 innerTextField()
