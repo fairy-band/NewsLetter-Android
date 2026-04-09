@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.feature.explore.bottomsheet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +22,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -42,14 +38,18 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReportNewsletterBottomSheet(
+    name: String,
+    url: String,
+    selectedPreferences: List<Preference>,
+    language: String,
+    updateName: (String) -> Unit,
+    updateUrl: (String) -> Unit,
+    updateLanguage: (String) -> Unit,
+    updatePreference: (Preference) -> Unit,
     onDismissRequest: () -> Unit,
-    onSubmit: (name: String, url: String, preferences: List<String>, language: String) -> Unit,
+    onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var name by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    val selectedPreferences = remember { mutableStateListOf<Preference>() }
-    var language by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     BaseBottomSheet(
@@ -101,7 +101,7 @@ internal fun ReportNewsletterBottomSheet(
                 Spacer(modifier = Modifier.height(8.dp))
                 ReportTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = updateName,
                     placeholder = stringResource(R.string.explore_report_field_name_hint),
                 )
 
@@ -112,7 +112,7 @@ internal fun ReportNewsletterBottomSheet(
                 Spacer(modifier = Modifier.height(8.dp))
                 ReportTextField(
                     value = url,
-                    onValueChange = { url = it },
+                    onValueChange = updateUrl,
                     placeholder = stringResource(R.string.explore_report_field_url_hint),
                 )
 
@@ -137,10 +137,7 @@ internal fun ReportNewsletterBottomSheet(
                                 )
                                 .padding(start = 10.dp, end = 12.dp)
                                 .padding(vertical = 8.dp)
-                                .noRippleClickable {
-                                    if (preference in selectedPreferences) selectedPreferences.remove(preference)
-                                    else selectedPreferences.add(preference)
-                                },
+                                .clickable { updatePreference(preference) },
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -165,7 +162,7 @@ internal fun ReportNewsletterBottomSheet(
                 Spacer(modifier = Modifier.height(8.dp))
                 ReportTextField(
                     value = language,
-                    onValueChange = { language = it },
+                    onValueChange = updateLanguage,
                     placeholder = stringResource(R.string.explore_report_field_language_hint),
                 )
             }
@@ -175,14 +172,7 @@ internal fun ReportNewsletterBottomSheet(
             BaseButton(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 paddingVertical = 16.dp,
-                onClick = {
-                    onSubmit(
-                        name,
-                        url,
-                        selectedPreferences.map { it.stringValue },
-                        language,
-                    )
-                },
+                onClick = onSubmit,
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
                 shape = RoundedCornerShape(12.dp),

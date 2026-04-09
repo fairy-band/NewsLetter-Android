@@ -74,8 +74,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
         )
     }
 
-    val feeds by viewModel.feeds.collectAsStateWithLifecycle()
-    val totalCount by viewModel.totalCount.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val lazyState = rememberLazyGridState()
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -87,6 +86,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             lastVisibleItemIndex >= totalItemsCount - threshold
         }
     }
+    val feeds = state.feeds
+    val totalCount = state.totalCount
 
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
 
@@ -169,10 +170,18 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
 
     if (showBottomSheet) {
         ReportNewsletterBottomSheet(
+            name = state.name,
+            url = state.url,
+            selectedPreferences = state.selectedPreferences,
+            language = state.language,
+            updateName = viewModel::updateName,
+            updateUrl = viewModel::updateUrl,
+            updateLanguage = viewModel::updateLanguage,
+            updatePreference = viewModel::updatePreference,
             onDismissRequest = { showBottomSheet = false },
-            onSubmit = { name, url, preferences, language ->
+            onSubmit = {
                 showBottomSheet = false
-                viewModel.reportNewsletter(name, url, preferences, language)
+                viewModel.reportNewsletter()
             },
         )
     }

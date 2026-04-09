@@ -3,7 +3,7 @@ package com.fairyband.soak.presentation.feature.explore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fairyband.soak.data.repository.NewsRepository
-import com.fairyband.soak.presentation.model.ExploreFeed
+import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import com.fairyband.soak.presentation.model.toExploreFeed
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,11 +18,8 @@ import org.koin.android.annotation.KoinViewModel
 class ExploreViewModel(
     private val newsRepository: NewsRepository,
 ) : ViewModel() {
-    private val _totalCount = MutableStateFlow(0)
-    val totalCount = _totalCount.asStateFlow()
-
-    private val _feeds = MutableStateFlow<List<ExploreFeed>>(emptyList())
-    val feeds = _feeds.asStateFlow()
+    private val _state = MutableStateFlow(ExploreState())
+    val state = _state.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<ExploreSideEffect>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -30,7 +27,27 @@ class ExploreViewModel(
     private var hasMore = true
     private var loadingJob: Job? = null
 
-    fun reportNewsletter(name: String, url: String, preferences: List<String>, language: String) {
+    fun updateName(value: String) {
+        _state.update { it.copy(name = value) }
+    }
+
+    fun updateUrl(value: String) {
+        _state.update { it.copy(url = value) }
+    }
+
+    fun updateLanguage(value: String) {
+        _state.update { it.copy(language = value) }
+    }
+
+    fun updatePreference(preference: Preference) {
+        _state.update {
+            val current = it.selectedPreferences
+            val updated = if (preference in current) current - preference else current + preference
+            it.copy(selectedPreferences = updated)
+        }
+    }
+
+    fun reportNewsletter() {
         viewModelScope.launch {
             // TODO: 백엔드 API 연동 전 임시 구현 - 항상 성공으로 처리
             _eventFlow.emit(ExploreSideEffect.ShowReportComplete)
@@ -42,13 +59,14 @@ class ExploreViewModel(
 
         loadingJob = viewModelScope.launch {
             val response = newsRepository.getExploreContents()
-            _totalCount.update { response.totalCount }
-
             val newFeeds = response.contents.map { it.toExploreFeed() }
             hasMore = response.hasMore
 
-            _feeds.update { existing ->
-                existing + newFeeds
+            _state.update {
+                it.copy(
+                    totalCount = response.totalCount,
+                    feeds = it.feeds + newFeeds,
+                )
             }
         }
 
