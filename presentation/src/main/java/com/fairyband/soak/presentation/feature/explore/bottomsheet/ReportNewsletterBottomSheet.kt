@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -221,24 +219,29 @@ private fun ReportTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+    BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = placeholder,
-                style = SoakTheme.typography.body15.copy(color = SoakTheme.colors.textTertiary),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = if (value.isNotEmpty()) SoakTheme.colors.borderStrong else SoakTheme.colors.borderPrimary,
+                shape = RoundedCornerShape(12.dp),
             )
-        },
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = SoakTheme.colors.borderStrong,
-            unfocusedBorderColor = SoakTheme.colors.borderPrimary,
-            focusedTextColor = SoakTheme.colors.textStrong,
-            unfocusedTextColor = SoakTheme.colors.textStrong,
-            cursorColor = SoakTheme.colors.textStrong,
-        ),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        textStyle = SoakTheme.typography.body15.copy(color = SoakTheme.colors.textStrong),
         singleLine = true,
+        decorationBox = { innerTextField ->
+            Box {
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        style = SoakTheme.typography.body15.copy(color = SoakTheme.colors.textTertiary),
+                    )
+                }
+                innerTextField()
+            }
+        },
     )
 }
