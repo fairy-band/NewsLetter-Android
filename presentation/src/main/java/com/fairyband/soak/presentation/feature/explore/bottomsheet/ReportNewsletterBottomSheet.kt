@@ -178,7 +178,7 @@ internal fun ReportNewsletterBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             BaseButton(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -186,7 +186,7 @@ internal fun ReportNewsletterBottomSheet(
                 onClick = onSubmit,
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
             ) {
                 Text(
                     text = stringResource(R.string.explore_report_bottomsheet_button),
