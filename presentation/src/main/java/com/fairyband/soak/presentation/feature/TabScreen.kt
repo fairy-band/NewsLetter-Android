@@ -14,8 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,6 +44,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
+import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
 import com.fairyband.soak.presentation.feature.home.HomeScreen
@@ -50,6 +57,7 @@ import com.fairyband.soak.presentation.navigation.rememberNavController
 fun TabScreen() {
     val soakColors = LocalSoakColors.current
 
+    val snackbarHostState = remember { SnackbarHostState() }
     val tabNavController = rememberNavController(TabDestination.Main)
     val isMain by remember {
         derivedStateOf {
@@ -60,20 +68,55 @@ fun TabScreen() {
         if (isMain) soakColors.fillSecondary else soakColors.backgroundSurfaceInverse
     }
 
-    Column(
-        modifier = Modifier.background(backgroundColor)
-    ) {
-        SoakTab(tabNavController = tabNavController, isMain = isMain)
+    CompositionLocalProvider(LocalSnackbarController provides snackbarHostState) {
+        Box {
+            Column(
+                modifier = Modifier.background(backgroundColor)
+            ) {
+                SoakTab(tabNavController = tabNavController, isMain = isMain)
 
-        NavDisplay(
-            backStack = tabNavController.backStack,
-            onBack = { tabNavController.pop() },
-            entryProvider = createEntryProvider(),
-            entryDecorators = listOf(
-                rememberSavedStateNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator(),
+                NavDisplay(
+                    backStack = tabNavController.backStack,
+                    onBack = { tabNavController.pop() },
+                    entryProvider = createEntryProvider(),
+                    entryDecorators = listOf(
+                        rememberSavedStateNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    )
+                )
+            }
+
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 100.dp),
+                snackbar = { snackbarData ->
+                    Row(
+                        modifier = Modifier
+                            .shadow(elevation = 4.dp, shape = CircleShape)
+                            .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            painter = painterResource(R.drawable.ic_check),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                        )
+                        Text(
+                            text = snackbarData.visuals.message,
+                            style = SoakTheme.typography.body14.copy(
+                                color = SoakTheme.colors.textStrong,
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                        )
+                    }
+                },
             )
-        )
+        }
     }
 }
 

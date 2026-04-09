@@ -1,10 +1,5 @@
 package com.fairyband.soak.presentation.feature.explore
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,11 +48,11 @@ import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
+import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.explore.bottomsheet.ReportNewsletterBottomSheet
 import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
@@ -67,6 +62,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     val navController = LocalNavController.current
     val soakColors = LocalSoakColors.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val snackbarController = LocalSnackbarController.current
     val cardColors = remember {
         listOf(
             soakColors.greenBackgroundPrimary,
@@ -93,7 +89,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     }
 
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var showSuccessToast by remember { mutableStateOf(false) }
+
+    val reportSuccessMessage = stringResource(R.string.explore_report_success)
 
     LaunchedEffect(lazyState) {
         snapshotFlow {
@@ -110,9 +107,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             .collect { event ->
                 when (event) {
                     is ExploreSideEffect.ShowReportComplete -> {
-                        showSuccessToast = true
-                        delay(2000)
-                        showSuccessToast = false
+                        snackbarController.showSnackbar(reportSuccessMessage)
                     }
                 }
             }
@@ -158,17 +153,6 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                     )
                 }
             }
-        }
-
-        AnimatedVisibility(
-            visible = showSuccessToast,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 8.dp),
-            enter = fadeIn() + slideInVertically { -it },
-            exit = fadeOut() + slideOutVertically { -it },
-        ) {
-            ReportSuccessToast()
         }
 
         ReportFab(
@@ -217,32 +201,6 @@ private fun ReportFab(
         )
         Text(
             text = stringResource(R.string.explore_report_fab),
-            style = SoakTheme.typography.body14.copy(
-                color = SoakTheme.colors.textStrong,
-                fontWeight = FontWeight.SemiBold,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun ReportSuccessToast(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .shadow(elevation = 4.dp, shape = CircleShape)
-            .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Icon(
-            modifier = Modifier.size(20.dp),
-            painter = painterResource(R.drawable.ic_check),
-            contentDescription = null,
-            tint = Color.Unspecified,
-        )
-        Text(
-            text = stringResource(R.string.explore_report_success),
             style = SoakTheme.typography.body14.copy(
                 color = SoakTheme.colors.textStrong,
                 fontWeight = FontWeight.SemiBold,
