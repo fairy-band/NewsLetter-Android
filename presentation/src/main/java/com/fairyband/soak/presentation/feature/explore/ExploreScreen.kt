@@ -178,6 +178,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
             updateUrl = viewModel::updateUrl,
             updateLanguage = viewModel::updateLanguage,
             updatePreference = viewModel::updatePreference,
+            isSubmitEnabled = state.isSubmitEnabled,
             onDismissRequest = { showBottomSheet = false },
             onSubmit = {
                 showBottomSheet = false

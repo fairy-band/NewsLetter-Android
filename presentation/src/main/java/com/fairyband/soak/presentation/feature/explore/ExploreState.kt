@@ -10,4 +10,7 @@ data class ExploreState(
     val url: String = "",
     val selectedPreferences: List<Preference> = emptyList(),
     val language: String = "",
-)
+) {
+    val isSubmitEnabled: Boolean
+        get() = name.isNotBlank() && url.isNotBlank() && selectedPreferences.isNotEmpty() && language.isNotBlank()
+}

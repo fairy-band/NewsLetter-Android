@@ -54,6 +54,7 @@ class ExploreViewModel(
             val request = ContentProviderRequest(
                 name = state.name,
                 url = state.url,
+                // TODO: 직군이 하나만 선택해야 하는지, 여러 개 선택이 가능한지 확인 후 주석 지우기
                 position = state.selectedPreferences.joinToString(",") { it.stringValue },
                 language = state.language,
             )
