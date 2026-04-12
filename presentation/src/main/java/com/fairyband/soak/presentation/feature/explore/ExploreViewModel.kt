@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.feature.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import com.fairyband.soak.presentation.model.toExploreFeed
@@ -49,7 +50,15 @@ class ExploreViewModel(
 
     fun reportNewsletter() {
         viewModelScope.launch {
-            // TODO: 백엔드 API 연동 전 임시 구현 - 항상 성공으로 처리
+            val state = _state.value
+            val request = ContentProviderRequest(
+                name = state.name,
+                url = state.url,
+                position = state.selectedPreferences.joinToString(",") { it.stringValue },
+                language = state.language,
+            )
+            // TODO: 에러 케이스 디자인이 추가되면 처리해 주세요.
+            newsRepository.requestContentProvider(request)
             _eventFlow.emit(ExploreSideEffect.ShowReportComplete)
         }
     }
