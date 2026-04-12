@@ -67,16 +67,17 @@ fun BaseButton2(
     borderColor: Color = SoakTheme.colors.borderPrimary,
     containerColor: Color = SoakTheme.colors.backgroundSurface,
     contentColor: Color = SoakTheme.colors.textPrimary,
-    disabledContainerColor: Color = Color.Gray,
-    disabledContentColor: Color = Color.White,
 ) {
+    // FIXME: disabled color가 확정되면 이 색깔을 변경해 주세요.
+    val disabledColor = Color.Gray
+
     Button(
         contentPadding = PaddingValues(vertical = paddingVertical),
         modifier = modifier
             .fillMaxWidth()
             .border(
                 width = borderWidth,
-                color = borderColor,
+                color = if (enabled) borderColor else disabledColor,
                 shape = shape,
             )
             .clip(shape = shape),
@@ -84,8 +85,8 @@ fun BaseButton2(
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
-            disabledContainerColor = disabledContainerColor,
-            disabledContentColor = disabledContentColor,
+            disabledContainerColor = disabledColor,
+            disabledContentColor = Color.White,
         ),
         onClick = onClick,
     ) {
