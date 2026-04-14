@@ -249,7 +249,7 @@ private fun Card(
             Text(
                 content.keyword, style = SoakTheme.typography.body13.copy(
                     color = Color(0x80121212),
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                 )
             )
             VerticalDivider(
@@ -258,11 +258,12 @@ private fun Card(
                     horizontal = 3.dp
                 ),
                 thickness = 1.dp,
-                color = Color(0x80121212)
+                color = Color(0xFF121212).copy(alpha = 0.1f)
             )
             Text(
                 content.letter, style = SoakTheme.typography.body13.copy(
-                    color = Color(0x80121212)
+                    color = Color(0x80121212),
+                    fontWeight = FontWeight.Medium,
                 )
             )
         }
