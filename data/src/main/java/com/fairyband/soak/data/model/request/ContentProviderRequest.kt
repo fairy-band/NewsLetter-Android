@@ -12,8 +12,8 @@ data class ContentProviderRequest(
     val name: String,
     @SerialName("channel")
     val url: String,
-    @SerialName("requestCategory")
-    val position: String,
+    @SerialName("requestCategories")
+    val positions: List<String>,
     @SerialName("relatedTo")
     val language: String,
     @SerialName("reason")
