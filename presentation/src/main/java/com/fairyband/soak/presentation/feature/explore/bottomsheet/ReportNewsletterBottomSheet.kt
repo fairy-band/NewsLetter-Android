@@ -37,6 +37,9 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 
+// TODO: 키보드 올라왔을 때 처리
+// TODO: 뒤로가기 눌렀을 때 키보드 먼저 닫히고 이후 바텀시트 닫기
+// TODO: 바텀시트 닫혔을 때 상태 초기화해 주기
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReportNewsletterBottomSheet(
