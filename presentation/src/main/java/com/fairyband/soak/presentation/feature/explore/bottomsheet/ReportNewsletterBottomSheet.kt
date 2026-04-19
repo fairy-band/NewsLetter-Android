@@ -63,6 +63,7 @@ internal fun ReportNewsletterBottomSheet(
         sheetState = sheetState,
         onDismissRequest = onDismissRequest,
         dragHandle = {},
+        cornerRadius = 24.dp,
     ) {
         Column(
             modifier = modifier
