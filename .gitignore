@@ -29,3 +29,4 @@ firebase-account.json
 
 # Claude
 .claude/settings.local.json
+.hotswan/
