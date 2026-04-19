@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.feature.explore.bottomsheet
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,11 +12,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -24,12 +24,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,8 +42,8 @@ import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
+import kotlinx.coroutines.launch
 
-// TODO: 뒤로가기 눌렀을 때 키보드 먼저 닫히고 이후 바텀시트 닫기
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReportNewsletterBottomSheet(
@@ -64,7 +67,22 @@ internal fun ReportNewsletterBottomSheet(
         onDismissRequest = onDismissRequest,
         dragHandle = {},
         cornerRadius = 24.dp,
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = false
+        )
     ) {
+        val density = LocalDensity.current
+        val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
+        val scope = rememberCoroutineScope()
+
+        BackHandler(!isKeyboardVisible) {
+            scope.launch {
+                sheetState.hide()
+            }.invokeOnCompletion {
+                onDismissRequest()
+            }
+        }
+
         Column(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
@@ -95,7 +113,13 @@ internal fun ReportNewsletterBottomSheet(
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .size(40.dp)
-                        .clickable(onClick = onDismissRequest),
+                        .clickable {
+                            scope.launch {
+                                sheetState.hide()
+                            }.invokeOnCompletion {
+                                onDismissRequest()
+                            }
+                        },
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(
