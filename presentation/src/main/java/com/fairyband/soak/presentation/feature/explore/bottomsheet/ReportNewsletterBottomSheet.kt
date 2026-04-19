@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -37,7 +40,6 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 
-// TODO: 키보드 올라왔을 때 처리
 // TODO: 뒤로가기 눌렀을 때 키보드 먼저 닫히고 이후 바텀시트 닫기
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +64,11 @@ internal fun ReportNewsletterBottomSheet(
         onDismissRequest = onDismissRequest,
         dragHandle = {},
     ) {
-        Column(modifier = modifier) {
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
+        ) {
             // 헤더: 타이틀 + 닫기 버튼
             Row(
                 modifier = Modifier
@@ -107,7 +113,7 @@ internal fun ReportNewsletterBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(52.dp))
 
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 // 이름
@@ -119,7 +125,7 @@ internal fun ReportNewsletterBottomSheet(
                     placeholder = stringResource(R.string.explore_report_field_name_hint),
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // 주소
                 FieldLabel(text = stringResource(R.string.explore_report_field_url))
@@ -130,7 +136,7 @@ internal fun ReportNewsletterBottomSheet(
                     placeholder = stringResource(R.string.explore_report_field_url_hint),
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // 직군
                 FieldLabel(text = stringResource(R.string.explore_report_field_job))
@@ -169,7 +175,7 @@ internal fun ReportNewsletterBottomSheet(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // 언어
                 FieldLabel(text = stringResource(R.string.explore_report_field_language))
@@ -198,11 +204,7 @@ internal fun ReportNewsletterBottomSheet(
                 )
             }
 
-            Spacer(
-                modifier = Modifier.height(
-                    16.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                )
-            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
