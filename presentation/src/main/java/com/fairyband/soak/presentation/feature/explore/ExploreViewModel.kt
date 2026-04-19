@@ -40,6 +40,10 @@ class ExploreViewModel(
         _state.update { it.copy(language = value) }
     }
 
+    fun resetReportState() {
+        _state.update { it.copy(name = "", url = "", selectedPreferences = emptyList(), language = "") }
+    }
+
     fun updatePreference(preference: Preference) {
         _state.update {
             val current = it.selectedPreferences
