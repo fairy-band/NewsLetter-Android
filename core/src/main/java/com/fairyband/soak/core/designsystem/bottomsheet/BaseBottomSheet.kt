@@ -1,11 +1,14 @@
 package com.fairyband.soak.core.designsystem.bottomsheet
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.theme.SoakTheme
 
@@ -15,15 +18,17 @@ fun BaseBottomSheet(
     onDismissRequest: () -> Unit,
     sheetState: SheetState = rememberModalBottomSheetState(),
     dragHandle: @Composable () -> Unit = {},
-    content: @Composable () -> Unit,
+    cornerRadius: Dp = 12.dp,
+    properties: ModalBottomSheetProperties = ModalBottomSheetProperties(),
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         containerColor = SoakTheme.colors.backgroundSurface,
         dragHandle = dragHandle,
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        content()
-    }
+        shape = RoundedCornerShape(topStart = cornerRadius, topEnd = cornerRadius),
+        properties = properties,
+        content = content,
+    )
 }

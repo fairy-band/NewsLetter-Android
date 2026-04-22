@@ -3,7 +3,7 @@ package com.fairyband.soak.data.repositoryimpl
 import com.fairyband.soak.core.extension.toPattern
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.NewsLetterDataSource
-import com.fairyband.soak.data.model.response.ExploreContentResponse
+import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.NewsResponse
 import com.fairyband.soak.data.repository.NewsRepository
@@ -63,5 +63,9 @@ class NewsRepositoryImpl(
         nextOffset = response.nextOffset
 
         return response
+    }
+
+    override suspend fun requestContentProvider(request: ContentProviderRequest) {
+        newsLetterDataSource.requestContentProvider(request)
     }
 }
