@@ -109,6 +109,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 when (event) {
                     is ExploreSideEffect.ShowReportComplete -> {
                         snackbarController.showSnackbar(reportSuccessMessage)
+                        viewModel.resetReportState()
+                        showBottomSheet = false
                     }
                 }
             }
@@ -184,9 +186,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 viewModel.resetReportState()
             },
             onSubmit = {
-                showBottomSheet = false
                 viewModel.reportNewsletter()
-                viewModel.resetReportState()
+                // 성공 후 onDissmiss 처리
             },
         )
     }
