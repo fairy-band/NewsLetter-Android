@@ -17,18 +17,22 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
@@ -132,16 +136,18 @@ class HomeViewModel(
 
     fun refreshNews() {
         if (_isRefreshing.value || hasRefreshedToday.value) return
-        viewModelScope.launch {
-            _isRefreshing.update { true }
-            try {
-                val snapshot = news.value
-                newsRepository.refreshNews()
-                withTimeoutOrNull(10_000) { news.first { it !== snapshot } }
-            } finally {
+
+        newsRepository.refreshNews()
+            .onStart {
+                _isRefreshing.update { true }
+            }
+            .onEach {
+                // news 목록이 자동으로 수정된다.
+            }
+            .onCompletion {
                 _isRefreshing.update { false }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     fun disableNotificationSetting() = viewModelScope.launch {

@@ -61,11 +61,12 @@ class NewsRepositoryImpl(
         refreshFlow.emit(Unit)
     }
 
-    override suspend fun refreshNews() {
+    override fun refreshNews(): Flow<Unit> = flow {
         val userId = authDataSource.getUserId()
         newsLetterDataSource.refreshContents(userId)
         newsDataStore.recordRefreshToday()
         refreshFlow.emit(Unit)
+        emit(Unit)
     }
 
     override suspend fun getExploreContents(): ExploreContentsResponse {

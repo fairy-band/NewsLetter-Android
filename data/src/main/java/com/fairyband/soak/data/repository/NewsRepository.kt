@@ -10,7 +10,7 @@ interface NewsRepository {
     val hasRefreshedToday: Flow<Boolean>
 
     suspend fun invalidateNews()
-    suspend fun refreshNews()
+    fun refreshNews(): Flow<Unit>
     suspend fun getExploreContents(): ExploreContentsResponse
     suspend fun requestContentProvider(request: ContentProviderRequest)
 }
