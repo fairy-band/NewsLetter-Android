@@ -24,6 +24,11 @@ interface NewsLetterService {
         size: Int = 20,
     ): ExploreContentsResponse
 
+    @POST("api/newsletters/contents/{userId}/refresh")
+    suspend fun refreshContents(
+        @Path("userId") userId: Long,
+    )
+
     @POST("api/newsletters/content-provider-requests")
     suspend fun requestContentProvider(
         @Body request: ContentProviderRequest,

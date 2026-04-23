@@ -23,6 +23,10 @@ class NewsLetterDataSource(
         return api.getExploreContents(lastSeenOffset = nextOffset, size = 20)
     }
 
+    suspend fun refreshContents(userId: Long) {
+        api.refreshContents(userId)
+    }
+
     suspend fun requestContentProvider(request: ContentProviderRequest) {
         api.requestContentProvider(request)
     }

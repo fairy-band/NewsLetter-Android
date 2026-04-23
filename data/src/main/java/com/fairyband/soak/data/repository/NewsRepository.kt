@@ -7,8 +7,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
     val news: Flow<List<NewsResponse>>
+    val hasRefreshedToday: Flow<Boolean>
 
     suspend fun invalidateNews()
+    suspend fun refreshNews()
     suspend fun getExploreContents(): ExploreContentsResponse
     suspend fun requestContentProvider(request: ContentProviderRequest)
 }
