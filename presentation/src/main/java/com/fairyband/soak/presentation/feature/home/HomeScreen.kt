@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -54,12 +55,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -812,31 +815,30 @@ private fun RefreshButton(
 
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(50))
+            .clip(CircleShape)
             .background(SoakTheme.colors.fillPrimary)
             .clickable(enabled = isEnabled, onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (isRefreshing) {
             CircularProgressIndicator(
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(16.dp),
                 strokeWidth = 1.5.dp,
                 color = contentColor,
             )
         } else {
             Image(
-                painter = painterResource(R.drawable.ic_refresh),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_refresh),
                 contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                colorFilter = ColorFilter.tint(contentColor),
+                modifier = Modifier.size(16.dp),
             )
         }
         Text(
-            text = "새로고침",
+            text = "${stringResource(R.string.home_refresh_button_label)} ${if (hasRefreshedToday) 1 else 0}/1",
             style = SoakTheme.typography.body14.copy(
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = contentColor,
             ),
         )
