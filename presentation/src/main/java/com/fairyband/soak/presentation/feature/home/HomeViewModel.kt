@@ -17,6 +17,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -31,7 +33,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(
-    newsRepository: NewsRepository,
+    private val newsRepository: NewsRepository,
     private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     private val putUserInfoUseCase: PutUserInfoUseCase,
@@ -39,6 +41,12 @@ class HomeViewModel(
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
+    val hasRefreshedToday: StateFlow<Boolean> = newsRepository.hasRefreshedToday
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val _cardShown = MutableStateFlow(false)
     private val cardShown: StateFlow<Boolean> = _cardShown.asStateFlow()
@@ -120,6 +128,20 @@ class HomeViewModel(
                 workingExperience = workingExperience
             ).toRequest()
         )
+    }
+
+    fun refreshNews() {
+        if (_isRefreshing.value || hasRefreshedToday.value) return
+        viewModelScope.launch {
+            _isRefreshing.update { true }
+            try {
+                val snapshot = news.value
+                newsRepository.refreshNews()
+                withTimeoutOrNull(10_000) { news.first { it !== snapshot } }
+            } finally {
+                _isRefreshing.update { false }
+            }
+        }
     }
 
     fun disableNotificationSetting() = viewModelScope.launch {
