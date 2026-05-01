@@ -3,6 +3,7 @@ package com.fairyband.soak.data.repositoryimpl
 import com.fairyband.soak.core.extension.toPattern
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.NewsLetterDataSource
+import com.fairyband.soak.data.local.news.NewsDataStore
 import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.NewsResponse
@@ -23,6 +24,7 @@ import java.time.LocalDateTime
 class NewsRepositoryImpl(
     private val newsLetterDataSource: NewsLetterDataSource,
     private val authDataSource: AuthDataSource,
+    private val newsDataStore: NewsDataStore,
 ) : NewsRepository {
     private val refreshFlow = MutableSharedFlow<Unit>()
     private var nextOffset = 0L
@@ -53,8 +55,18 @@ class NewsRepositoryImpl(
                 response.cards
             }
 
+    override val hasRefreshedToday: Flow<Boolean> = newsDataStore.hasRefreshedToday
+
     override suspend fun invalidateNews() {
         refreshFlow.emit(Unit)
+    }
+
+    override fun refreshNews(): Flow<Unit> = flow {
+        val userId = authDataSource.getUserId()
+        newsLetterDataSource.refreshContents(userId)
+        newsDataStore.recordRefreshToday()
+        refreshFlow.emit(Unit)
+        emit(Unit)
     }
 
     override suspend fun getExploreContents(): ExploreContentsResponse {

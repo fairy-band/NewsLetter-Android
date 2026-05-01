@@ -23,15 +23,21 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(
-    newsRepository: NewsRepository,
+    private val newsRepository: NewsRepository,
     private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     private val putUserInfoUseCase: PutUserInfoUseCase,
@@ -39,6 +45,12 @@ class HomeViewModel(
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
+    val hasRefreshedToday: StateFlow<Boolean> = newsRepository.hasRefreshedToday
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val _cardShown = MutableStateFlow(false)
     private val cardShown: StateFlow<Boolean> = _cardShown.asStateFlow()
@@ -120,6 +132,22 @@ class HomeViewModel(
                 workingExperience = workingExperience
             ).toRequest()
         )
+    }
+
+    fun refreshNews() {
+        if (_isRefreshing.value || hasRefreshedToday.value) return
+
+        newsRepository.refreshNews()
+            .onStart {
+                _isRefreshing.update { true }
+            }
+            .onEach {
+                // news 목록이 자동으로 수정된다.
+            }
+            .onCompletion {
+                _isRefreshing.update { false }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun disableNotificationSetting() = viewModelScope.launch {

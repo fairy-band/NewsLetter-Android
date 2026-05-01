@@ -7,6 +7,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
@@ -26,7 +27,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -49,14 +52,17 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -112,6 +118,8 @@ fun HomeScreen(
     val news by viewModel.news.collectAsStateWithLifecycle()
     val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
     val homeTitleVariant by viewModel.homeTitleVariant.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasNotificationPermission by remember { mutableStateOf(false) }
@@ -181,6 +189,9 @@ fun HomeScreen(
         news = news,
         colorType = colorType,
         homeTitleVariant = homeTitleVariant,
+        isRefreshing = isRefreshing,
+        hasRefreshedToday = hasRefreshedToday,
+        onRefresh = viewModel::refreshNews,
     )
 }
 
@@ -190,6 +201,9 @@ private fun HomeScreen(
     news: ImmutableList<NewsFeed>,
     colorType: String,
     homeTitleVariant: HomeTitleVariant,
+    isRefreshing: Boolean,
+    hasRefreshedToday: Boolean,
+    onRefresh: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     var cardsHeight by remember { mutableStateOf(0.dp) }
@@ -238,6 +252,12 @@ private fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Title(variant = homeTitleVariant)
+            Spacer(modifier = Modifier.height(12.dp))
+            RefreshButton(
+                isRefreshing = isRefreshing,
+                hasRefreshedToday = hasRefreshedToday,
+                onClick = onRefresh,
+            )
             Spacer(modifier = Modifier.weight(2f))
 
             Box(
@@ -783,6 +803,48 @@ private fun kakaoShare(
     }
 }
 
+@Composable
+private fun RefreshButton(
+    isRefreshing: Boolean,
+    hasRefreshedToday: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isEnabled = !isRefreshing && !hasRefreshedToday
+    val contentColor = if (isEnabled) SoakTheme.colors.textSecondary else SoakTheme.colors.textDisabled
+
+    Row(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(SoakTheme.colors.fillPrimary)
+            .clickable(enabled = isEnabled, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        if (isRefreshing) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(16.dp),
+                strokeWidth = 1.5.dp,
+                color = contentColor,
+            )
+        } else {
+            Image(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_refresh),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Text(
+            text = "${stringResource(R.string.home_refresh_button_label)} ${if (hasRefreshedToday) 1 else 0}/1",
+            style = SoakTheme.typography.body14.copy(
+                fontWeight = FontWeight.SemiBold,
+                color = contentColor,
+            ),
+        )
+    }
+}
+
 private object HomeDefaults {
     val FRONT_MOST_Z_INDEX = 5f
     val DRAWER_HEIGHT = 527.dp
@@ -796,6 +858,9 @@ private fun HomeScreenPreview() {
     SoakTheme {
         HomeScreen(
             onDismissRequest = {},
+            isRefreshing = false,
+            hasRefreshedToday = false,
+            onRefresh = {},
             news = persistentListOf(
                 NewsFeed(
                     id = 1,
