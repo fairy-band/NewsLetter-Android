@@ -47,8 +47,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +56,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
+import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,7 +90,6 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.abs
-import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -220,43 +221,36 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Title(variant = homeTitleVariant)
-                Spacer(modifier = Modifier.height(12.dp))
-                RefreshButton(
-                    isRefreshing = isRefreshing,
-                    hasRefreshedToday = hasRefreshedToday,
-                    onClick = onRefresh,
-                )
-                Spacer(modifier = Modifier.weight(2f))
-                Cards(
-                    pagerState = pagerState,
-                    news = news,
-                    onClick = { index -> cardIndex = index },
-                    colorType = colorType,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
-
+            Spacer(modifier = Modifier.height(20.dp))
+            Title(variant = homeTitleVariant)
+            Spacer(modifier = Modifier.height(12.dp))
+            RefreshButton(
+                isRefreshing = isRefreshing,
+                hasRefreshedToday = hasRefreshedToday,
+                onClick = onRefresh,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Cards(
+                pagerState = pagerState,
+                news = news,
+                onClick = { index -> cardIndex = index },
+                colorType = colorType,
+                modifier = Modifier.fillMaxWidth(),
+            )
             if (news.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(40.dp))
                 Dots(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 82.dp),
                     pagerState = pagerState,
                     count = news.size,
                 )
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 
@@ -403,34 +397,29 @@ private fun Cards(
 ) {
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
-    val density = LocalDensity.current
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
+    val cardWidth = 300.dp
+    val contentPaddingHorizontal = ((screenWidthDp - cardWidth) / 2).coerceAtLeast(0.dp)
+    val pageSpacing = (-80).dp
 
     HorizontalPager(
         state = pagerState,
-        contentPadding = PaddingValues(horizontal = 40.dp),
-        pageSpacing = 12.dp,
+        contentPadding = PaddingValues(horizontal = contentPaddingHorizontal),
+        pageSpacing = pageSpacing,
         modifier = modifier,
         verticalAlignment = Alignment.Top,
     ) { page ->
         val rel = (pagerState.currentPage - page).toFloat() + pagerState.currentPageOffsetFraction
         val absRel = abs(rel)
-        val scale = 1f - min(absRel * 0.12f, 0.28f)
-        val alpha = 1f - min(absRel * 0.22f, 0.56f)
-        val rotationY = (-rel * 34f).coerceIn(-46f, 46f)
-        val rotationZ = (rel * 1.3f).coerceIn(-3f, 3f)
-        val translationYPx = with(density) { (absRel * 8f).dp.toPx() }
+        val scale = lerp(0.7f, 1.0f, 1f - absRel.coerceIn(0f, 1f))
 
         Card(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(cardWidth)
+                .zIndex(1f - absRel)
                 .graphicsLayer {
                     scaleX = scale
                     scaleY = scale
-                    this.alpha = alpha
-                    this.rotationY = rotationY
-                    this.rotationZ = rotationZ
-                    this.translationY = translationYPx
-                    cameraDistance = 8f * this.density
                 },
             feed = news[page],
             cardColor = cardColors[page],
@@ -453,7 +442,6 @@ private fun Card(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = onClick,
             )
-            .height(300.dp)
             .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
     ) {
@@ -470,14 +458,14 @@ private fun Card(
                 ),
             )
             Row(
-                modifier = Modifier.padding(top = 6.dp),
+                modifier = Modifier.padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = feed.keyword,
-                    style = SoakTheme.typography.body13.copy(
+                    style = SoakTheme.typography.body14.copy(
                         fontWeight = FontWeight.Medium,
-                        color = SoakTheme.colors.textStrong.copy(alpha = 0.5f),
+                        color = SoakTheme.colors.textStrong.copy(alpha = 0.4f),
                     )
                 )
                 Box(
@@ -494,6 +482,12 @@ private fun Card(
                     )
                 )
             }
+            Box(
+                Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .background(color = SoakTheme.colors.fillPrimary)
+            )
         }
     }
 }
@@ -537,7 +531,8 @@ private fun RefreshButton(
     modifier: Modifier = Modifier,
 ) {
     val isEnabled = !isRefreshing && !hasRefreshedToday
-    val contentColor = if (isEnabled) SoakTheme.colors.textSecondary else SoakTheme.colors.textDisabled
+    val contentColor =
+        if (isEnabled) SoakTheme.colors.textSecondary else SoakTheme.colors.textDisabled
 
     Row(
         modifier = modifier
