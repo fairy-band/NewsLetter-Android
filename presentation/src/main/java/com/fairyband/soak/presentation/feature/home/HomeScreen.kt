@@ -3,30 +3,29 @@ package com.fairyband.soak.presentation.feature.home
 import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,11 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,43 +43,29 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
-import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -101,12 +82,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.math.abs
+import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -142,10 +124,8 @@ fun HomeScreen(
         snapshotFlow { bottomSheetVisibility }
             .collect { isHome ->
                 if (isHome) {
-                    // 앱 메인 페이지 진입
                     Firebase.analytics.logEvent("pageview_main") {}
                 } else {
-                    // 맞춤정보 바텀시트 노출
                     Firebase.analytics.logEvent("pageview_bottom_sheet_custom") {
                         param("object_type", "bottom_sheet")
                     }
@@ -206,11 +186,10 @@ private fun HomeScreen(
     onRefresh: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
-    var cardsHeight by remember { mutableStateOf(0.dp) }
     val navController = LocalNavController.current
     val context = LocalContext.current
-    var onCardHidden by remember { mutableStateOf(false) }
-    var dismissedCardIndex by rememberSaveable { mutableStateOf<Int?>(null) }
+
+    val pagerState = rememberPagerState(pageCount = { news.size })
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -218,10 +197,8 @@ private fun HomeScreen(
             .distinctUntilChanged()
             .collect { isHome ->
                 if (isHome) {
-                    // 앱 메인 페이지 진입
                     Firebase.analytics.logEvent("pageview_main") {}
                 } else {
-                    // 뉴스레터 캐러셀 진입
                     Firebase.analytics.logEvent("pageview_newsletter_carousel") {
                         param("object_type", "newsletter")
                     }
@@ -231,7 +208,6 @@ private fun HomeScreen(
 
     LaunchedEffect(cardIndex, news) {
         cardIndex?.let {
-            // 뉴스레터 클릭
             Firebase.analytics.logEvent("click_main") {
                 val title = news.getOrNull(it)?.title.orEmpty()
 
@@ -244,60 +220,41 @@ private fun HomeScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(innerPadding)
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Title(variant = homeTitleVariant)
-            Spacer(modifier = Modifier.height(12.dp))
-            RefreshButton(
-                isRefreshing = isRefreshing,
-                hasRefreshedToday = hasRefreshedToday,
-                onClick = onRefresh,
-            )
-            Spacer(modifier = Modifier.weight(2f))
-
-            Box(
-                contentAlignment = Alignment.BottomCenter,
-                modifier = Modifier.height(if (cardsHeight > 0.dp) cardsHeight + DRAWER_TO_CARD_MARGIN else 600.dp) // 왠지 모르겠으나 그냥 cardsHeight + DRAWER_TO_CARD_MARGIN 를 쓰면 안 된다.
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    painter = painterResource(R.drawable.home_drawer_background),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .drawBehind {
-                            drawRect(
-                                color = DRAWER_COLOR,
-                                topLeft = Offset(x = 0f, y = size.height),
-                                size = Size(width = size.width, height = size.height)
-                            )
-                        },
+                Spacer(modifier = Modifier.weight(1f))
+                Title(variant = homeTitleVariant)
+                Spacer(modifier = Modifier.height(12.dp))
+                RefreshButton(
+                    isRefreshing = isRefreshing,
+                    hasRefreshedToday = hasRefreshedToday,
+                    onClick = onRefresh,
                 )
+                Spacer(modifier = Modifier.weight(2f))
                 Cards(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .sizeIn(maxWidth = 432.dp),
-                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
+                    pagerState = pagerState,
                     news = news,
-                    onClick = { index ->
-                        cardIndex = index
-                        dismissedCardIndex = null
-                    },
+                    onClick = { index -> cardIndex = index },
                     colorType = colorType,
-                    onCardsHeight = { height ->
-                        if (cardsHeight > 0.dp) return@Cards
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
 
-                        cardsHeight = height.dp
-                    },
-                    dialogVisible = cardIndex != null,
-                    onCardHidden = { onCardHidden = true },
-                    dismissedCardIndex = dismissedCardIndex,
-                    onDismissAnimationFinished = { dismissedCardIndex = null }
+            if (news.isNotEmpty()) {
+                Dots(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 82.dp),
+                    pagerState = pagerState,
+                    count = news.size,
                 )
             }
         }
@@ -305,12 +262,10 @@ private fun HomeScreen(
 
     PopUpDialog(
         visibility = cardIndex != null,
-        backgroundVisibility = onCardHidden,
+        backgroundVisibility = cardIndex != null,
         onDismissRequest = {
-            dismissedCardIndex = cardIndex
             cardIndex = null
             onDismissRequest()
-            onCardHidden = false
         },
         onWebClick = { item, pageIndex ->
             navController.navigate(MainDestination.WebView(url = item.url))
@@ -440,365 +395,136 @@ private fun RowScope.RemainingTime() {
 
 @Composable
 private fun Cards(
-    dialogVisible: Boolean,
+    pagerState: PagerState,
     news: ImmutableList<NewsFeed>,
     onClick: (Int) -> Unit,
     colorType: String,
-    onCardsHeight: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onCardHidden: () -> Unit,
-    dismissedCardIndex: Int?,
-    onDismissAnimationFinished: () -> Unit,
 ) {
-    val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
-    val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
-    val keywordVisibilities = listOf(true, true, true, false, false, false)
-    val textStyles = listOf(
-        SoakTheme.typography.body18.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body18.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body16.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body15.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body14.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body13.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        )
-    )
-    val cardHeights = remember { mutableStateListOf(0, 0, 0, 0, 0, 0) }
-    val cardOffsets by remember {
-        derivedStateOf {
-            buildList {
-                var cumulative = 0
-                for (height in cardHeights) {
-                    cumulative += height
-                    add(cumulative)
-                }
-            }
-        }
-    }
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
-
-    var start by remember { mutableIntStateOf(0) }
-    val mapFeedIndex = { index: Int -> (index - start + news.size) % news.size }
-
     val density = LocalDensity.current
-    val stepDp = 106.dp
-    val stepPx = with(density) { stepDp.toPx() }
 
-    var scrollAccum by remember { mutableFloatStateOf(0f) }
-    var progress by remember { mutableFloatStateOf(0f) }
-    val scrollState = rememberScrollableState { delta ->
-        scrollAccum += delta
+    HorizontalPager(
+        state = pagerState,
+        contentPadding = PaddingValues(horizontal = 40.dp),
+        pageSpacing = 12.dp,
+        modifier = modifier,
+        verticalAlignment = Alignment.Top,
+    ) { page ->
+        val rel = (pagerState.currentPage - page).toFloat() + pagerState.currentPageOffsetFraction
+        val absRel = abs(rel)
+        val scale = 1f - min(absRel * 0.12f, 0.28f)
+        val alpha = 1f - min(absRel * 0.22f, 0.56f)
+        val rotationY = (-rel * 34f).coerceIn(-46f, 46f)
+        val rotationZ = (rel * 1.3f).coerceIn(-3f, 3f)
+        val translationYPx = with(density) { (absRel * 8f).dp.toPx() }
 
-        delta
-    }
-
-    LaunchedEffect(scrollAccum) {
-        if (news.isEmpty()) return@LaunchedEffect
-
-        if (scrollAccum > stepPx) {
-            start = (start + 1) % news.size
-            scrollAccum -= stepPx
-        }
-
-        if (scrollAccum < -stepPx) {
-            start = (start - 1 + news.size) % news.size
-            scrollAccum += stepPx
-        }
-
-        progress = scrollAccum / stepPx
-    }
-
-    LaunchedEffect(cardOffsets) {
-        if (news.isEmpty()) return@LaunchedEffect
-
-        onCardsHeight(cardOffsets.last())
-    }
-
-    var frontMostIndex by remember { mutableStateOf<Int?>(null) }
-
-    LaunchedEffect(dialogVisible) {
-        if (!dialogVisible) frontMostIndex = null
-    }
-
-    val animationList = remember(news) {
-        news.map { Animatable(initialValue = 0f) }
-    }
-
-    LaunchedEffect(news) {
-        animationList.forEachIndexed { index, animatable ->
-            delay(40L * index)
-            launch {
-                animatable.animateTo(
-                    targetValue = -4f,
-                    animationSpec = tween(durationMillis = 100)
-                )
-                animatable.animateTo(
-                    targetValue = 0f,
-                    animationSpec = tween(durationMillis = 100)
-                )
-            }
-        }
-    }
-
-    Box(
-        modifier = modifier
-            .scrollable(orientation = Orientation.Vertical, state = scrollState),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        repeat(news.size) { index ->
-            val feedIndex = mapFeedIndex(index)
-            val baseZ = FRONT_MOST_Z_INDEX - feedIndex
-            val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
-
-            Card(
-                modifier = Modifier
-                    .graphicsLayer {
-                        if (progress < 0 && feedIndex == news.size - 1) {
-                            val dy = cardHeights[feedIndex].toFloat() * progress * density.density
-                            translationY = -dy
-                        } else {
-                            val dy =
-                                cardHeights[(feedIndex + 1).coerceAtMost(news.size - 1)].toFloat() * progress * density.density
-                            translationY = dy
-                        }
-                    }
-                    .zIndex(currentZ)
-                    .offset(y = (166 - cardOffsets[feedIndex]).dp)
-                    .offset(y = animationList[feedIndex].value.dp)
-                    .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
-                feed = news[index],
-                cardColor = cardColors[index],
-                topPadding = topPaddings[feedIndex],
-                bottomPadding = bottomPaddings[feedIndex],
-                textStyle = textStyles[feedIndex],
-                showKeyword = keywordVisibilities[feedIndex],
-                visibleHeight = if (feedIndex < 3) 106 else null,
-                onHeightInflated = { height -> cardHeights[feedIndex] = height },
-                onClick = { onClick(index) },
-                onPromoteToFront = { frontMostIndex = index },
-                onPromoteToBack = { frontMostIndex = null },
-                onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == index,
-                onDismissAnimationFinished = onDismissAnimationFinished
-            )
-        }
-        val density = LocalDensity.current.density
-
-        // 아래로 스와이프할 때 가장 뒤쪽 카드가 서서히 올라와요.
-        if (progress > 0) {
-            val lastIndex = news.size - 1
-            Card(
-                modifier = Modifier
-                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] * density }
-                    .zIndex(-1f)
-                    .offset(y = (166 - cardOffsets[(lastIndex - 1).coerceAtLeast(0)]).dp)
-                    .padding(horizontal = ((lastIndex) * 16).dp),
-                feed = news[start],
-                cardColor = cardColors[start],
-                topPadding = topPaddings[lastIndex],
-                bottomPadding = bottomPaddings[lastIndex],
-                textStyle = textStyles[lastIndex],
-                showKeyword = keywordVisibilities[lastIndex],
-                visibleHeight = null,
-                onHeightInflated = { _ -> },
-                onClick = { onClick(start) },
-                onPromoteToFront = { frontMostIndex = start },
-                onPromoteToBack = { frontMostIndex = null },
-                onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == start,
-                onDismissAnimationFinished = onDismissAnimationFinished
-            )
-        }
-
-        // 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
-        // info: start - 1 은 마지막 index 이다.
-        if (news.isNotEmpty() && progress < 0) {
-            val risingIndex = (start - 1 + news.size) % news.size
-            Card(
-                modifier = Modifier
-                    .graphicsLayer { translationY = progress * cardHeights[0] * density }
-                    .zIndex(6f)
-                    .offset(y = 166.dp),
-                feed = news[risingIndex],
-                cardColor = cardColors[risingIndex],
-                topPadding = topPaddings[0],
-                bottomPadding = bottomPaddings[0],
-                textStyle = textStyles[0],
-                showKeyword = keywordVisibilities[0],
-                visibleHeight = 106,
-                onHeightInflated = { _ -> },
-                onClick = { onClick(risingIndex) },
-                onPromoteToFront = { frontMostIndex = risingIndex },
-                onPromoteToBack = { frontMostIndex = null },
-                onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == risingIndex,
-                onDismissAnimationFinished = onDismissAnimationFinished
-            )
-        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                    this.alpha = alpha
+                    this.rotationY = rotationY
+                    this.rotationZ = rotationZ
+                    this.translationY = translationYPx
+                    cameraDistance = 8f * this.density
+                },
+            feed = news[page],
+            cardColor = cardColors[page],
+            onClick = { onClick(page) },
+        )
     }
 }
 
-/**
- * @param showKeyword 아래 세 개의 카드는 항상 키워드를 보여준다.
- */
 @Composable
 private fun Card(
     feed: NewsFeed,
-    topPadding: Dp,
-    bottomPadding: Dp,
-    textStyle: TextStyle,
     cardColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    visibleHeight: Int? = null,
-    showKeyword: Boolean = false,
-    onHeightInflated: (height: Int) -> Unit,
-    onPromoteToFront: () -> Unit,
-    onPromoteToBack: () -> Unit,
-    onCardHidden: () -> Unit,
-    isDismissing: Boolean,
-    onDismissAnimationFinished: () -> Unit,
 ) {
-    val density = LocalDensity.current
-    var lineCount by remember { mutableIntStateOf(2) }
-
     Box(
         modifier = modifier
-            .bounceClick(
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
                 onClick = onClick,
-                onPromoteToFront = onPromoteToFront,
-                onPromoteToBack = onPromoteToBack,
-                onCardHidden = onCardHidden,
-                isDismissing = isDismissing,
-                onDismissAnimationFinished = onDismissAnimationFinished
             )
-            .height(166.dp)
+            .height(300.dp)
             .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
     ) {
-        val columnModifier = if (visibleHeight == null) {
-            Modifier
-        } else {
-            Modifier.heightIn(visibleHeight.dp)
-        }
-
         Column(
-            modifier = columnModifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .onGloballyPositioned { layoutCoordinates ->
-                    onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
-                }
-                .padding(horizontal = 20.dp)
-                .padding(top = topPadding, bottom = bottomPadding),
+                .padding(24.dp),
         ) {
             Text(
                 text = feed.title,
-                style = textStyle,
-                onTextLayout = { textLayoutResult ->
-                    lineCount = textLayoutResult.lineCount
-                },
+                style = SoakTheme.typography.body18.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = SoakTheme.colors.textStrong,
+                ),
             )
-            if (showKeyword || lineCount == 1) {
-                Row(
-                    modifier = Modifier.padding(top = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        feed.keyword,
-                        style = SoakTheme.typography.body13.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = SoakTheme.colors.textStrong.copy(alpha = 0.5f)
-                        )
+            Row(
+                modifier = Modifier.padding(top = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = feed.keyword,
+                    style = SoakTheme.typography.body13.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = SoakTheme.colors.textStrong.copy(alpha = 0.5f),
                     )
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 6.dp)
-                            .size(width = 1.dp, height = 14.dp)
-                            .background(color = Color.Black.copy(alpha = 0.1f))
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .size(width = 1.dp, height = 14.dp)
+                        .background(color = Color.Black.copy(alpha = 0.1f))
+                )
+                Text(
+                    text = feed.letter,
+                    style = SoakTheme.typography.body13.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = SoakTheme.colors.textStrong.copy(alpha = 0.5f),
                     )
-                    Text(
-                        text = feed.letter,
-                        style = SoakTheme.typography.body13.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = SoakTheme.colors.textStrong.copy(alpha = 0.5f)
-                        )
-                    )
-                }
+                )
             }
         }
     }
 }
 
-private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
-    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
-        param("object_type", "button")
-        param("job_group", jobGroup.joinToString(separator = ","))
-        param("career_level", careerLevel)
-    }
-}
-
-private fun webClickEvent(id: Int, page: Long) {
-    // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
-    Firebase.analytics.logEvent("click_newsletter_carousel") {
-        param("object_section", "newsletter_card")
-        param("object_type", "button")
-        param("object_id", id.toString())
-        param("card_index", page)
-    }
-}
-
-private fun kakaoShare(
-    id: Int,
-    title: String,
-    color: Color,
-    context: Context
+@Composable
+private fun Dots(
+    pagerState: PagerState,
+    count: Int,
+    modifier: Modifier = Modifier,
 ) {
-    val templateId = 124946L
-    val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
-    val templateArgs = mapOf(
-        "TITLE" to title,
-        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=$id&textColor=%23$textColor"
-    )
-
-    if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
-        ShareClient.instance.shareCustom(
-            context,
-            templateId,
-            templateArgs
-        ) { sharingResult, error ->
-            if (error != null) {
-                Timber.e("카카오톡 공유 실패: ${error.message}")
-            } else if (sharingResult != null) {
-                context.startActivity(sharingResult.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }
-        }
-    } else {
-        val sharerUrl = WebSharerClient.instance.makeCustomUrl(templateId, templateArgs)
-        try {
-            val intent = CustomTabsIntent.Builder().build().intent
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.data = sharerUrl
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Timber.e("웹 공유 실패: ${e.message}")
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(count) { index ->
+            val isActive = pagerState.currentPage == index
+            val dotWidth by animateDpAsState(
+                targetValue = if (isActive) 22.dp else 8.dp,
+                animationSpec = tween(durationMillis = 280),
+                label = "dot_width",
+            )
+            Box(
+                modifier = Modifier
+                    .height(8.dp)
+                    .width(dotWidth)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(
+                        color = if (isActive) Color(0xFF121212) else Color.Black.copy(alpha = 0.18f)
+                    )
+            )
         }
     }
 }
@@ -845,11 +571,59 @@ private fun RefreshButton(
     }
 }
 
-private object HomeDefaults {
-    val FRONT_MOST_Z_INDEX = 5f
-    val DRAWER_HEIGHT = 527.dp
-    val DRAWER_TO_CARD_MARGIN = 25.dp
-    val DRAWER_COLOR = Color(0xFF99C9FF)
+private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
+    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
+        param("object_type", "button")
+        param("job_group", jobGroup.joinToString(separator = ","))
+        param("career_level", careerLevel)
+    }
+}
+
+private fun webClickEvent(id: Int, page: Long) {
+    Firebase.analytics.logEvent("click_newsletter_carousel") {
+        param("object_section", "newsletter_card")
+        param("object_type", "button")
+        param("object_id", id.toString())
+        param("card_index", page)
+    }
+}
+
+private fun kakaoShare(
+    id: Int,
+    title: String,
+    color: Color,
+    context: Context
+) {
+    val templateId = 124946L
+    val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
+    val templateArgs = mapOf(
+        "TITLE" to title,
+        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=$id&textColor=%23$textColor"
+    )
+
+    if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
+        ShareClient.instance.shareCustom(
+            context,
+            templateId,
+            templateArgs
+        ) { sharingResult, error ->
+            if (error != null) {
+                Timber.e("카카오톡 공유 실패: ${error.message}")
+            } else if (sharingResult != null) {
+                context.startActivity(sharingResult.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
+        }
+    } else {
+        val sharerUrl = WebSharerClient.instance.makeCustomUrl(templateId, templateArgs)
+        try {
+            val intent = CustomTabsIntent.Builder().build().intent
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.data = sharerUrl
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Timber.e("웹 공유 실패: ${e.message}")
+        }
+    }
 }
 
 @Preview(showBackground = true)
@@ -872,46 +646,46 @@ private fun HomeScreenPreview() {
                     language = "한국어"
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
+                    id = 2,
+                    title = "Jetpack Compose 최신 기능",
+                    keyword = "Android",
                     letter = "Android Weekly",
                     summary = "",
                     url = "https://naver.com",
                     language = "한국어"
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
+                    id = 3,
+                    title = "Kotlin 2.0 새로운 기능들",
                     keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    letter = "Kotlin Weekly",
                     summary = "",
                     url = "https://naver.com",
                     language = "한국어"
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    id = 4,
+                    title = "AI가 바꾸는 개발 생태계",
+                    keyword = "AI",
+                    letter = "GeekNews",
                     summary = "",
                     url = "https://naver.com",
                     language = "한국어"
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    id = 5,
+                    title = "웹 성능 최적화 전략",
+                    keyword = "Web",
+                    letter = "Frontend Focus",
                     summary = "",
                     url = "https://naver.com",
                     language = "한국어"
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    id = 6,
+                    title = "도커와 쿠버네티스 실전 가이드",
+                    keyword = "DevOps",
+                    letter = "DevOps Weekly",
                     summary = "",
                     url = "https://naver.com",
                     language = "한국어"
