@@ -27,6 +27,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -76,6 +77,8 @@ import com.fairyband.soak.presentation.navigation.MainDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -456,6 +459,7 @@ private fun Card(
                     fontWeight = FontWeight.Bold,
                     color = SoakTheme.colors.textStrong,
                 ),
+                maxLines = 2,
             )
             Row(
                 modifier = Modifier.padding(top = 4.dp),
@@ -482,12 +486,29 @@ private fun Card(
                     )
                 )
             }
-            Box(
-                Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .background(color = SoakTheme.colors.fillPrimary)
-            )
+            Spacer(modifier = Modifier.height(20.dp))
+            if (feed.imageUrl != null) {
+                AsyncImage(
+                    model = feed.imageUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(corner = CornerSize(16.dp))),
+                    contentScale = ContentScale.Crop,
+                )
+            } else {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(shape = RoundedCornerShape(corner = CornerSize(16.dp)))
+                        .background(color = SoakTheme.colors.fillPrimary)
+                ) {
+                    
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
