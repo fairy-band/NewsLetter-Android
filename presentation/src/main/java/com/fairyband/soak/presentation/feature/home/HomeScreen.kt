@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -63,6 +64,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
@@ -77,8 +79,6 @@ import com.fairyband.soak.presentation.navigation.MainDestination
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
-import androidx.compose.ui.layout.ContentScale
-import coil3.compose.AsyncImage
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -487,25 +487,42 @@ private fun Card(
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
-            if (feed.imageUrl != null) {
-                AsyncImage(
-                    model = feed.imageUrl,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .clip(RoundedCornerShape(corner = CornerSize(16.dp))),
-                    contentScale = ContentScale.Crop,
-                )
-            } else {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .clip(shape = RoundedCornerShape(corner = CornerSize(16.dp)))
-                        .background(color = SoakTheme.colors.fillPrimary)
-                ) {
-                    
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(shape = RoundedCornerShape(corner = CornerSize(16.dp)))
+                    .background(color = Color.White.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (feed.imageUrl != null) {
+                    AsyncImage(
+                        model = feed.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "NEWS", // TODO: 종류에 맞게 수정하기
+                            style = SoakTheme.typography.head28.copy(
+                                fontSize = 48.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.Black.copy(alpha = 0.22f),
+                            )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .width(48.dp)
+                                .height(4.dp)
+                                .background(color = Color.Black.copy(alpha = 0.22f)) // FIXME: 새로 정의한 컬러로 변경
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
