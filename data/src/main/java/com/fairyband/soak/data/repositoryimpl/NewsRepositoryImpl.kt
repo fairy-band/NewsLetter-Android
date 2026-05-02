@@ -52,7 +52,7 @@ class NewsRepositoryImpl(
                 val response =
                     newsLetterDataSource.getContents(userId = userId, publishedDate = publishedDate)
 
-                response.cards
+                listOfNotNull(response.trendingCard) + response.cards
             }
 
     override val hasRefreshedToday: Flow<Boolean> = newsDataStore.hasRefreshedToday

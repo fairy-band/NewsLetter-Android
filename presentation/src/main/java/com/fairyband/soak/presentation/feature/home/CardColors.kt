@@ -55,6 +55,7 @@ private val cardColorsB = listOf(
     soakColors.blueBackgroundPrimary,
     soakColors.orangeBackgroundPrimary,
     soakColors.purpleBackgroundPrimary,
+    soakColors.greenBackgroundPrimary, // fixme: 카드가 최대 7개까지 나와서 임시로 첫 번째 색깔 재사용 함
 )
 
 private val cardTitleColors = listOf(

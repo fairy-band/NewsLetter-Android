@@ -574,7 +574,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     }
 }
 
-private fun webClickEvent(id: Int, page: Long) {
+private fun webClickEvent(id: Long, page: Long) {
     Firebase.analytics.logEvent("click_newsletter_carousel") {
         param("object_section", "newsletter_card")
         param("object_type", "button")
@@ -584,7 +584,7 @@ private fun webClickEvent(id: Int, page: Long) {
 }
 
 private fun kakaoShare(
-    id: Int,
+    id: Long,
     title: String,
     color: Color,
     context: Context
@@ -638,6 +638,7 @@ private fun HomeScreenPreview() {
                     letter = "Android Weekly",
                     summary = "",
                     url = "https://naver.com",
+                    imageUrl = null,
                     language = "한국어"
                 ),
                 NewsFeed(
@@ -647,6 +648,7 @@ private fun HomeScreenPreview() {
                     letter = "Android Weekly",
                     summary = "",
                     url = "https://naver.com",
+                    imageUrl = null,
                     language = "한국어"
                 ),
                 NewsFeed(
@@ -656,6 +658,7 @@ private fun HomeScreenPreview() {
                     letter = "Kotlin Weekly",
                     summary = "",
                     url = "https://naver.com",
+                    imageUrl = null,
                     language = "한국어"
                 ),
                 NewsFeed(
@@ -665,6 +668,7 @@ private fun HomeScreenPreview() {
                     letter = "GeekNews",
                     summary = "",
                     url = "https://naver.com",
+                    imageUrl = null,
                     language = "한국어"
                 ),
                 NewsFeed(
@@ -674,6 +678,7 @@ private fun HomeScreenPreview() {
                     letter = "Frontend Focus",
                     summary = "",
                     url = "https://naver.com",
+                    imageUrl = null,
                     language = "한국어"
                 ),
                 NewsFeed(
@@ -683,6 +688,7 @@ private fun HomeScreenPreview() {
                     letter = "DevOps Weekly",
                     summary = "",
                     url = "https://naver.com",
+                    imageUrl = null,
                     language = "한국어"
                 ),
             ),
