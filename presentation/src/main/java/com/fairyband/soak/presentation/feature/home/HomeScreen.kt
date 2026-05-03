@@ -401,7 +401,7 @@ private fun Cards(
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
-    val cardWidth = 300.dp
+    val cardWidth = 272.dp
     val contentPaddingHorizontal = ((screenWidthDp - cardWidth) / 2).coerceAtLeast(0.dp)
     val pageSpacing = (-80).dp
 
@@ -450,6 +450,7 @@ private fun Card(
     ) {
         Column(
             modifier = Modifier
+                .height(300.dp)
                 .fillMaxWidth()
                 .padding(24.dp),
         ) {
@@ -486,7 +487,7 @@ private fun Card(
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.weight(1f))
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -525,7 +526,7 @@ private fun Card(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
