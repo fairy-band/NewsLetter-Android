@@ -8,7 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +35,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -66,6 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
+import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
@@ -190,6 +191,10 @@ private fun HomeScreen(
     onRefresh: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
+    var cardStartXPx by remember { mutableFloatStateOf(0f) }
+    var cardStartYPx by remember { mutableFloatStateOf(0f) }
+    var cardStartWidthPx by remember { mutableFloatStateOf(0f) }
+    var cardStartHeightPx by remember { mutableFloatStateOf(0f) }
     val navController = LocalNavController.current
     val context = LocalContext.current
 
@@ -242,8 +247,15 @@ private fun HomeScreen(
             Cards(
                 pagerState = pagerState,
                 news = news,
-                onClick = { index -> cardIndex = index },
+                onClick = { index, x, y, w, h ->
+                    cardStartXPx = x
+                    cardStartYPx = y
+                    cardStartWidthPx = w
+                    cardStartHeightPx = h
+                    cardIndex = index
+                },
                 colorType = colorType,
+                selectedIndex = cardIndex,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (news.isNotEmpty()) {
@@ -259,7 +271,6 @@ private fun HomeScreen(
 
     PopUpDialog(
         visibility = cardIndex != null,
-        backgroundVisibility = cardIndex != null,
         onDismissRequest = {
             cardIndex = null
             onDismissRequest()
@@ -279,6 +290,10 @@ private fun HomeScreen(
         cardItems = news,
         cardIndex = cardIndex ?: 0,
         colorType = colorType,
+        cardStartXPx = cardStartXPx,
+        cardStartYPx = cardStartYPx,
+        cardStartWidthPx = cardStartWidthPx,
+        cardStartHeightPx = cardStartHeightPx,
     )
 }
 
@@ -394,8 +409,9 @@ private fun RowScope.RemainingTime() {
 private fun Cards(
     pagerState: PagerState,
     news: ImmutableList<NewsFeed>,
-    onClick: (Int) -> Unit,
+    onClick: (index: Int, xPx: Float, yPx: Float, widthPx: Float, heightPx: Float) -> Unit,
     colorType: String,
+    selectedIndex: Int?,
     modifier: Modifier = Modifier,
 ) {
     val keywords = news.map { it.keyword }
@@ -426,7 +442,8 @@ private fun Cards(
                 },
             feed = news[page],
             cardColor = cardColors[page],
-            onClick = { onClick(page) },
+            isInvisible = selectedIndex == page,
+            onClick = { x, y, w, h -> onClick(page, x, y, w, h) },
         )
     }
 }
@@ -435,14 +452,14 @@ private fun Cards(
 private fun Card(
     feed: NewsFeed,
     cardColor: Color,
-    onClick: () -> Unit,
+    isInvisible: Boolean,
+    onClick: (xPx: Float, yPx: Float, widthPx: Float, heightPx: Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
+            .bounceClick(
+                isInvisible = isInvisible,
                 onClick = onClick,
             )
             .clip(shape = RoundedCornerShape(24.dp))
