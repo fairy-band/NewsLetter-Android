@@ -66,7 +66,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
-import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
@@ -191,10 +190,6 @@ private fun HomeScreen(
     onRefresh: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
-    var cardStartXPx by remember { mutableFloatStateOf(0f) }
-    var cardStartYPx by remember { mutableFloatStateOf(0f) }
-    var cardStartWidthPx by remember { mutableFloatStateOf(0f) }
-    var cardStartHeightPx by remember { mutableFloatStateOf(0f) }
     val navController = LocalNavController.current
     val context = LocalContext.current
 
@@ -247,15 +242,10 @@ private fun HomeScreen(
             Cards(
                 pagerState = pagerState,
                 news = news,
-                onClick = { index, x, y, w, h ->
-                    cardStartXPx = x
-                    cardStartYPx = y
-                    cardStartWidthPx = w
-                    cardStartHeightPx = h
+                onClick = { index ->
                     cardIndex = index
                 },
                 colorType = colorType,
-                selectedIndex = cardIndex,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (news.isNotEmpty()) {
@@ -290,10 +280,6 @@ private fun HomeScreen(
         cardItems = news,
         cardIndex = cardIndex ?: 0,
         colorType = colorType,
-        cardStartXPx = cardStartXPx,
-        cardStartYPx = cardStartYPx,
-        cardStartWidthPx = cardStartWidthPx,
-        cardStartHeightPx = cardStartHeightPx,
     )
 }
 
@@ -409,9 +395,8 @@ private fun RowScope.RemainingTime() {
 private fun Cards(
     pagerState: PagerState,
     news: ImmutableList<NewsFeed>,
-    onClick: (index: Int, xPx: Float, yPx: Float, widthPx: Float, heightPx: Float) -> Unit,
+    onClick: (index: Int) -> Unit,
     colorType: String,
-    selectedIndex: Int?,
     modifier: Modifier = Modifier,
 ) {
     val keywords = news.map { it.keyword }
@@ -442,8 +427,7 @@ private fun Cards(
                 },
             feed = news[page],
             cardColor = cardColors[page],
-            isInvisible = selectedIndex == page,
-            onClick = { x, y, w, h -> onClick(page, x, y, w, h) },
+            onClick = { onClick(page) },
         )
     }
 }
@@ -452,15 +436,13 @@ private fun Cards(
 private fun Card(
     feed: NewsFeed,
     cardColor: Color,
-    isInvisible: Boolean,
-    onClick: (xPx: Float, yPx: Float, widthPx: Float, heightPx: Float) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
-            .bounceClick(
-                isInvisible = isInvisible,
-                onClick = onClick,
+            .clickable(
+                onClick = onClick
             )
             .clip(shape = RoundedCornerShape(24.dp))
             .background(color = cardColor)
