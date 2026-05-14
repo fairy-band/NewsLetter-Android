@@ -35,7 +35,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -246,6 +245,7 @@ private fun HomeScreen(
                     cardIndex = index
                 },
                 colorType = colorType,
+                showPopup = cardIndex != null,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (news.isNotEmpty()) {
@@ -397,13 +397,21 @@ private fun Cards(
     news: ImmutableList<NewsFeed>,
     onClick: (index: Int) -> Unit,
     colorType: String,
+    showPopup: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val keywords = news.map { it.keyword }
     val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
     val cardWidth = 272.dp
-    val contentPaddingHorizontal = ((screenWidthDp - cardWidth) / 2).coerceAtLeast(0.dp)
+    val cardHeight = 300.dp
+    val focusedCardWidth by animateDpAsState(
+        targetValue = if (showPopup) 300.dp else 272.dp
+    )
+    val focusedCardHeight by animateDpAsState(
+        targetValue = if (showPopup) 354.dp else 300.dp
+    )
+    val contentPaddingHorizontal = ((screenWidthDp - focusedCardWidth) / 2).coerceAtLeast(0.dp)
     val pageSpacing = (-80).dp
 
     HorizontalPager(
@@ -416,10 +424,12 @@ private fun Cards(
         val rel = (pagerState.currentPage - page).toFloat() + pagerState.currentPageOffsetFraction
         val absRel = abs(rel)
         val scale = lerp(0.7f, 1.0f, 1f - absRel.coerceIn(0f, 1f))
+        val isCurrentPage = page == pagerState.currentPage
 
         Card(
             modifier = Modifier
-                .width(cardWidth)
+                .width(if (isCurrentPage) focusedCardWidth else cardWidth)
+                .height(if (isCurrentPage) focusedCardHeight else cardHeight)
                 .zIndex(1f - absRel)
                 .graphicsLayer {
                     scaleX = scale
@@ -427,7 +437,9 @@ private fun Cards(
                 },
             feed = news[page],
             cardColor = cardColors[page],
-            onClick = { onClick(page) },
+            onClick = {
+                onClick(page)
+            },
         )
     }
 }
@@ -449,8 +461,7 @@ private fun Card(
     ) {
         Column(
             modifier = Modifier
-                .height(300.dp)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(24.dp),
         ) {
             Text(
