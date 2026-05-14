@@ -447,7 +447,7 @@ private fun Cards(
 @Composable
 private fun Card(
     feed: NewsFeed,
-    cardColor: Color,
+    cardColor: CardColor,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -457,7 +457,7 @@ private fun Card(
                 onClick = onClick
             )
             .clip(shape = RoundedCornerShape(24.dp))
-            .background(color = cardColor)
+            .background(color = cardColor.cardColor)
     ) {
         Column(
             modifier = Modifier
@@ -523,7 +523,7 @@ private fun Card(
                             style = SoakTheme.typography.head28.copy(
                                 fontSize = 48.sp,
                                 fontWeight = FontWeight.Black,
-                                color = Color.Black.copy(alpha = 0.22f),
+                                color = cardColor.textColor,
                             )
                         )
                         Box(
@@ -531,7 +531,7 @@ private fun Card(
                                 .padding(top = 4.dp)
                                 .width(48.dp)
                                 .height(4.dp)
-                                .background(color = Color.Black.copy(alpha = 0.22f)) // FIXME: 새로 정의한 컬러로 변경
+                                .background(color = cardColor.textColor)
                         )
                     }
                 }

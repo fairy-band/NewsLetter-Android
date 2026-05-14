@@ -5,14 +5,25 @@ import com.fairyband.soak.core.theme.SoakColors
 import java.time.LocalDate
 import kotlin.random.Random
 
+data class CardColor(
+    val textColor: Color,
+    val cardColor: Color,
+)
+
 private val soakColors = SoakColors()
 
-fun getCardColors(colorType: String, keywords: List<String>): List<Color> {
-    return if (colorType == "A") generateCardColorA(keywords) else cardColorsB
+fun getCardColors(colorType: String, keywords: List<String>): List<CardColor> {
+    return if (colorType == "A") {
+        val backgrounds = generateCardColorA(keywords)
+        val textColors = generateCardTextColorA(keywords)
+        backgrounds.zip(textColors).map { (bg, text) -> CardColor(textColor = bg, cardColor = text) }
+    } else {
+        cardColorsB
+    }
 }
 
 fun getCardTitleColors(colorType: String, keywords: List<String>): List<Color> {
-    return if (colorType == "A") generateCardTextColorA(keywords) else cardTitleColors
+    return getCardColors(colorType, keywords).map { it.cardColor }
 }
 
 private val aColorSet = listOf(
@@ -49,21 +60,12 @@ private val aColorSet = listOf(
 )
 
 private val cardColorsB = listOf(
-    soakColors.greenBackgroundPrimary,
-    soakColors.pinkBackgroundPrimary,
-    soakColors.lemonYellowBackgroundPrimary,
-    soakColors.blueBackgroundPrimary,
-    soakColors.orangeBackgroundPrimary,
-    soakColors.purpleBackgroundPrimary,
-)
-
-private val cardTitleColors = listOf(
-    soakColors.greenText,
-    soakColors.pinkText,
-    soakColors.lemonYellowText,
-    soakColors.blueText,
-    soakColors.orangeText,
-    soakColors.purpleText,
+    CardColor(cardColor = soakColors.greenBackgroundPrimary, textColor = soakColors.greenTextPrimary),
+    CardColor(cardColor = soakColors.pinkBackgroundPrimary, textColor = soakColors.pinkTextPrimary),
+    CardColor(cardColor = soakColors.lemonYellowBackgroundPrimary, textColor = soakColors.lemonYellowTextPrimary),
+    CardColor(cardColor = soakColors.blueBackgroundPrimary, textColor = soakColors.blueTextPrimary),
+    CardColor(cardColor = soakColors.orangeBackgroundPrimary, textColor = soakColors.orangeTextPrimary),
+    CardColor(cardColor = soakColors.purpleBackgroundPrimary, textColor = soakColors.purpleTextPrimary),
 )
 
 /**
@@ -114,10 +116,18 @@ fun generateCardColorA(keywords: List<String>): List<Color> {
 fun generateCardTextColorA(keywords: List<String>): List<Color> {
     val colorIndexes = getTodayColorIndexes(keywords)
     val keywordIndexMap = getKeywordIndexMap(keywords)
+    val textColors = listOf(
+        soakColors.greenText,
+        soakColors.pinkText,
+        soakColors.lemonYellowText,
+        soakColors.blueText,
+        soakColors.orangeText,
+        soakColors.purpleText,
+    )
 
     return keywords.map { keyword ->
         val keywordIndex = keywordIndexMap[keyword] ?: 5
         val colorIndex = colorIndexes[keywordIndex]
-        cardTitleColors[colorIndex]
+        textColors[colorIndex]
     }
 }
