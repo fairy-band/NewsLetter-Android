@@ -135,6 +135,7 @@ internal fun PopUpDialog(
                                 url = item.url,
                                 imageUrl = item.imageUrl,
                                 language = item.language,
+                                cardType = item.cardType,
                             ),
                             titleColor = titleColors[pageIndex],
                             onWebClick = { onWebClick(item, pageIndex) },

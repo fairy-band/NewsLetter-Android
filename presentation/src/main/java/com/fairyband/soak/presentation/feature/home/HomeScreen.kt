@@ -519,7 +519,7 @@ private fun Card(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "NEWS", // TODO: 종류에 맞게 수정하기
+                            text = feed.cardType,
                             style = SoakTheme.typography.head28.copy(
                                 fontSize = 48.sp,
                                 fontWeight = FontWeight.Black,
@@ -688,7 +688,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com",
                     imageUrl = null,
-                    language = "한국어"
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
                     id = 2,
@@ -698,7 +699,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com",
                     imageUrl = null,
-                    language = "한국어"
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
                     id = 3,
@@ -708,7 +710,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com",
                     imageUrl = null,
-                    language = "한국어"
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
                     id = 4,
@@ -718,7 +721,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com",
                     imageUrl = null,
-                    language = "한국어"
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
                     id = 5,
@@ -728,7 +732,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com",
                     imageUrl = null,
-                    language = "한국어"
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
                     id = 6,
@@ -738,7 +743,8 @@ private fun HomeScreenPreview() {
                     summary = "",
                     url = "https://naver.com",
                     imageUrl = null,
-                    language = "한국어"
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
             ),
             colorType = "B",

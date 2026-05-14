@@ -11,6 +11,7 @@ data class NewsFeed(
     val url: String,
     val imageUrl: String?,
     val language: String,
+    val cardType: String,
 )
 
 fun NewsResponse.toNewsFeed(): NewsFeed {
@@ -23,5 +24,16 @@ fun NewsResponse.toNewsFeed(): NewsFeed {
         url = contentUrl,
         imageUrl = imageUrl,
         language = language,
+        cardType = cardType.getCardType(),
     )
+}
+
+private fun String.getCardType(): String {
+    val upperType = this.uppercase()
+    return when {
+        upperType.startsWith("NEWS") -> "NEWS"
+        upperType.startsWith("BLOG") -> "BLOG"
+        upperType.startsWith("BOOK") -> "BOOK"
+        else -> ""
+    }
 }

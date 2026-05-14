@@ -12,4 +12,5 @@ data class NewsResponse(
     val imageUrl: String? = null,
     val newsletterName: String,
     val language: String,
+    val cardType: String,
 )

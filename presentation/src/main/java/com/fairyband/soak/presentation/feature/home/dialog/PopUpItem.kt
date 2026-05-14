@@ -183,7 +183,8 @@ private fun PopUpItemPreview() {
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 url = "",
                 imageUrl = null,
-                language = "한국어"
+                language = "한국어",
+                cardType = "NEWS"
             ),
             titleColor = SoakTheme.colors.statePositivePrimary,
             onWebClick = {},
