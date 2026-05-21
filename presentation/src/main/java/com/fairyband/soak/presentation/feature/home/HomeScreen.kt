@@ -101,7 +101,6 @@ fun HomeScreen(
     val context = LocalContext.current
 
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
     val homeTitleVariant by viewModel.homeTitleVariant.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
@@ -170,7 +169,6 @@ fun HomeScreen(
             viewModel.onCardShown()
         },
         news = news,
-        colorType = colorType,
         homeTitleVariant = homeTitleVariant,
         isRefreshing = isRefreshing,
         hasRefreshedToday = hasRefreshedToday,
@@ -182,7 +180,6 @@ fun HomeScreen(
 private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
-    colorType: String,
     homeTitleVariant: HomeTitleVariant,
     isRefreshing: Boolean,
     hasRefreshedToday: Boolean,
@@ -244,7 +241,6 @@ private fun HomeScreen(
                 onClick = { index ->
                     cardIndex = index
                 },
-                colorType = colorType,
                 showPopup = cardIndex != null,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -279,7 +275,6 @@ private fun HomeScreen(
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
-        colorType = colorType,
     )
 }
 
@@ -396,12 +391,10 @@ private fun Cards(
     pagerState: PagerState,
     news: ImmutableList<NewsFeed>,
     onClick: (index: Int) -> Unit,
-    colorType: String,
     showPopup: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val keywords = news.map { it.keyword }
-    val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
+    val cardColors = getCardColors()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
     val cardWidth = 272.dp
     val cardHeight = 300.dp
@@ -523,7 +516,7 @@ private fun Card(
                             style = SoakTheme.typography.head28.copy(
                                 fontSize = 48.sp,
                                 fontWeight = FontWeight.Black,
-                                color = cardColor.textColor,
+                                color = cardColor.imageTextColor,
                             )
                         )
                         Box(
@@ -531,7 +524,7 @@ private fun Card(
                                 .padding(top = 4.dp)
                                 .width(48.dp)
                                 .height(4.dp)
-                                .background(color = cardColor.textColor)
+                                .background(color = cardColor.imageTextColor)
                         )
                     }
                 }
@@ -747,7 +740,6 @@ private fun HomeScreenPreview() {
                     cardType = "NEWS",
                 ),
             ),
-            colorType = "B",
             homeTitleVariant = HomeTitleVariant.NEW,
         )
     }

@@ -23,7 +23,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.feature.home.getCardTitleColors
+import com.fairyband.soak.presentation.feature.home.getCardColors
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
@@ -59,15 +58,12 @@ internal fun PopUpDialog(
     onShareClick: (Long, String, Color) -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
-    colorType: String,
 ) {
     BackHandler(visibility) {
         onDismissRequest()
     }
 
-    val keywords = cardItems.map { it.keyword }
-    val titleColors = remember(cardItems, colorType) { getCardTitleColors(colorType, keywords) }
-
+    val titleColors = getCardColors().map { it.titleColor }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val pageSize = PopUpDialogDefaults.CARD_WIDTH
