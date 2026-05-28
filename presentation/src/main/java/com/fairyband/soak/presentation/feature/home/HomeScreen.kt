@@ -225,7 +225,6 @@ private fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom,
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             Title()

@@ -7,33 +7,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
-import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.getCardColors
 import com.fairyband.soak.presentation.model.NewsFeed
@@ -41,7 +30,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 internal object PopUpDialogDefaults {
     const val SUMMARY_MAX_LINE = 8
@@ -63,12 +51,6 @@ internal fun PopUpDialog(
         onDismissRequest()
     }
 
-    val titleColors = getCardColors().map { it.titleColor }
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val pageSize = PopUpDialogDefaults.CARD_WIDTH
-    val horizontalPadding = (screenWidth - pageSize) / 2
-
     Box {
         AnimatedVisibility(
             visible = visibility,
@@ -88,61 +70,43 @@ internal fun PopUpDialog(
             enter = fadeIn(animationSpec = tween(delayMillis = 560, durationMillis = 200)),
             exit = fadeOut(animationSpec = tween(700)),
         ) {
-            val pagerState = rememberPagerState(
-                pageCount = { cardItems.size },
-                initialPage = cardIndex,
-            )
+            val titleColors = getCardColors().map { it.titleColor }
+            val item = cardItems[cardIndex]
+            val titleColor = titleColors[cardIndex]
 
             LaunchedEffect(Unit) {
-                val loggedPages = mutableSetOf<Int>()
-                snapshotFlow { pagerState.currentPage }
-                    .distinctUntilChanged()
-                    .collect { page ->
-                        if (loggedPages.add(page)) {
-                            val item = cardItems[page]
-                            Firebase.analytics.logEvent("impression_newsletter_carousel") {
-                                param("object_section", "newsletter_card")
-                                param("object_type", "newsletter")
-                                param("object_id", item.title)
-                                param("card_index", page.toLong())
-                            }
-                        }
-                    }
+                Firebase.analytics.logEvent("impression_newsletter_carousel") {
+                    param("object_section", "newsletter_card")
+                    param("object_type", "newsletter")
+                    param("object_id", item.title)
+                    param("card_index", cardIndex.toLong())
+                }
             }
 
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Spacer(modifier = Modifier.weight(1f))
-                    HorizontalPager(
-                        state = pagerState,
-                        pageSize = PageSize.Fixed(pageSize),
-                        pageSpacing = 12.dp,
-                        contentPadding = PaddingValues(horizontal = horizontalPadding),
-                        key = { cardItems[it].id },
-                    ) { pageIndex ->
-                        val item = cardItems[pageIndex]
-                        PopUpItem(
-                            newsFeed = NewsFeed(
-                                id = item.id,
-                                title = item.title,
-                                keyword = item.keyword,
-                                letter = item.letter,
-                                summary = item.summary,
-                                url = item.url,
-                                imageUrl = item.imageUrl,
-                                language = item.language,
-                                cardType = item.cardType,
-                            ),
-                            titleColor = titleColors[pageIndex],
-                            onWebClick = { onWebClick(item, pageIndex) },
-                            onShareClick = { onShareClick(item.id, item.title, titleColors[pageIndex]) },
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Indicator(
-                        pageCount = cardItems.size,
-                        pageIndex = pagerState.currentPage,
+                    PopUpItem(
+                        modifier = Modifier.width(PopUpDialogDefaults.CARD_WIDTH),
+                        newsFeed = NewsFeed(
+                            id = item.id,
+                            title = item.title,
+                            keyword = item.keyword,
+                            letter = item.letter,
+                            summary = item.summary,
+                            url = item.url,
+                            imageUrl = item.imageUrl,
+                            language = item.language,
+                            cardType = item.cardType,
+                        ),
+                        titleColor = titleColor,
+                        onWebClick = { onWebClick(item, cardIndex) },
+                        onShareClick = { onShareClick(item.id, item.title, titleColor) },
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.weight(1f))
                 }
                 Image(
@@ -158,26 +122,3 @@ internal fun PopUpDialog(
     }
 }
 
-@Composable
-private fun Indicator(
-    pageCount: Int,
-    pageIndex: Int,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        repeat(pageCount) { index ->
-            val isSelected = index == pageIndex
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(8.dp)
-                    .background(
-                        SoakTheme.colors.backgroundBase.copy(alpha = if (isSelected) 1f else 0.3f)
-                    )
-            )
-        }
-    }
-}
