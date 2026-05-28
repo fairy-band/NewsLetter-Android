@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,8 +50,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -225,6 +230,7 @@ private fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             Title(variant = homeTitleVariant)
@@ -234,7 +240,6 @@ private fun HomeScreen(
                 hasRefreshedToday = hasRefreshedToday,
                 onClick = onRefresh,
             )
-            Spacer(modifier = Modifier.weight(1f))
             Cards(
                 pagerState = pagerState,
                 news = news,
@@ -387,7 +392,7 @@ private fun RowScope.RemainingTime() {
 }
 
 @Composable
-private fun Cards(
+private fun ColumnScope.Cards(
     pagerState: PagerState,
     news: ImmutableList<NewsFeed>,
     onClick: (index: Int) -> Unit,
@@ -398,20 +403,31 @@ private fun Cards(
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
     val cardWidth = 272.dp
     val cardHeight = 300.dp
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
     val focusedCardWidth by animateDpAsState(
-        targetValue = if (showPopup) 300.dp else 272.dp
+        targetValue = if (showPopup) 300.dp else 272.dp,
+        animationSpec = tween(durationMillis = 560),
     )
     val focusedCardHeight by animateDpAsState(
-        targetValue = if (showPopup) 354.dp else 300.dp
+        targetValue = if (showPopup) 354.dp else 300.dp,
+        animationSpec = tween(durationMillis = 560),
+    )
+    var yCoordinate by remember { mutableStateOf(0f) }
+    val density = LocalDensity.current
+    val popupYOffset = (screenHeight - 354.dp) / 2
+    val yOffset by animateDpAsState(
+        targetValue = if (showPopup) (popupYOffset - (yCoordinate / density.density).toInt().dp) else 0.dp,
+        animationSpec = tween(durationMillis = 560),
     )
     val contentPaddingHorizontal = ((screenWidthDp - focusedCardWidth) / 2).coerceAtLeast(0.dp)
     val pageSpacing = (-80).dp
 
     HorizontalPager(
+        modifier = modifier,
         state = pagerState,
         contentPadding = PaddingValues(horizontal = contentPaddingHorizontal),
         pageSpacing = pageSpacing,
-        modifier = modifier,
         verticalAlignment = Alignment.Top,
     ) { page ->
         val rel = (pagerState.currentPage - page).toFloat() + pagerState.currentPageOffsetFraction
@@ -421,8 +437,13 @@ private fun Cards(
 
         Card(
             modifier = Modifier
+                .padding(top = 30.dp)
                 .width(if (isCurrentPage) focusedCardWidth else cardWidth)
                 .height(if (isCurrentPage) focusedCardHeight else cardHeight)
+                .onGloballyPositioned { coordinates ->
+                    yCoordinate = coordinates.positionInRoot().y
+                }
+//                .offset(y = yOffset)
                 .zIndex(1f - absRel)
                 .graphicsLayer {
                     scaleX = scale

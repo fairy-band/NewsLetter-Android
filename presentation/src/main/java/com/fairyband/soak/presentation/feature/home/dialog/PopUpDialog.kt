@@ -72,7 +72,7 @@ internal fun PopUpDialog(
     Box {
         AnimatedVisibility(
             visible = visibility,
-            enter = fadeIn(animationSpec = tween(400)),
+            enter = fadeIn(animationSpec = tween(delayMillis = 560, durationMillis = 200)),
             exit = fadeOut(animationSpec = tween(700)),
         ) {
             Box(
@@ -85,7 +85,7 @@ internal fun PopUpDialog(
 
         AnimatedVisibility(
             visible = visibility,
-            enter = fadeIn(animationSpec = tween(200)),
+            enter = fadeIn(animationSpec = tween(delayMillis = 560, durationMillis = 200)),
             exit = fadeOut(animationSpec = tween(700)),
         ) {
             val pagerState = rememberPagerState(
