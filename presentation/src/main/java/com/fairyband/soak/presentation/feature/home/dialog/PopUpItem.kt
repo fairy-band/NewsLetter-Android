@@ -61,7 +61,7 @@ internal fun PopUpItem(
             )
             .fillMaxWidth()
             .height(CARD_HEIGHT)
-            .padding(24.dp),
+            .padding(20.dp),
     ) {
         var titleLineCount by remember { mutableIntStateOf(1) }
 
@@ -94,7 +94,7 @@ internal fun PopUpItem(
             Text(
                 text = newsFeed.keyword,
                 style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
-                color = titleColor
+                color = titleColor,
             )
             Spacer(modifier = Modifier.width(6.dp))
             AnimatedVerticalDivider(color = titleColor)
@@ -102,7 +102,9 @@ internal fun PopUpItem(
             Text(
                 text = newsFeed.letter,
                 style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
-                color = titleColor
+                color = titleColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
         Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
@@ -133,6 +135,7 @@ internal fun PopUpItem(
                 )
             }
             BaseButton(
+                modifier = Modifier.height(44.dp),
                 paddingVertical = 12.dp,
                 onClick = onWebClick,
                 shape = CircleShape,
