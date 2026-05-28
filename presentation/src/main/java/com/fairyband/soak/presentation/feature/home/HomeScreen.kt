@@ -16,11 +16,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -106,7 +104,6 @@ fun HomeScreen(
     val context = LocalContext.current
 
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val homeTitleVariant by viewModel.homeTitleVariant.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -174,7 +171,6 @@ fun HomeScreen(
             viewModel.onCardShown()
         },
         news = news,
-        homeTitleVariant = homeTitleVariant,
         isRefreshing = isRefreshing,
         hasRefreshedToday = hasRefreshedToday,
         onRefresh = viewModel::refreshNews,
@@ -185,7 +181,6 @@ fun HomeScreen(
 private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
-    homeTitleVariant: HomeTitleVariant,
     isRefreshing: Boolean,
     hasRefreshedToday: Boolean,
     onRefresh: () -> Unit,
@@ -233,7 +228,7 @@ private fun HomeScreen(
             verticalArrangement = Arrangement.Bottom,
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            Title(variant = homeTitleVariant)
+            Title()
             Spacer(modifier = Modifier.height(12.dp))
             RefreshButton(
                 isRefreshing = isRefreshing,
@@ -284,18 +279,14 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun ColumnScope.Title(variant: HomeTitleVariant) {
+private fun ColumnScope.Title() {
     val today = LocalDate.now()
 
-    val titleResId = when (variant) {
-        HomeTitleVariant.EXISTING -> R.string.home_title
-        HomeTitleVariant.NEW -> R.string.home_title_b
-    }
     Text(
         modifier = Modifier
             .padding(horizontal = 20.dp),
         text = stringResource(
-            titleResId,
+            R.string.home_title,
             today.year,
             today.monthValue.toString().padStart(2, '0'),
             today.dayOfMonth.toString().padStart(2, '0')
@@ -307,54 +298,20 @@ private fun ColumnScope.Title(variant: HomeTitleVariant) {
         color = SoakTheme.colors.textStrong,
     )
 
-    when (variant) {
-        HomeTitleVariant.NEW -> Spacer(Modifier.height(12.dp))
-        HomeTitleVariant.EXISTING -> Spacer(Modifier.height(8.dp))
-    }
-
-    if (variant == HomeTitleVariant.NEW) {
-        Text(
-            text = stringResource(R.string.home_update_notice_b),
-            style = SoakTheme.typography.body15.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = SoakTheme.colors.textStrong,
-            )
+    Spacer(Modifier.height(12.dp))
+    Text(
+        text = stringResource(R.string.home_update_notice_b),
+        style = SoakTheme.typography.body15.copy(
+            fontWeight = FontWeight.SemiBold,
+            color = SoakTheme.colors.textStrong,
         )
-    }
-
-    if (variant == HomeTitleVariant.NEW) Spacer(Modifier.height(4.dp))
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(1.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        if (variant == HomeTitleVariant.NEW) {
-            Text(
-                modifier = Modifier.padding(end = 2.dp),
-                text = stringResource(R.string.home_limited_time_notice_prefix_b),
-                style = SoakTheme.typography.body15.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = SoakTheme.colors.textSecondary,
-                )
-            )
-        }
-
-        RemainingTime()
-
-        val suffixString = stringResource(R.string.home_limited_time_notice)
-        Text(
-            modifier = Modifier.padding(start = 2.dp),
-            text = suffixString,
-            style = SoakTheme.typography.body15.copy(
-                fontWeight = FontWeight.Medium,
-                color = SoakTheme.colors.textSecondary,
-            )
-        )
-    }
+    )
+    Spacer(Modifier.height(4.dp))
+    RemainingTime()
 }
 
 @Composable
-private fun RowScope.RemainingTime() {
+private fun RemainingTime() {
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()
@@ -384,11 +341,16 @@ private fun RowScope.RemainingTime() {
     val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
     val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
 
-    Text(hh, style = numberStyle)
-    Text(":", style = colonStyle)
-    Text(mm, style = numberStyle)
-    Text(":", style = colonStyle)
-    Text(ss, style = numberStyle)
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(hh, style = numberStyle)
+        Text(":", style = colonStyle)
+        Text(mm, style = numberStyle)
+        Text(":", style = colonStyle)
+        Text(ss, style = numberStyle)
+    }
 }
 
 @Composable
@@ -761,7 +723,6 @@ private fun HomeScreenPreview() {
                     cardType = "NEWS",
                 ),
             ),
-            homeTitleVariant = HomeTitleVariant.NEW,
         )
     }
 }

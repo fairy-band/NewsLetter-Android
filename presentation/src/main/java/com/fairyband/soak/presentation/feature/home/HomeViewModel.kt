@@ -84,22 +84,6 @@ class HomeViewModel(
             persistentListOf()
         )
 
-    val cardColorType: StateFlow<String> = remoteConfigRepository
-        .getCardColorType()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            "B",
-        )
-
-    val homeTitleVariant: StateFlow<HomeTitleVariant> = remoteConfigRepository
-        .getHomeTitleVariant()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            HomeTitleVariant.EXISTING,
-        )
-
     init {
         visitApp()
         observeBottomSheetTrigger()
