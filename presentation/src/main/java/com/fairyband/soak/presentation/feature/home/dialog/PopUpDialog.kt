@@ -106,7 +106,6 @@ internal fun PopUpDialog(
                         onWebClick = { onWebClick(item, cardIndex) },
                         onShareClick = { onShareClick(item.id, item.title, titleColor) },
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.weight(1f))
                 }
                 Image(
