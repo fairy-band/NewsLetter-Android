@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -228,12 +229,7 @@ private fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             Title()
-            Spacer(modifier = Modifier.height(12.dp))
-            RefreshButton(
-                isRefreshing = isRefreshing,
-                hasRefreshedToday = hasRefreshedToday,
-                onClick = onRefresh,
-            )
+            Spacer(modifier = Modifier.height(102.dp))
             Cards(
                 pagerState = pagerState,
                 news = news,
@@ -250,7 +246,12 @@ private fun HomeScreen(
                     count = news.size,
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(40.dp))
+            RefreshButton(
+                isRefreshing = isRefreshing,
+                hasRefreshedToday = hasRefreshedToday,
+                onClick = onRefresh,
+            )
         }
     }
 
@@ -378,7 +379,7 @@ private fun ColumnScope.Cards(
     val density = LocalDensity.current
     val popupYOffset = (screenHeight - 354.dp) / 2
     val yOffset by animateDpAsState(
-        targetValue = if (showPopup) (popupYOffset - (yCoordinate / density.density).toInt().dp) else 0.dp,
+        targetValue = if (showPopup) (popupYOffset - (yCoordinate / density.density).toInt().dp + 24.dp) else 0.dp,
         animationSpec = tween(durationMillis = 560),
     )
     val contentPaddingHorizontal = ((screenWidthDp - focusedCardWidth) / 2).coerceAtLeast(0.dp)
@@ -404,7 +405,7 @@ private fun ColumnScope.Cards(
                 .onGloballyPositioned { coordinates ->
                     yCoordinate = coordinates.positionInRoot().y
                 }
-//                .offset(y = yOffset)
+                .offset(y = if (isCurrentPage) yOffset else 0.dp)
                 .zIndex(1f - absRel)
                 .graphicsLayer {
                     scaleX = scale
@@ -563,7 +564,7 @@ private fun RefreshButton(
             .clip(CircleShape)
             .background(SoakTheme.colors.fillPrimary)
             .clickable(enabled = isEnabled, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
