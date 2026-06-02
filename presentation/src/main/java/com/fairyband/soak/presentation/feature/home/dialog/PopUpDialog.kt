@@ -44,19 +44,19 @@ internal fun PopUpDialog(
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
 ) {
-    BackHandler(visibility) {
-        onDismissRequest()
-    }
-
     AnimatedDialog(
         visibility = visibility,
         onDismissRequest = onDismissRequest,
         dimEnter = fadeIn(tween(delayMillis = 560, durationMillis = 200)),
         contentEnter = fadeIn(tween(delayMillis = 560, durationMillis = 200)),
-    ) {
+    ) { handleDismiss ->
         val titleColors = getCardColors().map { it.titleColor }
         val item = cardItems[cardIndex]
         val titleColor = titleColors[cardIndex]
+
+        BackHandler(visibility) {
+            handleDismiss()
+        }
 
         LaunchedEffect(visibility) {
             if (visibility) {
@@ -98,7 +98,7 @@ internal fun PopUpDialog(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
                 contentDescription = "pop up dismiss button",
                 modifier = Modifier
-                    .noRippleClickable(onClick = onDismissRequest)
+                    .noRippleClickable(onClick = handleDismiss)
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 124.dp),
             )

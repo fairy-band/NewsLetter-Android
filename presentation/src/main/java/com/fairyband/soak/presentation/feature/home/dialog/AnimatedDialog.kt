@@ -29,7 +29,7 @@ fun AnimatedDialog(
     dimExit: ExitTransition = fadeOut(tween(durationMillis = 200)),
     contentEnter: EnterTransition = fadeIn(tween(durationMillis = 200)),
     contentExit: ExitTransition = fadeOut(tween(durationMillis = 200)),
-    content: @Composable () -> Unit,
+    content: @Composable (onDismiss: () -> Unit) -> Unit,
 ) {
     if (visibility) {
         val visibleState = remember { MutableTransitionState(false) }
@@ -84,7 +84,7 @@ fun AnimatedDialog(
                     enter = contentEnter,
                     exit = contentExit,
                 ) {
-                    content()
+                    content(handleDismiss)
                 }
             }
         }
