@@ -1,17 +1,14 @@
 package com.fairyband.soak.presentation.feature.home.dialog
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -51,30 +48,18 @@ internal fun PopUpDialog(
         onDismissRequest()
     }
 
-    Box {
-        AnimatedVisibility(
-            visible = visibility,
-            enter = fadeIn(animationSpec = tween(delayMillis = 560, durationMillis = 200)),
-            exit = fadeOut(animationSpec = tween(700)),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color.Black.copy(alpha = 0.7f))
-                    .noRippleClickable(onClick = onDismissRequest)
-            )
-        }
+    AnimatedDialog(
+        visibility = visibility,
+        onDismissRequest = onDismissRequest,
+        dimEnter = fadeIn(tween(delayMillis = 560, durationMillis = 200)),
+        contentEnter = fadeIn(tween(delayMillis = 560, durationMillis = 200)),
+    ) {
+        val titleColors = getCardColors().map { it.titleColor }
+        val item = cardItems[cardIndex]
+        val titleColor = titleColors[cardIndex]
 
-        AnimatedVisibility(
-            visible = visibility,
-            enter = fadeIn(animationSpec = tween(delayMillis = 560, durationMillis = 200)),
-            exit = fadeOut(animationSpec = tween(700)),
-        ) {
-            val titleColors = getCardColors().map { it.titleColor }
-            val item = cardItems[cardIndex]
-            val titleColor = titleColors[cardIndex]
-
-            LaunchedEffect(Unit) {
+        LaunchedEffect(visibility) {
+            if (visibility) {
                 Firebase.analytics.logEvent("impression_newsletter_carousel") {
                     param("object_section", "newsletter_card")
                     param("object_type", "newsletter")
@@ -82,41 +67,41 @@ internal fun PopUpDialog(
                     param("card_index", cardIndex.toLong())
                 }
             }
+        }
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    PopUpItem(
-                        modifier = Modifier.width(PopUpDialogDefaults.CARD_WIDTH),
-                        newsFeed = NewsFeed(
-                            id = item.id,
-                            title = item.title,
-                            keyword = item.keyword,
-                            letter = item.letter,
-                            summary = item.summary,
-                            url = item.url,
-                            imageUrl = item.imageUrl,
-                            language = item.language,
-                            cardType = item.cardType,
-                        ),
-                        titleColor = titleColor,
-                        onWebClick = { onWebClick(item, cardIndex) },
-                        onShareClick = { onShareClick(item.id, item.title, titleColor) },
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
-                    contentDescription = "pop up dismiss button",
-                    modifier = Modifier
-                        .noRippleClickable(onClick = onDismissRequest)
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 124.dp),
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = Modifier.weight(1f))
+                PopUpItem(
+                    modifier = Modifier.width(PopUpDialogDefaults.CARD_WIDTH),
+                    newsFeed = NewsFeed(
+                        id = item.id,
+                        title = item.title,
+                        keyword = item.keyword,
+                        letter = item.letter,
+                        summary = item.summary,
+                        url = item.url,
+                        imageUrl = item.imageUrl,
+                        language = item.language,
+                        cardType = item.cardType,
+                    ),
+                    titleColor = titleColor,
+                    onWebClick = { onWebClick(item, cardIndex) },
+                    onShareClick = { onShareClick(item.id, item.title, titleColor) },
                 )
+                Spacer(modifier = Modifier.weight(1f))
             }
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_popup_dismiss),
+                contentDescription = "pop up dismiss button",
+                modifier = Modifier
+                    .noRippleClickable(onClick = onDismissRequest)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 124.dp),
+            )
         }
     }
 }
