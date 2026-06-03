@@ -61,7 +61,7 @@ internal fun PopUpItem(
             )
             .fillMaxWidth()
             .height(CARD_HEIGHT)
-            .padding(24.dp),
+            .padding(20.dp),
     ) {
         var titleLineCount by remember { mutableIntStateOf(1) }
 
@@ -94,7 +94,7 @@ internal fun PopUpItem(
             Text(
                 text = newsFeed.keyword,
                 style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
-                color = titleColor
+                color = titleColor,
             )
             Spacer(modifier = Modifier.width(6.dp))
             AnimatedVerticalDivider(color = titleColor)
@@ -102,7 +102,9 @@ internal fun PopUpItem(
             Text(
                 text = newsFeed.letter,
                 style = SoakTheme.typography.body13.copy(fontWeight = FontWeight.Medium),
-                color = titleColor
+                color = titleColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
         Spacer(modifier = Modifier.height(if (titleLineCount == TITLE_MAX_LINE) 16.dp else 44.dp))
@@ -133,6 +135,7 @@ internal fun PopUpItem(
                 )
             }
             BaseButton(
+                modifier = Modifier.height(44.dp),
                 paddingVertical = 12.dp,
                 onClick = onWebClick,
                 shape = CircleShape,
@@ -182,7 +185,9 @@ private fun PopUpItemPreview() {
                 letter = "안드로이드 위클리",
                 summary = "Anatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역직렬화할 때 실제 싱글톤 동작을 유지하려면 사용자 정의 어댑터가 필요하다고 강조합니다.\nAnatolii Frolov는 Kotlin 객체 싱글톤이 Gson과 같은 라이브러리에 의해 복제될 수 있으므로 역렬화할 때 실제 싱글톤 동작을 강조합니다.",
                 url = "",
-                language = "한국어"
+                imageUrl = null,
+                language = "한국어",
+                cardType = "NEWS"
             ),
             titleColor = SoakTheme.colors.statePositivePrimary,
             onWebClick = {},

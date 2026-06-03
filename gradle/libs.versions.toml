@@ -51,6 +51,9 @@ kotest = "6.0.3"
 
 ## Kakao
 kakaoVersion = "2.20.1"
+
+# coil
+coil = "3.0.4"
 core = "1.17.0"
 
 [libraries]
@@ -121,6 +124,10 @@ kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref 
 # kakao
 kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakaoVersion" }
 kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakaoVersion" }
+
+# coil
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [bundles]

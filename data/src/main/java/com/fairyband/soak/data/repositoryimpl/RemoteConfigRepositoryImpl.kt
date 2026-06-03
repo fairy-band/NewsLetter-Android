@@ -32,17 +32,6 @@ internal class RemoteConfigRepositoryImpl : RemoteConfigRepository {
         emit(getString("card_color") ?: "B")
     }
 
-    override fun getHomeTitleVariant(): Flow<HomeTitleVariant> = flow {
-        val variantString = getString("main_description")
-        val variant = if (variantString == "new") {
-            HomeTitleVariant.NEW
-        } else {
-            HomeTitleVariant.EXISTING
-        }
-
-        emit(variant)
-    }
-
     override fun getRequiredVersion(): Flow<String?> = flow {
         emit(getString("required_version"))
     }

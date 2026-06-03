@@ -3,31 +3,30 @@ package com.fairyband.soak.presentation.feature.home
 import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -35,11 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,43 +43,36 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
-import com.fairyband.soak.core.extension.bounceClick
 import com.fairyband.soak.core.theme.SoakTheme
-import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_COLOR
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.DRAWER_TO_CARD_MARGIN
-import com.fairyband.soak.presentation.feature.home.HomeDefaults.FRONT_MOST_Z_INDEX
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -101,12 +89,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -116,8 +104,6 @@ fun HomeScreen(
     val context = LocalContext.current
 
     val news by viewModel.news.collectAsStateWithLifecycle()
-    val colorType by viewModel.cardColorType.collectAsStateWithLifecycle()
-    val homeTitleVariant by viewModel.homeTitleVariant.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -142,10 +128,8 @@ fun HomeScreen(
         snapshotFlow { bottomSheetVisibility }
             .collect { isHome ->
                 if (isHome) {
-                    // 앱 메인 페이지 진입
                     Firebase.analytics.logEvent("pageview_main") {}
                 } else {
-                    // 맞춤정보 바텀시트 노출
                     Firebase.analytics.logEvent("pageview_bottom_sheet_custom") {
                         param("object_type", "bottom_sheet")
                     }
@@ -187,8 +171,6 @@ fun HomeScreen(
             viewModel.onCardShown()
         },
         news = news,
-        colorType = colorType,
-        homeTitleVariant = homeTitleVariant,
         isRefreshing = isRefreshing,
         hasRefreshedToday = hasRefreshedToday,
         onRefresh = viewModel::refreshNews,
@@ -199,18 +181,15 @@ fun HomeScreen(
 private fun HomeScreen(
     onDismissRequest: () -> Unit,
     news: ImmutableList<NewsFeed>,
-    colorType: String,
-    homeTitleVariant: HomeTitleVariant,
     isRefreshing: Boolean,
     hasRefreshedToday: Boolean,
     onRefresh: () -> Unit,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
-    var cardsHeight by remember { mutableStateOf(0.dp) }
     val navController = LocalNavController.current
     val context = LocalContext.current
-    var onCardHidden by remember { mutableStateOf(false) }
-    var dismissedCardIndex by rememberSaveable { mutableStateOf<Int?>(null) }
+
+    val pagerState = rememberPagerState(pageCount = { news.size })
 
     LaunchedEffect(Unit) {
         snapshotFlow { cardIndex }
@@ -218,10 +197,8 @@ private fun HomeScreen(
             .distinctUntilChanged()
             .collect { isHome ->
                 if (isHome) {
-                    // 앱 메인 페이지 진입
                     Firebase.analytics.logEvent("pageview_main") {}
                 } else {
-                    // 뉴스레터 캐러셀 진입
                     Firebase.analytics.logEvent("pageview_newsletter_carousel") {
                         param("object_type", "newsletter")
                     }
@@ -231,7 +208,6 @@ private fun HomeScreen(
 
     LaunchedEffect(cardIndex, news) {
         cardIndex?.let {
-            // 뉴스레터 클릭
             Firebase.analytics.logEvent("click_main") {
                 val title = news.getOrNull(it)?.title.orEmpty()
 
@@ -250,67 +226,39 @@ private fun HomeScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Title(variant = homeTitleVariant)
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+            Title()
+//            Spacer(modifier = Modifier.height(102.dp))
+            Cards(
+                modifier = Modifier.fillMaxWidth(),
+                pagerState = pagerState,
+                news = news,
+                onClick = { index ->
+                    cardIndex = index
+                },
+                showPopup = cardIndex != null,
+            )
+            if (news.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(40.dp))
+                Dots(
+                    pagerState = pagerState,
+                    count = news.size,
+                )
+            }
+            Spacer(modifier = Modifier.height(40.dp))
             RefreshButton(
                 isRefreshing = isRefreshing,
                 hasRefreshedToday = hasRefreshedToday,
                 onClick = onRefresh,
             )
-            Spacer(modifier = Modifier.weight(2f))
-
-            Box(
-                contentAlignment = Alignment.BottomCenter,
-                modifier = Modifier.height(if (cardsHeight > 0.dp) cardsHeight + DRAWER_TO_CARD_MARGIN else 600.dp) // 왠지 모르겠으나 그냥 cardsHeight + DRAWER_TO_CARD_MARGIN 를 쓰면 안 된다.
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.home_drawer_background),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .drawBehind {
-                            drawRect(
-                                color = DRAWER_COLOR,
-                                topLeft = Offset(x = 0f, y = size.height),
-                                size = Size(width = size.width, height = size.height)
-                            )
-                        },
-                )
-                Cards(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .sizeIn(maxWidth = 432.dp),
-                        // .sizeIn(maxWidth = 532.dp) FIXME: 원래 532로 디자인되어 있지만, 532로 하면 서랍장 끝 부분이 카드보다 작아지다. 그렇다고 서랍 이미지의 크기를 조절하면 그라데이션이 안 맞을 것이다. (참고로 서랍의 기울기는 3이다.)
-                    news = news,
-                    onClick = { index ->
-                        cardIndex = index
-                        dismissedCardIndex = null
-                    },
-                    colorType = colorType,
-                    onCardsHeight = { height ->
-                        if (cardsHeight > 0.dp) return@Cards
-
-                        cardsHeight = height.dp
-                    },
-                    dialogVisible = cardIndex != null,
-                    onCardHidden = { onCardHidden = true },
-                    dismissedCardIndex = dismissedCardIndex,
-                    onDismissAnimationFinished = { dismissedCardIndex = null }
-                )
-            }
         }
     }
 
     PopUpDialog(
         visibility = cardIndex != null,
-        backgroundVisibility = onCardHidden,
         onDismissRequest = {
-            dismissedCardIndex = cardIndex
             cardIndex = null
             onDismissRequest()
-            onCardHidden = false
         },
         onWebClick = { item, pageIndex ->
             navController.navigate(MainDestination.WebView(url = item.url))
@@ -326,23 +274,18 @@ private fun HomeScreen(
         },
         cardItems = news,
         cardIndex = cardIndex ?: 0,
-        colorType = colorType,
     )
 }
 
 @Composable
-private fun ColumnScope.Title(variant: HomeTitleVariant) {
+private fun ColumnScope.Title() {
     val today = LocalDate.now()
 
-    val titleResId = when (variant) {
-        HomeTitleVariant.EXISTING -> R.string.home_title
-        HomeTitleVariant.NEW -> R.string.home_title_b
-    }
     Text(
         modifier = Modifier
             .padding(horizontal = 20.dp),
         text = stringResource(
-            titleResId,
+            R.string.home_title,
             today.year,
             today.monthValue.toString().padStart(2, '0'),
             today.dayOfMonth.toString().padStart(2, '0')
@@ -354,54 +297,20 @@ private fun ColumnScope.Title(variant: HomeTitleVariant) {
         color = SoakTheme.colors.textStrong,
     )
 
-    when (variant) {
-        HomeTitleVariant.NEW -> Spacer(Modifier.height(12.dp))
-        HomeTitleVariant.EXISTING -> Spacer(Modifier.height(8.dp))
-    }
-
-    if (variant == HomeTitleVariant.NEW) {
-        Text(
-            text = stringResource(R.string.home_update_notice_b),
-            style = SoakTheme.typography.body15.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = SoakTheme.colors.textStrong,
-            )
+    Spacer(Modifier.height(12.dp))
+    Text(
+        text = stringResource(R.string.home_update_notice_b),
+        style = SoakTheme.typography.body15.copy(
+            fontWeight = FontWeight.SemiBold,
+            color = SoakTheme.colors.textStrong,
         )
-    }
-
-    if (variant == HomeTitleVariant.NEW) Spacer(Modifier.height(4.dp))
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(1.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        if (variant == HomeTitleVariant.NEW) {
-            Text(
-                modifier = Modifier.padding(end = 2.dp),
-                text = stringResource(R.string.home_limited_time_notice_prefix_b),
-                style = SoakTheme.typography.body15.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = SoakTheme.colors.textSecondary,
-                )
-            )
-        }
-
-        RemainingTime()
-
-        val suffixString = stringResource(R.string.home_limited_time_notice)
-        Text(
-            modifier = Modifier.padding(start = 2.dp),
-            text = suffixString,
-            style = SoakTheme.typography.body15.copy(
-                fontWeight = FontWeight.Medium,
-                color = SoakTheme.colors.textSecondary,
-            )
-        )
-    }
+    )
+    Spacer(Modifier.height(4.dp))
+    RemainingTime()
 }
 
 @Composable
-private fun RowScope.RemainingTime() {
+private fun RemainingTime() {
     val remainingUntilTomorrow by flow {
         while (true) {
             val now = LocalDateTime.now()
@@ -431,323 +340,260 @@ private fun RowScope.RemainingTime() {
     val mm = remainingUntilTomorrow.second.toString().padStart(2, '0')
     val ss = remainingUntilTomorrow.third.toString().padStart(2, '0')
 
-    Text(hh, style = numberStyle)
-    Text(":", style = colonStyle)
-    Text(mm, style = numberStyle)
-    Text(":", style = colonStyle)
-    Text(ss, style = numberStyle)
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(hh, style = numberStyle)
+        Text(":", style = colonStyle)
+        Text(mm, style = numberStyle)
+        Text(":", style = colonStyle)
+        Text(ss, style = numberStyle)
+    }
 }
 
 @Composable
-private fun Cards(
-    dialogVisible: Boolean,
+private fun ColumnScope.Cards(
+    pagerState: PagerState,
     news: ImmutableList<NewsFeed>,
-    onClick: (Int) -> Unit,
-    colorType: String,
-    onCardsHeight: (Int) -> Unit,
+    onClick: (index: Int) -> Unit,
+    showPopup: Boolean,
     modifier: Modifier = Modifier,
-    onCardHidden: () -> Unit,
-    dismissedCardIndex: Int?,
-    onDismissAnimationFinished: () -> Unit,
 ) {
-    val topPaddings = listOf(20.dp, 20.dp, 20.dp, 20.dp, 16.dp, 16.dp)
-    val bottomPaddings = listOf(16.dp, 16.dp, 16.dp, 16.dp, 12.dp, 12.dp)
-    val keywordVisibilities = listOf(true, true, true, false, false, false)
-    val textStyles = listOf(
-        SoakTheme.typography.body18.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body18.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body16.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body15.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body14.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        ),
-        SoakTheme.typography.body13.copy(
-            fontWeight = FontWeight.Bold,
-            color = SoakTheme.colors.textStrong
-        )
-    )
-    val cardHeights = remember { mutableStateListOf(0, 0, 0, 0, 0, 0) }
-    val cardOffsets by remember {
-        derivedStateOf {
-            buildList {
-                var cumulative = 0
-                for (height in cardHeights) {
-                    cumulative += height
-                    add(cumulative)
-                }
-            }
-        }
-    }
-    val keywords = news.map { it.keyword }
-    val cardColors = remember(news, colorType) { getCardColors(colorType, keywords) }
-
-    var start by remember { mutableIntStateOf(0) }
-    val mapFeedIndex = { index: Int -> (index - start + news.size) % news.size }
-
     val density = LocalDensity.current
-    val stepDp = 106.dp
-    val stepPx = with(density) { stepDp.toPx() }
+    val cardColors = getCardColors()
+    val screenWidthDp = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+    val screenHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
+    val cardWidth = 272.dp
+    val cardHeight = 300.dp
+    val focusedCardWidth by animateDpAsState(
+        targetValue = if (showPopup) 300.dp else 272.dp,
+        animationSpec = tween(durationMillis = 560),
+    )
+    val focusedCardHeight by animateDpAsState(
+        targetValue = if (showPopup) 354.dp else 300.dp,
+        animationSpec = tween(durationMillis = 560),
+    )
+    var yCoordinate by remember { mutableStateOf(0.dp) }
+    val popupYOffset = (screenHeight - 354.dp) / 2 + 6.dp // FIXME: 6.dp는 임시 시각 보정 값. gesture hint 혹은 status bar padding에서 생긴 오차 같은데 연구 필요
+    val yOffset by animateDpAsState(
+        targetValue = if (showPopup) (popupYOffset - yCoordinate) else 0.dp,
+        animationSpec = tween(durationMillis = 560),
+    )
+    val contentPaddingHorizontal = ((screenWidthDp - focusedCardWidth) / 2).coerceAtLeast(0.dp)
+    val pageSpacing = (-80).dp
 
-    var scrollAccum by remember { mutableFloatStateOf(0f) }
-    var progress by remember { mutableFloatStateOf(0f) }
-    val scrollState = rememberScrollableState { delta ->
-        scrollAccum += delta
+    HorizontalPager(
+        modifier = modifier,
+        state = pagerState,
+        contentPadding = PaddingValues(horizontal = contentPaddingHorizontal),
+        pageSpacing = pageSpacing,
+        verticalAlignment = Alignment.Top,
+    ) { page ->
+        val rel = (pagerState.currentPage - page).toFloat() + pagerState.currentPageOffsetFraction
+        val absRel = abs(rel)
+        val scale = lerp(0.7f, 1.0f, 1f - absRel.coerceIn(0f, 1f))
+        val isCurrentPage = page == pagerState.currentPage
 
-        delta
-    }
-
-    LaunchedEffect(scrollAccum) {
-        if (news.isEmpty()) return@LaunchedEffect
-
-        if (scrollAccum > stepPx) {
-            start = (start + 1) % news.size
-            scrollAccum -= stepPx
-        }
-
-        if (scrollAccum < -stepPx) {
-            start = (start - 1 + news.size) % news.size
-            scrollAccum += stepPx
-        }
-
-        progress = scrollAccum / stepPx
-    }
-
-    LaunchedEffect(cardOffsets) {
-        if (news.isEmpty()) return@LaunchedEffect
-
-        onCardsHeight(cardOffsets.last())
-    }
-
-    var frontMostIndex by remember { mutableStateOf<Int?>(null) }
-
-    LaunchedEffect(dialogVisible) {
-        if (!dialogVisible) frontMostIndex = null
-    }
-
-    val animationList = remember(news) {
-        news.map { Animatable(initialValue = 0f) }
-    }
-
-    LaunchedEffect(news) {
-        animationList.forEachIndexed { index, animatable ->
-            delay(40L * index)
-            launch {
-                animatable.animateTo(
-                    targetValue = -4f,
-                    animationSpec = tween(durationMillis = 100)
-                )
-                animatable.animateTo(
-                    targetValue = 0f,
-                    animationSpec = tween(durationMillis = 100)
-                )
-            }
-        }
-    }
-
-    Box(
-        modifier = modifier
-            .scrollable(orientation = Orientation.Vertical, state = scrollState),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        repeat(news.size) { index ->
-            val feedIndex = mapFeedIndex(index)
-            val baseZ = FRONT_MOST_Z_INDEX - feedIndex
-            val currentZ = if (frontMostIndex == index) FRONT_MOST_Z_INDEX else baseZ
-
-            Card(
-                modifier = Modifier
-                    .graphicsLayer {
-                        if (progress < 0 && feedIndex == news.size - 1) {
-                            val dy = cardHeights[feedIndex].toFloat() * progress * density.density
-                            translationY = -dy
-                        } else {
-                            val dy =
-                                cardHeights[(feedIndex + 1).coerceAtMost(news.size - 1)].toFloat() * progress * density.density
-                            translationY = dy
+        Card(
+            modifier = Modifier
+                .padding(top = 102.dp)
+                .width(if (isCurrentPage) focusedCardWidth else cardWidth)
+                .height(if (isCurrentPage) focusedCardHeight else cardHeight)
+                .onGloballyPositioned { coordinates ->
+                    if (yCoordinate == 0.dp) {
+                        yCoordinate = with(density) {
+                            coordinates.positionInRoot().y.toDp()
                         }
                     }
-                    .zIndex(currentZ)
-                    .offset(y = (166 - cardOffsets[feedIndex]).dp)
-                    .offset(y = animationList[feedIndex].value.dp)
-                    .padding(horizontal = ((feedIndex - progress).coerceAtLeast(0f) * 16).dp),
-                feed = news[index],
-                cardColor = cardColors[index],
-                topPadding = topPaddings[feedIndex],
-                bottomPadding = bottomPaddings[feedIndex],
-                textStyle = textStyles[feedIndex],
-                showKeyword = keywordVisibilities[feedIndex],
-                visibleHeight = if (feedIndex < 3) 106 else null,
-                onHeightInflated = { height -> cardHeights[feedIndex] = height },
-                onClick = { onClick(index) },
-                onPromoteToFront = { frontMostIndex = index },
-                onPromoteToBack = { frontMostIndex = null },
-                onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == index,
-                onDismissAnimationFinished = onDismissAnimationFinished
-            )
-        }
-        val density = LocalDensity.current.density
-
-        // 아래로 스와이프할 때 가장 뒤쪽 카드가 서서히 올라와요.
-        if (progress > 0) {
-            val lastIndex = news.size - 1
-            Card(
-                modifier = Modifier
-                    .graphicsLayer { translationY = -progress * cardHeights[lastIndex] * density }
-                    .zIndex(-1f)
-                    .offset(y = (166 - cardOffsets[(lastIndex - 1).coerceAtLeast(0)]).dp)
-                    .padding(horizontal = ((lastIndex) * 16).dp),
-                feed = news[start],
-                cardColor = cardColors[start],
-                topPadding = topPaddings[lastIndex],
-                bottomPadding = bottomPaddings[lastIndex],
-                textStyle = textStyles[lastIndex],
-                showKeyword = keywordVisibilities[lastIndex],
-                visibleHeight = null,
-                onHeightInflated = { _ -> },
-                onClick = { onClick(start) },
-                onPromoteToFront = { frontMostIndex = start },
-                onPromoteToBack = { frontMostIndex = null },
-                onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == start,
-                onDismissAnimationFinished = onDismissAnimationFinished
-            )
-        }
-
-        // 위로 스와이프할 때 가장 앞쪽 카드가 서서히 올라와요.
-        // info: start - 1 은 마지막 index 이다.
-        if (news.isNotEmpty() && progress < 0) {
-            val risingIndex = (start - 1 + news.size) % news.size
-            Card(
-                modifier = Modifier
-                    .graphicsLayer { translationY = progress * cardHeights[0] * density }
-                    .zIndex(6f)
-                    .offset(y = 166.dp),
-                feed = news[risingIndex],
-                cardColor = cardColors[risingIndex],
-                topPadding = topPaddings[0],
-                bottomPadding = bottomPaddings[0],
-                textStyle = textStyles[0],
-                showKeyword = keywordVisibilities[0],
-                visibleHeight = 106,
-                onHeightInflated = { _ -> },
-                onClick = { onClick(risingIndex) },
-                onPromoteToFront = { frontMostIndex = risingIndex },
-                onPromoteToBack = { frontMostIndex = null },
-                onCardHidden = onCardHidden,
-                isDismissing = dismissedCardIndex == risingIndex,
-                onDismissAnimationFinished = onDismissAnimationFinished
-            )
-        }
+                }
+                .offset(y = if (isCurrentPage) yOffset else 0.dp)
+                .zIndex(1f - absRel)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                },
+            feed = news[page],
+            cardColor = cardColors[page],
+            onClick = {
+                onClick(page)
+            },
+        )
     }
 }
 
-/**
- * @param showKeyword 아래 세 개의 카드는 항상 키워드를 보여준다.
- */
 @Composable
 private fun Card(
     feed: NewsFeed,
-    topPadding: Dp,
-    bottomPadding: Dp,
-    textStyle: TextStyle,
-    cardColor: Color,
+    cardColor: CardColor,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    visibleHeight: Int? = null,
-    showKeyword: Boolean = false,
-    onHeightInflated: (height: Int) -> Unit,
-    onPromoteToFront: () -> Unit,
-    onPromoteToBack: () -> Unit,
-    onCardHidden: () -> Unit,
-    isDismissing: Boolean,
-    onDismissAnimationFinished: () -> Unit,
 ) {
-    val density = LocalDensity.current
-    var lineCount by remember { mutableIntStateOf(2) }
-
     Box(
         modifier = modifier
-            .bounceClick(
-                onClick = onClick,
-                onPromoteToFront = onPromoteToFront,
-                onPromoteToBack = onPromoteToBack,
-                onCardHidden = onCardHidden,
-                isDismissing = isDismissing,
-                onDismissAnimationFinished = onDismissAnimationFinished
+            .clickable(
+                onClick = onClick
             )
-            .height(166.dp)
             .clip(shape = RoundedCornerShape(24.dp))
-            .background(color = cardColor)
+            .background(color = cardColor.cardColor)
     ) {
-        val columnModifier = if (visibleHeight == null) {
-            Modifier
-        } else {
-            Modifier.heightIn(visibleHeight.dp)
-        }
-
         Column(
-            modifier = columnModifier
-                .fillMaxWidth()
-                .onGloballyPositioned { layoutCoordinates ->
-                    onHeightInflated((layoutCoordinates.size.height / density.density).toInt())
-                }
-                .padding(horizontal = 20.dp)
-                .padding(top = topPadding, bottom = bottomPadding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
         ) {
             Text(
                 text = feed.title,
-                style = textStyle,
-                onTextLayout = { textLayoutResult ->
-                    lineCount = textLayoutResult.lineCount
-                },
+                style = SoakTheme.typography.body18.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = SoakTheme.colors.textStrong,
+                ),
+                maxLines = 2,
             )
-            if (showKeyword || lineCount == 1) {
-                Row(
-                    modifier = Modifier.padding(top = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        feed.keyword,
-                        style = SoakTheme.typography.body13.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = SoakTheme.colors.textStrong.copy(alpha = 0.5f)
-                        )
+            Row(
+                modifier = Modifier.padding(top = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = feed.keyword,
+                    style = SoakTheme.typography.body14.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = SoakTheme.colors.textStrong.copy(alpha = 0.4f),
                     )
-                    Box(
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .size(width = 1.dp, height = 14.dp)
+                        .background(color = Color.Black.copy(alpha = 0.1f))
+                )
+                Text(
+                    text = feed.letter,
+                    style = SoakTheme.typography.body13.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = SoakTheme.colors.textStrong.copy(alpha = 0.5f),
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(shape = RoundedCornerShape(corner = CornerSize(16.dp)))
+                    .background(color = Color.White.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (feed.imageUrl != null) {
+                    AsyncImage(
+                        model = feed.imageUrl,
+                        contentDescription = null,
                         modifier = Modifier
-                            .padding(horizontal = 6.dp)
-                            .size(width = 1.dp, height = 14.dp)
-                            .background(color = Color.Black.copy(alpha = 0.1f))
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop,
                     )
-                    Text(
-                        text = feed.letter,
-                        style = SoakTheme.typography.body13.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = SoakTheme.colors.textStrong.copy(alpha = 0.5f)
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = feed.cardType,
+                            style = SoakTheme.typography.head28.copy(
+                                fontSize = 48.sp,
+                                fontWeight = FontWeight.Black,
+                                color = cardColor.imageTextColor,
+                            )
                         )
-                    )
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .width(48.dp)
+                                .height(4.dp)
+                                .background(color = cardColor.imageTextColor)
+                        )
+                    }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
+    }
+}
+
+@Composable
+private fun Dots(
+    pagerState: PagerState,
+    count: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(count) { index ->
+            val isActive = pagerState.currentPage == index
+            val dotWidth by animateDpAsState(
+                targetValue = if (isActive) 22.dp else 8.dp,
+                animationSpec = tween(durationMillis = 280),
+                label = "dot_width",
+            )
+            Box(
+                modifier = Modifier
+                    .height(8.dp)
+                    .width(dotWidth)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(
+                        color = if (isActive) Color(0xFF121212) else Color.Black.copy(alpha = 0.18f)
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+private fun RefreshButton(
+    isRefreshing: Boolean,
+    hasRefreshedToday: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isEnabled = !isRefreshing && !hasRefreshedToday
+    val contentColor =
+        if (isEnabled) SoakTheme.colors.textSecondary else SoakTheme.colors.textDisabled
+
+    Row(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(SoakTheme.colors.fillPrimary)
+            .clickable(enabled = isEnabled, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        if (isRefreshing) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(16.dp),
+                strokeWidth = 1.5.dp,
+                color = contentColor,
+            )
+        } else {
+            Image(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_refresh),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Text(
+            text = "${stringResource(R.string.home_refresh_button_label)} ${if (hasRefreshedToday) 1 else 0}/1",
+            style = SoakTheme.typography.body14.copy(
+                fontWeight = FontWeight.SemiBold,
+                color = contentColor,
+            ),
+        )
     }
 }
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
     Firebase.analytics.logEvent("click_bottom_sheet_custom") {
         param("object_type", "button")
         param("job_group", jobGroup.joinToString(separator = ","))
@@ -755,8 +601,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
     }
 }
 
-private fun webClickEvent(id: Int, page: Long) {
-    // 뉴스레터 캐러셀 카드 내 ‘이어서 보기’ 버튼 클릭
+private fun webClickEvent(id: Long, page: Long) {
     Firebase.analytics.logEvent("click_newsletter_carousel") {
         param("object_section", "newsletter_card")
         param("object_type", "button")
@@ -766,7 +611,7 @@ private fun webClickEvent(id: Int, page: Long) {
 }
 
 private fun kakaoShare(
-    id: Int,
+    id: Long,
     title: String,
     color: Color,
     context: Context
@@ -803,55 +648,6 @@ private fun kakaoShare(
     }
 }
 
-@Composable
-private fun RefreshButton(
-    isRefreshing: Boolean,
-    hasRefreshedToday: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val isEnabled = !isRefreshing && !hasRefreshedToday
-    val contentColor = if (isEnabled) SoakTheme.colors.textSecondary else SoakTheme.colors.textDisabled
-
-    Row(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(SoakTheme.colors.fillPrimary)
-            .clickable(enabled = isEnabled, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        if (isRefreshing) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(16.dp),
-                strokeWidth = 1.5.dp,
-                color = contentColor,
-            )
-        } else {
-            Image(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_refresh),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-            )
-        }
-        Text(
-            text = "${stringResource(R.string.home_refresh_button_label)} ${if (hasRefreshedToday) 1 else 0}/1",
-            style = SoakTheme.typography.body14.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = contentColor,
-            ),
-        )
-    }
-}
-
-private object HomeDefaults {
-    val FRONT_MOST_Z_INDEX = 5f
-    val DRAWER_HEIGHT = 527.dp
-    val DRAWER_TO_CARD_MARGIN = 25.dp
-    val DRAWER_COLOR = Color(0xFF99C9FF)
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
@@ -869,56 +665,66 @@ private fun HomeScreenPreview() {
                     letter = "Android Weekly",
                     summary = "",
                     url = "https://naver.com",
-                    language = "한국어"
+                    imageUrl = null,
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
+                    id = 2,
+                    title = "Jetpack Compose 최신 기능",
+                    keyword = "Android",
                     letter = "Android Weekly",
                     summary = "",
                     url = "https://naver.com",
-                    language = "한국어"
+                    imageUrl = null,
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
+                    id = 3,
+                    title = "Kotlin 2.0 새로운 기능들",
                     keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    letter = "Kotlin Weekly",
                     summary = "",
                     url = "https://naver.com",
-                    language = "한국어"
+                    imageUrl = null,
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    id = 4,
+                    title = "AI가 바꾸는 개발 생태계",
+                    keyword = "AI",
+                    letter = "GeekNews",
                     summary = "",
                     url = "https://naver.com",
-                    language = "한국어"
+                    imageUrl = null,
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    id = 5,
+                    title = "웹 성능 최적화 전략",
+                    keyword = "Web",
+                    letter = "Frontend Focus",
                     summary = "",
                     url = "https://naver.com",
-                    language = "한국어"
+                    imageUrl = null,
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
                 NewsFeed(
-                    id = 1,
-                    title = "38800원은 너무 비싸",
-                    keyword = "Kotlin",
-                    letter = "Android Weekly",
+                    id = 6,
+                    title = "도커와 쿠버네티스 실전 가이드",
+                    keyword = "DevOps",
+                    letter = "DevOps Weekly",
                     summary = "",
                     url = "https://naver.com",
-                    language = "한국어"
+                    imageUrl = null,
+                    language = "한국어",
+                    cardType = "NEWS",
                 ),
             ),
-            colorType = "B",
-            homeTitleVariant = HomeTitleVariant.NEW,
         )
     }
 }

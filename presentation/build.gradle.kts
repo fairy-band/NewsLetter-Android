@@ -115,6 +115,10 @@ dependencies {
 
     // kakao
     implementation(libs.kakao.share)
+
+    // image loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }
 
 tasks.withType<Test>().configureEach {

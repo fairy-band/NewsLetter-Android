@@ -117,6 +117,19 @@ private object ColorPalette {
     val lemonYellow700: Color = Color(0xFF8CA70B)
     val lemonYellow800: Color = Color(0xFF728808)
     val lemonYellow900: Color = Color(0xFF586908)
+
+    // Mint
+    val mint50: Color = Color(0xFFF2FFFD)
+    val mint100: Color = Color(0xFFE8FFFC)
+    val mint150: Color = Color(0xFFD3FCF6)
+    val mint200: Color = Color(0xFFBDF8F0)
+    val mint300: Color = Color(0xFF7AF0E5)
+    val mint400: Color = Color(0xFF33E9D6)
+    val mint500: Color = Color(0xFF00E7CE)
+    val mint600: Color = Color(0xFF00C7B0)
+    val mint700: Color = Color(0xFF009C8C)
+    val mint800: Color = Color(0xFF00887A)
+    val mint900: Color = Color(0xFF006E63)
 }
 
 /**
@@ -183,24 +196,35 @@ data class SoakColors(
     val blueBackgroundSecondary: Color = ColorPalette.blue200,
     val blueBackgroundTertiary: Color = ColorPalette.blue400,
     val blueText: Color = ColorPalette.blue600,
+    val blueTextPrimary: Color = Color(0xFF68A4E7),
     val orangeBackgroundPrimary: Color = ColorPalette.orange400,
     val orangeBackgroundSecondary: Color = ColorPalette.orange300,
     val orangeBackgroundTertiary: Color = ColorPalette.orange500,
     val orangeText: Color = ColorPalette.orange500,
+    val orangeTextPrimary: Color = Color(0xFFF38338),
     val pinkBackgroundPrimary: Color = ColorPalette.pink300,
     val pinkBackgroundSecondary: Color = ColorPalette.pink200,
     val pinkBackgroundTertiary: Color = ColorPalette.pink400,
     val pinkText: Color = ColorPalette.pink600,
+    val pinkTextPrimary: Color = Color(0xFFFC98DB),
     val purpleBackgroundPrimary: Color = ColorPalette.purple200,
     val purpleBackgroundSecondary: Color = ColorPalette.purple150,
     val purpleBackgroundTertiary: Color = ColorPalette.purple300,
     val purpleText: Color = ColorPalette.purple600,
+    val purpleTextPrimary: Color = Color(0xFFA888C7),
     val greenBackgroundPrimary: Color = ColorPalette.green300,
     val greenBackgroundSecondary: Color = ColorPalette.green200,
     val greenBackgroundTertiary: Color = ColorPalette.green400,
     val greenText: Color = ColorPalette.green600,
+    val greenTextPrimary: Color = Color(0xFF41D17F),
     val lemonYellowBackgroundPrimary: Color = ColorPalette.lemonYellow300,
     val lemonYellowBackgroundSecondary: Color = ColorPalette.lemonYellow200,
     val lemonYellowBackgroundTertiary: Color = ColorPalette.lemonYellow400,
-    val lemonYellowText: Color = ColorPalette.lemonYellow700
+    val lemonYellowText: Color = ColorPalette.lemonYellow700,
+    val lemonYellowTextPrimary: Color = Color(0xFFCBE064),
+    val mintBackgroundPrimary: Color = ColorPalette.mint500,
+    val mintBackgroundSecondary: Color = ColorPalette.mint200,
+    val mintBackgroundTertiary: Color = ColorPalette.mint400,
+    val mintText: Color = ColorPalette.mint600,
+    val mintTextPrimary: Color = Color(0xFF04AD9B)
 )
