@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,6 +53,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +70,6 @@ import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.theme.SoakTheme
-import com.fairyband.soak.data.model.abtest.HomeTitleVariant
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
@@ -229,15 +228,15 @@ private fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             Title()
-            Spacer(modifier = Modifier.height(102.dp))
+//            Spacer(modifier = Modifier.height(102.dp))
             Cards(
+                modifier = Modifier.fillMaxWidth(),
                 pagerState = pagerState,
                 news = news,
                 onClick = { index ->
                     cardIndex = index
                 },
                 showPopup = cardIndex != null,
-                modifier = Modifier.fillMaxWidth(),
             )
             if (news.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -361,12 +360,12 @@ private fun ColumnScope.Cards(
     showPopup: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val density = LocalDensity.current
     val cardColors = getCardColors()
-    val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
+    val screenWidthDp = with(density) { LocalWindowInfo.current.containerSize.width.toDp() }
+    val screenHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val cardWidth = 272.dp
     val cardHeight = 300.dp
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
     val focusedCardWidth by animateDpAsState(
         targetValue = if (showPopup) 300.dp else 272.dp,
         animationSpec = tween(durationMillis = 560),
@@ -375,11 +374,10 @@ private fun ColumnScope.Cards(
         targetValue = if (showPopup) 354.dp else 300.dp,
         animationSpec = tween(durationMillis = 560),
     )
-    var yCoordinate by remember { mutableStateOf(0f) }
-    val density = LocalDensity.current
-    val popupYOffset = (screenHeight - 354.dp) / 2
+    var yCoordinate by remember { mutableStateOf(0.dp) }
+    val popupYOffset = (screenHeight - 354.dp) / 2 + 6.dp // FIXME: 6.dp는 임시 시각 보정 값. gesture hint 혹은 status bar padding에서 생긴 오차 같은데 연구 필요
     val yOffset by animateDpAsState(
-        targetValue = if (showPopup) (popupYOffset - (yCoordinate / density.density).toInt().dp + 24.dp) else 0.dp,
+        targetValue = if (showPopup) (popupYOffset - yCoordinate) else 0.dp,
         animationSpec = tween(durationMillis = 560),
     )
     val contentPaddingHorizontal = ((screenWidthDp - focusedCardWidth) / 2).coerceAtLeast(0.dp)
@@ -399,11 +397,15 @@ private fun ColumnScope.Cards(
 
         Card(
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(top = 102.dp)
                 .width(if (isCurrentPage) focusedCardWidth else cardWidth)
                 .height(if (isCurrentPage) focusedCardHeight else cardHeight)
                 .onGloballyPositioned { coordinates ->
-                    yCoordinate = coordinates.positionInRoot().y
+                    if (yCoordinate == 0.dp) {
+                        yCoordinate = with(density) {
+                            coordinates.positionInRoot().y.toDp()
+                        }
+                    }
                 }
                 .offset(y = if (isCurrentPage) yOffset else 0.dp)
                 .zIndex(1f - absRel)

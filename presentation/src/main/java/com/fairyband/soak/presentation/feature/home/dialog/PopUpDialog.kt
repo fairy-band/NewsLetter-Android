@@ -47,8 +47,10 @@ internal fun PopUpDialog(
     AnimatedDialog(
         visibility = visibility,
         onDismissRequest = onDismissRequest,
-        dimEnter = fadeIn(tween(delayMillis = 560, durationMillis = 200)),
-        contentEnter = fadeIn(tween(delayMillis = 560, durationMillis = 200)),
+        dimEnter = fadeIn(tween(delayMillis = 300, durationMillis = 200)),
+        dimExit = fadeOut(tween(durationMillis = 0)),
+        contentEnter = fadeIn(tween(delayMillis = 300, durationMillis = 200)),
+        contentExit = fadeOut(tween(durationMillis = 0)),
     ) { handleDismiss ->
         val titleColors = getCardColors().map { it.titleColor }
         val item = cardItems[cardIndex]
