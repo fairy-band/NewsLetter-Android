@@ -79,12 +79,14 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.analytics.toContentType
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.koin.compose.viewmodel.koinViewModel
@@ -124,11 +126,11 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         snapshotFlow { bottomSheetVisibility }
-            .collect { isHome ->
-                if (isHome) {
-                    SoakAnalytics.logPageViewMain()
+            .collect { isBottomSheetVisible ->
+                if (isBottomSheetVisible) {
+                    SoakAnalytics.logBottomSheetCustomPageview()
                 } else {
-                    SoakAnalytics.logPageViewBottomSheetCustom()
+                    SoakAnalytics.logMainPageview()
                 }
             }
     }
@@ -191,20 +193,10 @@ private fun HomeScreen(
         snapshotFlow { cardIndex }
             .map { it == null }
             .distinctUntilChanged()
-            .collect { isHome ->
-                if (isHome) {
-                    SoakAnalytics.logPageViewMain()
-                } else {
-                    SoakAnalytics.logPageViewNewsletterCarousel()
-                }
+            .filter { it }
+            .collect {
+                SoakAnalytics.logMainPageview()
             }
-    }
-
-    LaunchedEffect(cardIndex, news) {
-        cardIndex?.let {
-            val title = news.getOrNull(it)?.title.orEmpty()
-            SoakAnalytics.logClickMain(title = title, listIndex = it)
-        }
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -250,7 +242,7 @@ private fun HomeScreen(
         },
         onWebClick = { item, pageIndex ->
             navController.navigate(MainDestination.WebView(url = item.url))
-            webClickEvent(id = item.id, page = pageIndex.toLong())
+            webClickEvent(item)
         },
         onShareClick = { id, title, color ->
             kakaoShare(
@@ -582,11 +574,16 @@ private fun RefreshButton(
 }
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    SoakAnalytics.logClickBottomSheetCustom(jobGroup = jobGroup, careerLevel = careerLevel)
+    SoakAnalytics.logBottomSheetCustomClick(jobGroup = jobGroup, careerLevel = careerLevel)
 }
 
-private fun webClickEvent(id: Long, page: Long) {
-    SoakAnalytics.logClickNewsletterCarousel(id = id, cardIndex = page)
+private fun webClickEvent(item: NewsFeed) {
+    SoakAnalytics.logMainContentsDetailClick(
+        cardType = "recommend",
+        contentType = item.cardType.toContentType(),
+        contentTitle = item.title,
+        contentId = item.id.toString(),
+    )
 }
 
 private fun kakaoShare(

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.analytics.toContentType
 import com.fairyband.soak.presentation.feature.home.getCardColors
 import com.fairyband.soak.presentation.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
@@ -60,9 +61,12 @@ internal fun PopUpDialog(
 
         LaunchedEffect(visibility) {
             if (visibility) {
-                SoakAnalytics.logImpressionNewsletterCarousel(
-                    title = item.title,
-                    cardIndex = cardIndex.toLong(),
+                SoakAnalytics.logMainContentsDetailPageview(
+                    cardIndex = cardIndex,
+                    cardType = "recommend",
+                    contentType = item.cardType.toContentType(),
+                    contentTitle = item.title,
+                    contentId = item.id.toString(),
                 )
             }
         }

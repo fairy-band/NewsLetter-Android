@@ -284,7 +284,7 @@ private fun SettingText(
 }
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    SoakAnalytics.logClickBottomSheetCustom(jobGroup = jobGroup, careerLevel = careerLevel)
+    SoakAnalytics.logBottomSheetCustomClick(jobGroup = jobGroup, careerLevel = careerLevel)
 }
 
 @Preview(showBackground = true)

@@ -54,10 +54,10 @@ internal fun NotificationBottomSheet(
     }
 
     DisposableEffect(Unit) {
-        SoakAnalytics.logPageViewBottomSheetNotification()
+        SoakAnalytics.logBottomSheetNotificationPageview()
 
         onDispose {
-            SoakAnalytics.logPageViewMain()
+            SoakAnalytics.logMainPageview()
         }
     }
 
@@ -90,7 +90,7 @@ internal fun NotificationBottomSheet(
                 onClick = {
                     onDismissRequest()
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    SoakAnalytics.logClickBottomSheetNotification()
+                    SoakAnalytics.logBottomSheetNotificationClick()
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,

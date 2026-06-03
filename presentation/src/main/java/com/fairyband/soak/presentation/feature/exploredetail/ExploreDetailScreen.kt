@@ -129,6 +129,16 @@ fun ExploreDetailScreen(
         lazyState.animateScrollToItem(index = index)
     }
 
+    LaunchedEffect(index) {
+        val feed = feeds.getOrNull(index) ?: return@LaunchedEffect
+        SoakAnalytics.logExploreContentsDetailPageview(
+            cardIndex = index,
+            contentType = "newsletter",
+            contentTitle = feed.title,
+            contentId = feed.id.toString(),
+        )
+    }
+
     DetailBackground()
 
     Column(
@@ -217,7 +227,7 @@ fun ExploreDetailScreen(
                 paddingVertical = 12.dp,
                 onClick = {
                     navController.navigate(MainDestination.WebView(url = feed.url))
-                    webClickEvent(id = feed.id, index = index)
+                    webClickEvent(feed)
                 },
                 shape = CircleShape,
                 borderWidth = 1.dp,
@@ -322,6 +332,10 @@ private fun Feed(
     }
 }
 
-private fun webClickEvent(id: Int, index: Int) {
-    SoakAnalytics.logClickNewsletterCarousel(id = id.toString(), cardIndex = "explore-$index")
+private fun webClickEvent(feed: ExploreFeed) {
+    SoakAnalytics.logExploreContentsDetailClick(
+        contentType = "newsletter",
+        contentTitle = feed.title,
+        contentId = feed.id.toString(),
+    )
 }
