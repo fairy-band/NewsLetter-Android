@@ -7,10 +7,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import kotlinx.coroutines.flow.filterNotNull
 
 class NavController(val backStack: NavBackStack) {
@@ -34,7 +31,6 @@ fun rememberNavController(startDestination: NavKey): NavController {
     val backStack = rememberNavBackStack(startDestination)
 
     LaunchedEffect(backStack) {
-        val analytics = Firebase.analytics
         var previousScreenName = "none"
 
         snapshotFlow { backStack.lastOrNull() }
@@ -42,12 +38,11 @@ fun rememberNavController(startDestination: NavKey): NavController {
             .collect {
                 val screenName = (it as? MainDestination)?.name ?: "Unknown"
 
-                analytics.logEvent("page_view") {
-                    param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
-                    param("platform", "Android")
-                    param("previous_screen", previousScreenName)
-                    param("arguments", it.toString())
-                }
+                SoakAnalytics.logPageView(
+                    screenName = screenName,
+                    previousScreenName = previousScreenName,
+                    arguments = it.toString(),
+                )
 
                 previousScreenName = screenName
             }

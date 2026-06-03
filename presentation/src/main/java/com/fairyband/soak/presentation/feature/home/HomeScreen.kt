@@ -78,9 +78,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBott
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -128,11 +126,9 @@ fun HomeScreen(
         snapshotFlow { bottomSheetVisibility }
             .collect { isHome ->
                 if (isHome) {
-                    Firebase.analytics.logEvent("pageview_main") {}
+                    SoakAnalytics.logPageViewMain()
                 } else {
-                    Firebase.analytics.logEvent("pageview_bottom_sheet_custom") {
-                        param("object_type", "bottom_sheet")
-                    }
+                    SoakAnalytics.logPageViewBottomSheetCustom()
                 }
             }
     }
@@ -197,25 +193,17 @@ private fun HomeScreen(
             .distinctUntilChanged()
             .collect { isHome ->
                 if (isHome) {
-                    Firebase.analytics.logEvent("pageview_main") {}
+                    SoakAnalytics.logPageViewMain()
                 } else {
-                    Firebase.analytics.logEvent("pageview_newsletter_carousel") {
-                        param("object_type", "newsletter")
-                    }
+                    SoakAnalytics.logPageViewNewsletterCarousel()
                 }
             }
     }
 
     LaunchedEffect(cardIndex, news) {
         cardIndex?.let {
-            Firebase.analytics.logEvent("click_main") {
-                val title = news.getOrNull(it)?.title.orEmpty()
-
-                param("object_section", "newsletter_list")
-                param("object_type", "newsletter")
-                param("object_id", title)
-                param("list_index", it.toLong())
-            }
+            val title = news.getOrNull(it)?.title.orEmpty()
+            SoakAnalytics.logClickMain(title = title, listIndex = it)
         }
     }
 
@@ -594,20 +582,11 @@ private fun RefreshButton(
 }
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
-        param("object_type", "button")
-        param("job_group", jobGroup.joinToString(separator = ","))
-        param("career_level", careerLevel)
-    }
+    SoakAnalytics.logClickBottomSheetCustom(jobGroup = jobGroup, careerLevel = careerLevel)
 }
 
 private fun webClickEvent(id: Long, page: Long) {
-    Firebase.analytics.logEvent("click_newsletter_carousel") {
-        param("object_section", "newsletter_card")
-        param("object_type", "button")
-        param("object_id", id.toString())
-        param("card_index", page)
-    }
+    SoakAnalytics.logClickNewsletterCarousel(id = id, cardIndex = page)
 }
 
 private fun kakaoShare(

@@ -62,9 +62,7 @@ import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.S
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
 import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
@@ -325,11 +323,5 @@ private fun Feed(
 }
 
 private fun webClickEvent(id: Int, index: Int) {
-    // 카드 내 ‘원문 보기’ 버튼 클릭
-    Firebase.analytics.logEvent("click_newsletter_carousel") {
-        param("object_section", "newsletter_card")
-        param("object_type", "button")
-        param("object_id", id.toString())
-        param("card_index", "explore-${index}")
-    }
+    SoakAnalytics.logClickNewsletterCarousel(id = id.toString(), cardIndex = "explore-$index")
 }

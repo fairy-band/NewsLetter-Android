@@ -21,11 +21,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.feature.home.getCardColors
 import com.fairyband.soak.presentation.model.NewsFeed
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
 import kotlinx.collections.immutable.ImmutableList
 
 internal object PopUpDialogDefaults {
@@ -62,12 +60,10 @@ internal fun PopUpDialog(
 
         LaunchedEffect(visibility) {
             if (visibility) {
-                Firebase.analytics.logEvent("impression_newsletter_carousel") {
-                    param("object_section", "newsletter_card")
-                    param("object_type", "newsletter")
-                    param("object_id", item.title)
-                    param("card_index", cardIndex.toLong())
-                }
+                SoakAnalytics.logImpressionNewsletterCarousel(
+                    title = item.title,
+                    cardIndex = cardIndex.toLong(),
+                )
             }
         }
 

@@ -46,9 +46,7 @@ import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.navigation.MainDestination
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.google.firebase.installations.FirebaseInstallations
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -286,12 +284,7 @@ private fun SettingText(
 }
 
 private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    // 맞춤정보 바텀시트_맞춤정보 보기 버튼 클릭
-    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
-        param("object_type", "button")
-        param("job_group", jobGroup.joinToString(separator = ","))
-        param("career_level", careerLevel)
-    }
+    SoakAnalytics.logClickBottomSheetCustom(jobGroup = jobGroup, careerLevel = careerLevel)
 }
 
 @Preview(showBackground = true)
