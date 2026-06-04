@@ -124,17 +124,6 @@ fun HomeScreen(
             }
     }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { bottomSheetVisibility }
-            .collect { isBottomSheetVisible ->
-                if (isBottomSheetVisible) {
-                    SoakAnalytics.logBottomSheetCustomPageview()
-                } else {
-                    SoakAnalytics.logMainPageview()
-                }
-            }
-    }
-
     LaunchedEffect(showNotificationBottomSheet) {
         hasNotificationPermission =
             NotificationManagerCompat.from(context).areNotificationsEnabled()
@@ -188,16 +177,6 @@ private fun HomeScreen(
     val context = LocalContext.current
 
     val pagerState = rememberPagerState(pageCount = { news.size })
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { cardIndex }
-            .map { it == null }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect {
-                SoakAnalytics.logMainPageview()
-            }
-    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
