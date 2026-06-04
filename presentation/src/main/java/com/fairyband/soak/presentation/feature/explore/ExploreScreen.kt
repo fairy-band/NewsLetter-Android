@@ -94,12 +94,6 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
 
     val reportSuccessMessage = stringResource(R.string.explore_report_success)
 
-    LaunchedEffect(showBottomSheet) {
-        if (showBottomSheet) {
-            SoakAnalytics.logExploreReportPageview()
-        }
-    }
-
     LaunchedEffect(lazyState) {
         snapshotFlow {
             shouldLoadMore

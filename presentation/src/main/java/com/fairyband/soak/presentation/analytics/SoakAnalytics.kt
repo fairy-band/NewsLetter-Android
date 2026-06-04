@@ -24,12 +24,6 @@ object SoakAnalytics {
     private const val PARAM_PREVIOUS_SCREEN = "previous_screen"
     private const val PARAM_ARGUMENTS = "arguments"
 
-    // Main
-
-    fun logMainPageview() {
-        Firebase.analytics.logEvent("main_pageview") {}
-    }
-
     fun logMainContentsDetailPageview(
         cardIndex: Int,
         cardType: String,
@@ -58,12 +52,6 @@ object SoakAnalytics {
             param(PARAM_CONTENT_TITLE, contentTitle)
             param(PARAM_CONTENT_ID, contentId)
         }
-    }
-
-    // Explore
-
-    fun logExplorePageview() {
-        Firebase.analytics.logEvent("explore_pageview") {}
     }
 
     fun logExploreContentsDetailPageview(
@@ -107,7 +95,7 @@ object SoakAnalytics {
     }
 
     fun logExploreReportPageview() {
-        Firebase.analytics.logEvent("explore_report_pageview") {}
+        logPageView(screenName = "explore_report")
     }
 
     fun logExploreReportSubmitClick(
@@ -148,12 +136,12 @@ object SoakAnalytics {
 
     // Navigation
 
-    fun logPageView(screenName: String, previousScreenName: String, arguments: String) {
+    fun logPageView(screenName: String, previousScreenName: String? = null, arguments: String? = null) {
         Firebase.analytics.logEvent("page_view") {
             param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
             param(PARAM_PLATFORM, "Android")
-            param(PARAM_PREVIOUS_SCREEN, previousScreenName)
-            param(PARAM_ARGUMENTS, arguments)
+            param(PARAM_PREVIOUS_SCREEN, previousScreenName ?: "null")
+            param(PARAM_ARGUMENTS, arguments ?: "null")
         }
     }
 }

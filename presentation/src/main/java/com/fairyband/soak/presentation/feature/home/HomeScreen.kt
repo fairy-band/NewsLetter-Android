@@ -141,7 +141,7 @@ fun HomeScreen(
                     workingExperience = workingExperience
                 )
 
-                buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
+                SoakAnalytics.logBottomSheetCustomClick(jobGroup = preferences, careerLevel = workingExperience)
             }
         )
     }
@@ -545,10 +545,6 @@ private fun RefreshButton(
             ),
         )
     }
-}
-
-private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    SoakAnalytics.logBottomSheetCustomClick(jobGroup = jobGroup, careerLevel = careerLevel)
 }
 
 private fun webClickEvent(item: NewsFeed) {
