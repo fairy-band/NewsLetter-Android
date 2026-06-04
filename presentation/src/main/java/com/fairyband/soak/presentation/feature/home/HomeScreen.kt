@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +49,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -76,19 +74,16 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
-import com.fairyband.soak.presentation.model.NewsFeed
+import com.fairyband.soak.domain.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.analytics.toContentType
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.time.Duration
@@ -124,19 +119,6 @@ fun HomeScreen(
             }
     }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { bottomSheetVisibility }
-            .collect { isHome ->
-                if (isHome) {
-                    Firebase.analytics.logEvent("pageview_main") {}
-                } else {
-                    Firebase.analytics.logEvent("pageview_bottom_sheet_custom") {
-                        param("object_type", "bottom_sheet")
-                    }
-                }
-            }
-    }
-
     LaunchedEffect(showNotificationBottomSheet) {
         hasNotificationPermission =
             NotificationManagerCompat.from(context).areNotificationsEnabled()
@@ -159,7 +141,7 @@ fun HomeScreen(
                     workingExperience = workingExperience
                 )
 
-                buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
+                SoakAnalytics.logBottomSheetCustomClick(jobGroup = preferences, careerLevel = workingExperience)
             }
         )
     }
@@ -190,34 +172,6 @@ private fun HomeScreen(
     val context = LocalContext.current
 
     val pagerState = rememberPagerState(pageCount = { news.size })
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { cardIndex }
-            .map { it == null }
-            .distinctUntilChanged()
-            .collect { isHome ->
-                if (isHome) {
-                    Firebase.analytics.logEvent("pageview_main") {}
-                } else {
-                    Firebase.analytics.logEvent("pageview_newsletter_carousel") {
-                        param("object_type", "newsletter")
-                    }
-                }
-            }
-    }
-
-    LaunchedEffect(cardIndex, news) {
-        cardIndex?.let {
-            Firebase.analytics.logEvent("click_main") {
-                val title = news.getOrNull(it)?.title.orEmpty()
-
-                param("object_section", "newsletter_list")
-                param("object_type", "newsletter")
-                param("object_id", title)
-                param("list_index", it.toLong())
-            }
-        }
-    }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -262,7 +216,7 @@ private fun HomeScreen(
         },
         onWebClick = { item, pageIndex ->
             navController.navigate(MainDestination.WebView(url = item.url))
-            webClickEvent(id = item.id, page = pageIndex.toLong())
+            webClickEvent(item)
         },
         onShareClick = { id, title, color ->
             kakaoShare(
@@ -593,21 +547,13 @@ private fun RefreshButton(
     }
 }
 
-private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
-    Firebase.analytics.logEvent("click_bottom_sheet_custom") {
-        param("object_type", "button")
-        param("job_group", jobGroup.joinToString(separator = ","))
-        param("career_level", careerLevel)
-    }
-}
-
-private fun webClickEvent(id: Long, page: Long) {
-    Firebase.analytics.logEvent("click_newsletter_carousel") {
-        param("object_section", "newsletter_card")
-        param("object_type", "button")
-        param("object_id", id.toString())
-        param("card_index", page)
-    }
+private fun webClickEvent(item: NewsFeed) {
+    SoakAnalytics.logMainContentsDetailClick(
+        cardType = if (item.isTrending) "trending" else "recommend",
+        contentType = item.cardType.toContentType(),
+        contentTitle = item.title,
+        contentId = item.id.toString(),
+    )
 }
 
 private fun kakaoShare(

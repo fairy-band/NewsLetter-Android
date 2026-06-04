@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,9 +31,7 @@ import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,18 +54,8 @@ internal fun NotificationBottomSheet(
         }
     }
 
-    DisposableEffect(Unit) {
-        val analytics = Firebase.analytics
-
-        // 알림 바텀시트 노출
-        analytics.logEvent("pageview_bottom_sheet_notification") {
-            param("object_type", "bottom_sheet")
-        }
-
-        // 앱 메인 페이지 진입
-        onDispose {
-            analytics.logEvent("pageview_main") {}
-        }
+    LaunchedEffect (Unit) {
+        SoakAnalytics.logBottomSheetNotificationPageview()
     }
 
     BaseBottomSheet(
@@ -98,10 +87,7 @@ internal fun NotificationBottomSheet(
                 onClick = {
                     onDismissRequest()
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    // 알림받기 버튼 클릭
-                    Firebase.analytics.logEvent("click_bottom_sheet_notification") {
-                        param("object_type", "button")
-                    }
+                    SoakAnalytics.logBottomSheetNotificationClick()
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,

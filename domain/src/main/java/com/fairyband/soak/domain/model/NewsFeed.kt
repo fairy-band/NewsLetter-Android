@@ -1,4 +1,4 @@
-package com.fairyband.soak.presentation.model
+package com.fairyband.soak.domain.model
 
 import com.fairyband.soak.data.model.response.NewsResponse
 
@@ -12,9 +12,10 @@ data class NewsFeed(
     val imageUrl: String?,
     val language: String,
     val cardType: String,
+    val isTrending: Boolean = false,
 )
 
-fun NewsResponse.toNewsFeed(): NewsFeed {
+fun NewsResponse.toNewsFeed(isTrending: Boolean = false): NewsFeed {
     return NewsFeed(
         id = id,
         title = title,
@@ -25,6 +26,7 @@ fun NewsResponse.toNewsFeed(): NewsFeed {
         imageUrl = imageUrl,
         language = language,
         cardType = cardType.getCardType(),
+        isTrending = isTrending,
     )
 }
 

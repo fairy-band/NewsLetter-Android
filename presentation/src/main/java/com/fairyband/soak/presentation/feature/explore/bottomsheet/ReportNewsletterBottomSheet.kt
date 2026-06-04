@@ -28,6 +28,7 @@ import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import com.fairyband.soak.core.designsystem.bottomsheet.BaseBottomSheet
 import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import kotlinx.coroutines.launch
 
@@ -61,6 +63,10 @@ internal fun ReportNewsletterBottomSheet(
     modifier: Modifier = Modifier,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    LaunchedEffect(Unit) {
+        SoakAnalytics.logExploreReportPageview()
+    }
 
     BaseBottomSheet(
         sheetState = sheetState,

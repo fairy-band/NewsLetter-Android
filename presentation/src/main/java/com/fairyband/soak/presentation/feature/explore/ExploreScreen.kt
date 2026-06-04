@@ -50,6 +50,7 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.feature.explore.bottomsheet.ReportNewsletterBottomSheet
 import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
@@ -186,8 +187,13 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 viewModel.resetReportState()
             },
             onSubmit = {
+                SoakAnalytics.logExploreReportSubmitClick(
+                    name = state.name,
+                    url = state.url,
+                    jobGroup = state.selectedPreferences.joinToString(",") { it.stringValue },
+                    language = state.language,
+                )
                 viewModel.reportNewsletter()
-                // 성공 후 onDissmiss 처리
             },
         )
     }

@@ -20,6 +20,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,7 @@ import com.fairyband.soak.core.designsystem.button.BaseButton
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +52,10 @@ internal fun HomeBottomSheet(
     var selectedWorkingExperience by remember { mutableStateOf<WorkingExperience?>(null) }
     val isButtonEnabled = selectedWorkingExperience != null && selectedPreferences.isNotEmpty()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    LaunchedEffect(Unit) {
+        SoakAnalytics.logBottomSheetCustomPageview()
+    }
 
     BaseBottomSheet(
         sheetState = sheetState,

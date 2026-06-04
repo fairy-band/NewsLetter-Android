@@ -6,6 +6,7 @@ import com.fairyband.soak.data.datasource.NewsLetterDataSource
 import com.fairyband.soak.data.local.news.NewsDataStore
 import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
+import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.model.response.NewsResponse
 import com.fairyband.soak.data.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +42,7 @@ class NewsRepositoryImpl(
         }
     }
 
-    override val news: Flow<List<NewsResponse>> =
+    override val news: Flow<LetterResponse> =
         merge(refreshFlow, dayFlow)
             .map {
                 Timber.d("뉴스를 새로 불러왔어요.")
@@ -49,10 +50,7 @@ class NewsRepositoryImpl(
                 val userId = authDataSource.getUserId()
                 val publishedDate = LocalDate.now().toPattern("yyyy-MM-dd")
 
-                val response =
-                    newsLetterDataSource.getContents(userId = userId, publishedDate = publishedDate)
-
-                listOfNotNull(response.trendingCard) + response.cards.filter { it.id != response.trendingCard?.id }
+                newsLetterDataSource.getContents(userId = userId, publishedDate = publishedDate)
             }
 
     override val hasRefreshedToday: Flow<Boolean> = newsDataStore.hasRefreshedToday

@@ -43,7 +43,7 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.CARD_HEIGHT
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.SUMMARY_MAX_LINE
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialogDefaults.TITLE_MAX_LINE
-import com.fairyband.soak.presentation.model.NewsFeed
+import com.fairyband.soak.domain.model.NewsFeed
 
 @Composable
 internal fun PopUpItem(
