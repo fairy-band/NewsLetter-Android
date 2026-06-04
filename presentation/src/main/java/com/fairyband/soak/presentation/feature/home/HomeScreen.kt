@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +49,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -76,7 +74,7 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
-import com.fairyband.soak.presentation.model.NewsFeed
+import com.fairyband.soak.domain.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.analytics.toContentType
@@ -85,10 +83,7 @@ import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.time.Duration
@@ -558,7 +553,7 @@ private fun buttonClickEvent(jobGroup: List<String>, careerLevel: String) {
 
 private fun webClickEvent(item: NewsFeed) {
     SoakAnalytics.logMainContentsDetailClick(
-        cardType = "recommend",
+        cardType = if (item.isTrending) "trending" else "recommend",
         contentType = item.cardType.toContentType(),
         contentTitle = item.title,
         contentId = item.id.toString(),
