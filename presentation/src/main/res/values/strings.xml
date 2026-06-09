@@ -27,6 +27,8 @@
 
     <!--explore-->
     <string name="explore_count_of_articles">전체 (%d)</string>
+    <string name="explore_newest">최신순</string>
+    <string name="explore_oldest">오래된순</string>
     <string name="explore_report_fab">뉴스레터 제보</string>
     <string name="explore_report_bottomsheet_title">추가되었으면 하는\n뉴스레터나 블로그가 있나요?</string>
     <string name="explore_report_bottomsheet_subtitle">신규 뉴스레터를 제보해주세요</string>
@@ -176,7 +178,7 @@
         1. 사용자가 서비스를 이용하면서 발생하는 모든 개인 정보보호 관련 문의, 불만, 조언이나 기타 사항은 개인 정보 보호 책임자 및 담당 부서로 연락해 주시기 바랍니다. 쏙 사용자 목소리에 귀 기울이고 신속하고 충분한 답변을 드릴 수 있도록 최선을 다하겠습니다.\n\n
         제10조 (개인정보 보호 책임자)\n
         - 이름: 조성아\n
-        - 연락처: missionmateteam@gmail.com\n\n
+        - 연락처: newsletter.feeding@gmail.com\n\n
         제11조 (개인정보 처리방침의 변경)\n
         - 쏙 법령이나 서비스 변경에 따라 개인정보 처리방침을 수정할 수 있으며, 변경 사항은 서비스 화면에 공지합니다. 변경된 방침은 게시한 날로부터 7일 후 효력이 발생합니다.\n\n
         공고일자: 2025년 8월 23일\n
