@@ -1,6 +1,7 @@
 package com.fairyband.soak.data.datasource
 
 import com.fairyband.soak.data.model.request.ContentProviderRequest
+import com.fairyband.soak.data.model.request.Sort
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.remote.service.NewsLetterService
@@ -18,9 +19,10 @@ class NewsLetterDataSource(
     }
 
     suspend fun getExploreContents(
-        nextOffset: Long
+        nextOffset: Long,
+        sort: Sort,
     ): ExploreContentsResponse {
-        return api.getExploreContents(lastSeenOffset = nextOffset, size = 20)
+        return api.getExploreContents(lastSeenOffset = nextOffset, size = 20, sort = sort.value)
     }
 
     suspend fun refreshContents(userId: Long) {

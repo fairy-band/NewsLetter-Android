@@ -22,6 +22,8 @@ interface NewsLetterService {
         lastSeenOffset: Long = 0,
         @Query("size")
         size: Int = 20,
+        @Query("sort")
+        sort: String = "PUBLISHED",
     ): ExploreContentsResponse
 
     @POST("api/newsletters/contents/{userId}/refresh")
