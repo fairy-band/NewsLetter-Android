@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -37,14 +38,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
+import com.fairyband.soak.data.model.request.Sort
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
@@ -89,10 +93,15 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     }
     val feeds = state.feeds
     val totalCount = state.totalCount
+    val sortOrder = state.sort
 
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     val reportSuccessMessage = stringResource(R.string.explore_report_success)
+
+    LaunchedEffect(sortOrder) {
+        lazyState.scrollToItem(0)
+    }
 
     LaunchedEffect(lazyState) {
         snapshotFlow {
@@ -123,14 +132,43 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Text(
-                modifier = Modifier.padding(vertical = 8.dp),
-                text = stringResource(R.string.explore_count_of_articles, totalCount),
-                style = SoakTheme.typography.body14.copy(
-                    color = soakColors.textStrongInverse,
-                    fontWeight = FontWeight.Bold
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = stringResource(R.string.explore_count_of_articles, totalCount),
+                    style = SoakTheme.typography.body14.copy(
+                        color = soakColors.textStrongInverse,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
-            )
+
+                Row(
+                    modifier = Modifier.clickable { viewModel.toggleOrder() },
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        ImageVector.vectorResource(R.drawable.ic_order),
+                        contentDescription = null,
+                        tint = Color.White,
+                    )
+                    Text(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        text = stringResource(
+                            if (sortOrder == Sort.PUBLISHED) R.string.explore_newest
+                            else R.string.explore_oldest
+                        ),
+                        style = SoakTheme.typography.body13.copy(
+                            color = soakColors.textStrongInverse,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
+            }
 
             LazyVerticalGrid(
                 state = lazyState,
@@ -148,7 +186,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                             navController.navigate(
                                 MainDestination.ExploreDetail(
                                     feeds = feeds,
-                                    index = index
+                                    index = index,
+                                    totalCount = totalCount,
                                 )
                             )
                         },

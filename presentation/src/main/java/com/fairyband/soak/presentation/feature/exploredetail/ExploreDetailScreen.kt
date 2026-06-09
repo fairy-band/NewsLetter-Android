@@ -177,7 +177,7 @@ fun ExploreDetailScreen(
                 )
                 .width(300.dp)
                 .height(CARD_HEIGHT)
-                .padding(24.dp),
+                .padding(20.dp),
         ) {
             val titleColor = titleColors[index % 6]
             val feed = feeds[index]

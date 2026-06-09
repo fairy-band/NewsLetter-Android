@@ -18,7 +18,7 @@ class ExploreDetailViewModel(
     detail: MainDestination.ExploreDetail,
     private val newsRepository: NewsRepository,
 ) : ViewModel() {
-    private val _totalCount = MutableStateFlow(0)
+    private val _totalCount = MutableStateFlow(detail.totalCount)
     val totalCount = _totalCount.asStateFlow()
 
     private val _feeds: MutableStateFlow<List<ExploreFeed>> = MutableStateFlow(detail.feeds)
@@ -34,7 +34,7 @@ class ExploreDetailViewModel(
         if (loadingJob != null || !hasMore) return
 
         loadingJob = viewModelScope.launch {
-            val response = newsRepository.getExploreContents()
+            val response = newsRepository.getExploreContents(null)
             _totalCount.update { response.totalCount }
 
             val newFeeds = response.contents.map { it.toExploreFeed() }
