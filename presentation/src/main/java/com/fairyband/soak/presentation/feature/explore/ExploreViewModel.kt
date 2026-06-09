@@ -3,6 +3,7 @@ package com.fairyband.soak.presentation.feature.explore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fairyband.soak.data.model.request.ContentProviderRequest
+import com.fairyband.soak.data.model.request.Sort
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import com.fairyband.soak.presentation.model.toExploreFeed
@@ -71,7 +72,7 @@ class ExploreViewModel(
         if (loadingJob != null || !hasMore) return
 
         loadingJob = viewModelScope.launch {
-            val response = newsRepository.getExploreContents()
+            val response = newsRepository.getExploreContents(state.value.sort)
             val newFeeds = response.contents.map { it.toExploreFeed() }
             hasMore = response.hasMore
 
@@ -86,5 +87,14 @@ class ExploreViewModel(
         loadingJob?.invokeOnCompletion {
             loadingJob = null
         }
+    }
+
+    fun toggleOrder() {
+        val newSort = if (_state.value.sort == Sort.PUBLISHED) Sort.REGISTERED else Sort.PUBLISHED
+        loadingJob?.cancel()
+        loadingJob = null
+        hasMore = true
+        _state.update { it.copy(sort = newSort, feeds = emptyList(), totalCount = 0) }
+        loadFeeds()
     }
 }

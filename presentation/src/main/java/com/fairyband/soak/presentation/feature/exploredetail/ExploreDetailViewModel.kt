@@ -34,7 +34,7 @@ class ExploreDetailViewModel(
         if (loadingJob != null || !hasMore) return
 
         loadingJob = viewModelScope.launch {
-            val response = newsRepository.getExploreContents()
+            val response = newsRepository.getExploreContents(null)
             _totalCount.update { response.totalCount }
 
             val newFeeds = response.contents.map { it.toExploreFeed() }
