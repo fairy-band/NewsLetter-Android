@@ -3,11 +3,19 @@
     android:height="14dp"
     android:viewportWidth="14"
     android:viewportHeight="14">
-  <group>
-    <clip-path
-        android:pathData="M14,14l-14,-0l-0,-14l14,-0z"/>
-    <path
-        android:pathData="M14,0l-14,0l-0,14l14,0z"
-        android:fillColor="#ffffff"/>
-  </group>
+
+  <path
+      android:pathData="M4.5,11.1V3.2M1.9,5.4L4.5,2.8L7.1,5.4"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="1.5"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round" />
+
+  <path
+      android:pathData="M9.5,2.9V10.8M6.9,8.6L9.5,11.2L12.1,8.6"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="1.5"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round" />
+
 </vector>
