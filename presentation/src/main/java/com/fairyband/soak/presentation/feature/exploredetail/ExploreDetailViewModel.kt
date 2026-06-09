@@ -18,7 +18,7 @@ class ExploreDetailViewModel(
     detail: MainDestination.ExploreDetail,
     private val newsRepository: NewsRepository,
 ) : ViewModel() {
-    private val _totalCount = MutableStateFlow(0)
+    private val _totalCount = MutableStateFlow(detail.totalCount)
     val totalCount = _totalCount.asStateFlow()
 
     private val _feeds: MutableStateFlow<List<ExploreFeed>> = MutableStateFlow(detail.feeds)

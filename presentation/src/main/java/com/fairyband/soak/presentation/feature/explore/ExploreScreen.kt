@@ -186,7 +186,8 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                             navController.navigate(
                                 MainDestination.ExploreDetail(
                                     feeds = feeds,
-                                    index = index
+                                    index = index,
+                                    totalCount = totalCount,
                                 )
                             )
                         },

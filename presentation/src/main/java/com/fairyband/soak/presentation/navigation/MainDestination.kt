@@ -44,5 +44,6 @@ sealed class MainDestination(val name: String) : NavKey {
     data class ExploreDetail(
         val index: Int,
         val feeds: List<ExploreFeed>,
+        val totalCount: Int,
     ) : MainDestination("explore_detail")
 }
