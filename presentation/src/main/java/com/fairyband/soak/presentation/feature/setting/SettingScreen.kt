@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.dialog.BaseDialog
+import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
@@ -59,6 +60,8 @@ internal fun SettingScreen(
     val navController = LocalNavController.current
     var bottomSheetVisibility by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    LightSystemBar()
 
     if (bottomSheetVisibility) {
         HomeBottomSheet(
