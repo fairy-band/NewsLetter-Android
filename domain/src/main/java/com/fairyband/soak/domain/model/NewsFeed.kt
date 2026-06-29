@@ -33,9 +33,11 @@ fun NewsResponse.toNewsFeed(isTrending: Boolean = false): NewsFeed {
 private fun String.getCardType(): String {
     val upperType = this.uppercase()
     return when {
+        // 백엔드 스펙: BLOG, NEWSLETTER, USER_PROVIDE_CONTENT, UNKNOWN, BOOK
         upperType.startsWith("NEWS") -> "NEWS"
         upperType.startsWith("BLOG") -> "BLOG"
         upperType.startsWith("BOOK") -> "BOOK"
+        upperType.startsWith("USER") -> "USER"
         else -> ""
     }
 }
