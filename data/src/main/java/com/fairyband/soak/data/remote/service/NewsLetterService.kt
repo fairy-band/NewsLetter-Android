@@ -24,6 +24,8 @@ interface NewsLetterService {
         size: Int = 20,
         @Query("sort")
         sort: String = "PUBLISHED",
+        @Query("direction")
+        direction: String,
     ): ExploreContentsResponse
 
     @POST("api/newsletters/contents/{userId}/refresh")
