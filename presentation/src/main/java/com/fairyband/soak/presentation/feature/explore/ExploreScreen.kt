@@ -48,9 +48,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
-import com.fairyband.soak.data.model.request.Sort
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.data.model.request.Direction
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
@@ -93,13 +93,13 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     }
     val feeds = state.feeds
     val totalCount = state.totalCount
-    val sortOrder = state.sort
+    val directionOrder = state.direction
 
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     val reportSuccessMessage = stringResource(R.string.explore_report_success)
 
-    LaunchedEffect(sortOrder) {
+    LaunchedEffect(directionOrder) {
         lazyState.scrollToItem(0)
     }
 
@@ -159,7 +159,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
                         text = stringResource(
-                            if (sortOrder == Sort.PUBLISHED) R.string.explore_newest
+                            if (directionOrder == Direction.DESC) R.string.explore_newest
                             else R.string.explore_oldest
                         ),
                         style = SoakTheme.typography.body13.copy(

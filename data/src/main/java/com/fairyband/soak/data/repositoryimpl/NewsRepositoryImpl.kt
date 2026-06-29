@@ -5,7 +5,7 @@ import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.datasource.NewsLetterDataSource
 import com.fairyband.soak.data.local.news.NewsDataStore
 import com.fairyband.soak.data.model.request.ContentProviderRequest
-import com.fairyband.soak.data.model.request.Sort
+import com.fairyband.soak.data.model.request.Direction
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.repository.NewsRepository
@@ -29,7 +29,7 @@ class NewsRepositoryImpl(
 ) : NewsRepository {
     private val refreshFlow = MutableSharedFlow<Unit>()
     private var nextOffset = 0L
-    private var currentSort: Sort = Sort.PUBLISHED
+    private var currentDirection: Direction = Direction.DESC
 
     // 매일 자정에 뉴스를 새로고침해요.
     private val dayFlow = flow {
@@ -68,12 +68,12 @@ class NewsRepositoryImpl(
         emit(Unit)
     }
 
-    override suspend fun getExploreContents(sort: Sort?): ExploreContentsResponse {
-        if (sort != null && sort != currentSort) {
+    override suspend fun getExploreContents(direction: Direction?): ExploreContentsResponse {
+        if (direction != null && direction != currentDirection) {
             nextOffset = 0L
-            currentSort = sort
+            currentDirection = direction
         }
-        val response = newsLetterDataSource.getExploreContents(nextOffset, currentSort)
+        val response = newsLetterDataSource.getExploreContents(nextOffset, currentDirection)
         nextOffset = response.nextOffset
         return response
     }
