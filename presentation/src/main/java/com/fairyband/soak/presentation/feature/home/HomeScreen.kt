@@ -3,7 +3,12 @@ package com.fairyband.soak.presentation.feature.home
 import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,12 +47,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -57,6 +65,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
@@ -67,17 +76,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
+import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.domain.model.NewsFeed
 import com.fairyband.soak.presentation.BuildConfig
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.analytics.toContentType
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
-import com.fairyband.soak.domain.model.NewsFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
-import com.fairyband.soak.presentation.analytics.SoakAnalytics
-import com.fairyband.soak.presentation.analytics.toContentType
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -141,7 +151,10 @@ fun HomeScreen(
                     workingExperience = workingExperience
                 )
 
-                SoakAnalytics.logBottomSheetCustomClick(jobGroup = preferences, careerLevel = workingExperience)
+                SoakAnalytics.logBottomSheetCustomClick(
+                    jobGroup = preferences,
+                    careerLevel = workingExperience
+                )
             }
         )
     }
@@ -171,7 +184,7 @@ private fun HomeScreen(
     val navController = LocalNavController.current
     val context = LocalContext.current
 
-    val pagerState = rememberPagerState(pageCount = { news.size })
+    val pagerState = rememberPagerState(pageCount = { if (news.isEmpty()) 7 else news.size })
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -182,7 +195,6 @@ private fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             Title()
-//            Spacer(modifier = Modifier.height(102.dp))
             Cards(
                 modifier = Modifier.fillMaxWidth(),
                 pagerState = pagerState,
@@ -329,7 +341,8 @@ private fun ColumnScope.Cards(
         animationSpec = tween(durationMillis = 560),
     )
     var yCoordinate by remember { mutableStateOf(0.dp) }
-    val popupYOffset = (screenHeight - 354.dp) / 2 + 6.dp // FIXME: 6.dp는 임시 시각 보정 값. gesture hint 혹은 status bar padding에서 생긴 오차 같은데 연구 필요
+    val popupYOffset =
+        (screenHeight - 354.dp) / 2 + 6.dp // FIXME: 6.dp는 임시 시각 보정 값. gesture hint 혹은 status bar padding에서 생긴 오차 같은데 연구 필요
     val yOffset by animateDpAsState(
         targetValue = if (showPopup) (popupYOffset - yCoordinate) else 0.dp,
         animationSpec = tween(durationMillis = 560),
@@ -349,29 +362,113 @@ private fun ColumnScope.Cards(
         val scale = lerp(0.7f, 1.0f, 1f - absRel.coerceIn(0f, 1f))
         val isCurrentPage = page == pagerState.currentPage
 
-        Card(
-            modifier = Modifier
-                .padding(top = 102.dp)
-                .width(if (isCurrentPage) focusedCardWidth else cardWidth)
-                .height(if (isCurrentPage) focusedCardHeight else cardHeight)
-                .onGloballyPositioned { coordinates ->
-                    if (yCoordinate == 0.dp) {
-                        yCoordinate = with(density) {
-                            coordinates.positionInRoot().y.toDp()
+        if (news.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .padding(top = 102.dp)
+                    .width(if (isCurrentPage) focusedCardWidth else cardWidth)
+                    .height(if (isCurrentPage) focusedCardHeight else cardHeight)
+                    .onGloballyPositioned { coordinates ->
+                        if (yCoordinate == 0.dp) {
+                            yCoordinate = with(density) {
+                                coordinates.positionInRoot().y.toDp()
+                            }
                         }
                     }
-                }
-                .offset(y = if (isCurrentPage) yOffset else 0.dp)
-                .zIndex(1f - absRel)
-                .graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
+                    .offset(y = if (isCurrentPage) yOffset else 0.dp)
+                    .zIndex(1f - absRel)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                    },
+                feed = news[page],
+                cardColor = cardColors[page],
+                onClick = {
+                    onClick(page)
                 },
-            feed = news[page],
-            cardColor = cardColors[page],
-            onClick = {
-                onClick(page)
-            },
+            )
+        } else {
+            EmptyCard(
+                cardColor = cardColors[page],
+                modifier = Modifier
+                    .padding(top = 102.dp)
+                    .offset(y = if (isCurrentPage) yOffset else 0.dp)
+                    .zIndex(1f - absRel)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                    },
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyCard(
+    cardColor: CardColor,
+    modifier: Modifier = Modifier,
+) {
+    val transition = rememberInfiniteTransition(label = "shimmer")
+    val progress by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1400, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "shimmer_progress",
+    )
+
+    var size by remember { mutableStateOf(IntSize.Zero) }
+
+    val shimmerBrush = remember(progress, size) {
+        val width = size.width.toFloat()
+        val height = size.height.toFloat()
+        val translate = progress * 2f * width - width
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0f),
+                Color.White.copy(alpha = 0.5f),
+                Color.White.copy(alpha = 0f),
+            ),
+            start = Offset(x = translate, y = 0f),
+            end = Offset(x = translate + width, y = height),
+        )
+    }
+
+    Column(
+        modifier = modifier
+            .width(272.dp)
+            .height(300.dp)
+            .clip(shape = RoundedCornerShape(24.dp))
+            .background(color = cardColor.cardColor)
+            .onSizeChanged { size = it }
+            .background(brush = shimmerBrush)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 24.dp)
+                .padding(horizontal = 24.dp)
+                .fillMaxWidth()
+                .height(52.dp)
+                .background(color = Color.DarkGray.copy(alpha = 0.3f))
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .padding(horizontal = 24.dp)
+                .width(150.dp)
+                .height(18.dp)
+                .background(color = Color.Gray.copy(alpha = 0.3f))
+        )
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(top = 20.dp, bottom = 32.dp)
+                .fillMaxWidth()
+                .height(150.dp)
+                .clip(shape = RoundedCornerShape(16.dp))
+                .background(color = Color.White.copy(alpha = 0.3f))
         )
     }
 }
