@@ -31,5 +31,13 @@ enum class Preference(
         label = "DEVOPS",
         icon = R.drawable.ic_home_devops,
         stringValue = "DEVOPS"
-    )
+    );
+
+    companion object {
+        /**
+         * 서버가 모르는 직군을 내려주더라도 크래시하지 않도록 null 을 반환해요.
+         */
+        fun from(stringValue: String?): Preference? =
+            entries.find { it.stringValue == stringValue }
+    }
 }
