@@ -3,6 +3,7 @@ package com.fairyband.soak.data.datasource
 import com.fairyband.soak.data.local.user.BottomSheetState
 import com.fairyband.soak.data.local.user.UserDataStore
 import com.fairyband.soak.data.model.request.UserInfoRequest
+import com.fairyband.soak.data.model.response.UserInfoResponse
 import com.fairyband.soak.data.remote.service.UserService
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
@@ -16,6 +17,9 @@ class UserDataSource(
     val streak: Flow<Int> = userDataStore.streakFlow
     val notificationSettingDateFlow: Flow<LocalDate> = userDataStore.notificationSettingDateFlow
     val bottomSheetFlow: Flow<BottomSheetState> = userDataStore.bottomSheetFlow
+
+    suspend fun getUserInfo(userId: Long): UserInfoResponse =
+        userService.getUserInfo(userId = userId)
 
     suspend fun putUserInfo(
         userId: Long,

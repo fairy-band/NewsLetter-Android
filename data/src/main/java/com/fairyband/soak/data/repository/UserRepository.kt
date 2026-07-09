@@ -2,6 +2,7 @@ package com.fairyband.soak.data.repository
 
 import com.fairyband.soak.data.local.user.BottomSheetState
 import com.fairyband.soak.data.model.request.UserInfoRequest
+import com.fairyband.soak.data.model.response.UserInfoResponse
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -10,6 +11,13 @@ interface UserRepository {
     val streak: Flow<Int>
     val notificationEnabled: Flow<Boolean>
     suspend fun recordBottomSheetShown()
+
+    /**
+     * 사용자가 선택한 직군, 경력을 조회해요.
+     * 아직 경력을 선택하지 않은 사용자는 workingExperience 가 null 이에요.
+     */
+    fun getUserInfo(): Flow<UserInfoResponse>
+
     fun putUserInfo(request: UserInfoRequest): Flow<Unit>
 
     /**
