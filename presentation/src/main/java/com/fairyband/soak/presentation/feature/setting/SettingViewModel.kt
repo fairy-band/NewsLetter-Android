@@ -3,7 +3,6 @@ package com.fairyband.soak.presentation.feature.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fairyband.soak.data.repository.UserRepository
-import com.fairyband.soak.domain.usecase.GetUserInfoUseCase
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import com.fairyband.soak.presentation.feature.home.bottomsheet.WorkingExperience
 import com.fairyband.soak.presentation.model.UserInfo
@@ -21,7 +20,6 @@ import timber.log.Timber
 @KoinViewModel
 class SettingViewModel(
     private val userRepository: UserRepository,
-    private val getUserInfoUseCase: GetUserInfoUseCase,
 ): ViewModel() {
     private val _state = MutableStateFlow(SettingState())
     val state: StateFlow<SettingState> = _state.asStateFlow()
@@ -34,7 +32,7 @@ class SettingViewModel(
      * 조회에 실패하면 아무것도 선택되지 않은 상태로 바텀시트를 열어요.
      */
     private fun loadUserInfo() {
-        getUserInfoUseCase().onEach { response ->
+        userRepository.getUserInfo().onEach { response ->
             _state.value = response.toState()
         }.catch {
             Timber.e(it)
