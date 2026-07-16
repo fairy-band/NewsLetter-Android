@@ -37,6 +37,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.designsystem.dialog.BaseDialog
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.extension.openAppNotificationSettings
@@ -59,6 +60,7 @@ internal fun SettingScreen(
     val navController = LocalNavController.current
     var bottomSheetVisibility by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     if (bottomSheetVisibility) {
         HomeBottomSheet(
@@ -72,7 +74,9 @@ internal fun SettingScreen(
                 )
 
                 buttonClickEvent(jobGroup = preferences, careerLevel = workingExperience)
-            }
+            },
+            initialPreferences = state.preferences,
+            initialWorkingExperience = state.workingExperience,
         )
     }
 

@@ -47,9 +47,15 @@ internal fun HomeBottomSheet(
     onDismissRequest: () -> Unit,
     onButtonClick: (List<String>, String) -> Unit,
     modifier: Modifier = Modifier,
+    initialPreferences: List<Preference> = emptyList(),
+    initialWorkingExperience: WorkingExperience? = null,
 ) {
-    val selectedPreferences = remember { mutableStateListOf<Preference>() }
-    var selectedWorkingExperience by remember { mutableStateOf<WorkingExperience?>(null) }
+    val selectedPreferences = remember(initialPreferences) {
+        mutableStateListOf<Preference>().apply { addAll(initialPreferences) }
+    }
+    var selectedWorkingExperience by remember(initialWorkingExperience) {
+        mutableStateOf(initialWorkingExperience)
+    }
     val isButtonEnabled = selectedWorkingExperience != null && selectedPreferences.isNotEmpty()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 

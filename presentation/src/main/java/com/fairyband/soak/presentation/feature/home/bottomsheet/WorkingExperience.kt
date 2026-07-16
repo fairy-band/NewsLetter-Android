@@ -23,5 +23,13 @@ enum class WorkingExperience(
     OVER_10_YEARS(
         label = "10년차 이상",
         stringValue = "EXPERT"
-    )
+    );
+
+    companion object {
+        /**
+         * 아직 경력을 선택하지 않았거나 서버가 모르는 경력을 내려주면 null 을 반환해요.
+         */
+        fun from(stringValue: String?): WorkingExperience? =
+            entries.find { it.stringValue == stringValue }
+    }
 }
