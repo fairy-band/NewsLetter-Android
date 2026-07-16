@@ -27,6 +27,7 @@
 
     <!--explore-->
     <string name="explore_count_of_articles">전체 (%d)</string>
+    <string name="explore_filter_all">전체</string>
     <string name="explore_newest">최신순</string>
     <string name="explore_oldest">오래된순</string>
     <string name="explore_report_fab">뉴스레터 제보</string>
