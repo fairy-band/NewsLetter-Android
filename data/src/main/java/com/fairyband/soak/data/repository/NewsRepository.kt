@@ -12,6 +12,12 @@ interface NewsRepository {
 
     suspend fun invalidateNews()
     fun refreshNews(): Flow<Unit>
-    suspend fun getExploreContents(direction: Direction?): ExploreContentsResponse
+    /**
+     * @param categoryIds 직군 카테고리 ID 목록. 비어 있으면 전체 조회예요.
+     */
+    suspend fun getExploreContents(
+        direction: Direction?,
+        categoryIds: List<String> = emptyList(),
+    ): ExploreContentsResponse
     suspend fun requestContentProvider(request: ContentProviderRequest)
 }
