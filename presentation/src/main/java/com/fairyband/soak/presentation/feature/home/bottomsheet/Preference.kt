@@ -6,31 +6,37 @@ enum class Preference(
     val label: String,
     val icon: Int,
     val stringValue: String,
+    val categoryId: String,
 ) {
     ANDROID(
         label = "AND",
         icon = R.drawable.ic_home_android,
-        stringValue = "ANDROID"
+        stringValue = "ANDROID",
+        categoryId = "4",
     ),
     IOS(
         label = "iOS",
         icon = R.drawable.ic_home_ios,
-        stringValue = "IOS"
+        stringValue = "IOS",
+        categoryId = "3",
     ),
     FRONTEND(
         label = "FE",
         icon = R.drawable.ic_home_frontend,
-        stringValue = "FRONTEND"
+        stringValue = "FRONTEND",
+        categoryId = "2",
     ),
     BACKEND(
         label = "BE",
         icon = R.drawable.ic_home_backend,
-        stringValue = "BACKEND"
+        stringValue = "BACKEND",
+        categoryId = "1",
     ),
     DEVOPS(
         label = "DEVOPS",
         icon = R.drawable.ic_home_devops,
-        stringValue = "DEVOPS"
+        stringValue = "DEVOPS",
+        categoryId = "5",
     );
 
     companion object {

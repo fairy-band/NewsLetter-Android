@@ -17,4 +17,16 @@ class PreferenceTest : StringSpec({
     "직군이 null 이면 null 을 반환한다" {
         Preference.from(null) shouldBe null
     }
+
+    "직군은 서버 카테고리 ID 로 매핑된다" {
+        Preference.BACKEND.categoryId shouldBe "1"
+        Preference.FRONTEND.categoryId shouldBe "2"
+        Preference.IOS.categoryId shouldBe "3"
+        Preference.ANDROID.categoryId shouldBe "4"
+        Preference.DEVOPS.categoryId shouldBe "5"
+    }
+
+    "카테고리 ID 는 직군마다 고유하다" {
+        Preference.entries.map { it.categoryId }.toSet().size shouldBe Preference.entries.size
+    }
 })
