@@ -71,8 +71,11 @@ class ExploreViewModel(
     fun loadFeeds() {
         if (loadingJob != null || !hasMore) return
 
-        loadingJob = viewModelScope.launch {
-            val response = newsRepository.getExploreContents(state.value.direction)
+        val job = viewModelScope.launch {
+            val response = newsRepository.getExploreContents(
+                direction = state.value.direction,
+                categoryIds = state.value.selectedJobFilters.map { it.categoryId },
+            )
             val newFeeds = response.contents.map { it.toExploreFeed() }
             hasMore = response.hasMore
 
@@ -83,18 +86,53 @@ class ExploreViewModel(
                 )
             }
         }
+        loadingJob = job
 
-        loadingJob?.invokeOnCompletion {
-            loadingJob = null
+        // 취소된 이전 job 의 완료 콜백이 새 job 의 참조를 지우지 않도록 확인해요.
+        job.invokeOnCompletion {
+            if (loadingJob === job) loadingJob = null
         }
     }
 
     fun toggleOrder() {
         val newDirection = if (_state.value.direction == Direction.DESC) Direction.ASC else Direction.DESC
+        reloadWith { it.copy(direction = newDirection) }
+    }
+
+    /**
+     * 직군 필터를 토글해요.
+     *
+     * - 전체(선택 없음) 상태에서 하나를 고르면 해당 직군만 선택돼요.
+     * - 모든 직군이 선택되면 자동으로 전체 선택으로 바뀌어요.
+     */
+    fun toggleJobFilter(preference: Preference) {
+        val current = _state.value.selectedJobFilters
+        val updated = when {
+            current.isEmpty() -> listOf(preference)
+            preference in current -> current - preference
+            else -> Preference.entries.filter { it in current || it == preference }
+        }
+        val isAllSelected = updated.size == Preference.entries.size
+
+        reloadWith { it.copy(selectedJobFilters = if (isAllSelected) emptyList() else updated) }
+    }
+
+    /**
+     * '전체' 칩을 눌렀을 때 모든 직군 필터를 해제해요.
+     */
+    fun selectAllJobFilters() {
+        if (_state.value.selectedJobFilters.isEmpty()) return
+        reloadWith { it.copy(selectedJobFilters = emptyList()) }
+    }
+
+    /**
+     * 정렬/필터 조건이 바뀌면 keyset 커서가 무효해지므로 목록을 비우고 처음부터 다시 조회해요.
+     */
+    private fun reloadWith(update: (ExploreState) -> ExploreState) {
         loadingJob?.cancel()
         loadingJob = null
         hasMore = true
-        _state.update { it.copy(direction = newDirection, feeds = emptyList(), totalCount = 0) }
+        _state.update { update(it).copy(feeds = emptyList(), totalCount = 0) }
         loadFeeds()
     }
 }

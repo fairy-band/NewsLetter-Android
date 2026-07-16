@@ -30,6 +30,7 @@ class NewsRepositoryImpl(
     private val refreshFlow = MutableSharedFlow<Unit>()
     private var nextOffset = 0L
     private var currentDirection: Direction = Direction.DESC
+    private var currentCategoryIds: List<String> = emptyList()
 
     // 매일 자정에 뉴스를 새로고침해요.
     private val dayFlow = flow {
@@ -68,12 +69,24 @@ class NewsRepositoryImpl(
         emit(Unit)
     }
 
-    override suspend fun getExploreContents(direction: Direction?): ExploreContentsResponse {
+    override suspend fun getExploreContents(
+        direction: Direction?,
+        categoryIds: List<String>,
+    ): ExploreContentsResponse {
+        // keyset 커서는 정렬/필터 조합에 종속적이라, 조건이 바뀌면 처음부터 다시 조회해야 해요.
         if (direction != null && direction != currentDirection) {
             nextOffset = 0L
             currentDirection = direction
         }
-        val response = newsLetterDataSource.getExploreContents(nextOffset, currentDirection)
+        if (categoryIds != currentCategoryIds) {
+            nextOffset = 0L
+            currentCategoryIds = categoryIds
+        }
+        val response = newsLetterDataSource.getExploreContents(
+            nextOffset = nextOffset,
+            direction = currentDirection,
+            categoryIds = currentCategoryIds.ifEmpty { null },
+        )
         nextOffset = response.nextOffset
         return response
     }

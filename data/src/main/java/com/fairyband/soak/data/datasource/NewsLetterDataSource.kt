@@ -21,12 +21,14 @@ class NewsLetterDataSource(
     suspend fun getExploreContents(
         nextOffset: Long,
         direction: Direction,
+        categoryIds: List<String>?,
     ): ExploreContentsResponse {
         return api.getExploreContents(
             lastSeenOffset = nextOffset,
             size = 20,
             sort = "PUBLISHED",
             direction = direction.value,
+            categoryIds = categoryIds,
         )
     }
 

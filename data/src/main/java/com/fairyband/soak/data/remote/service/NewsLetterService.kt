@@ -26,6 +26,8 @@ interface NewsLetterService {
         sort: String = "PUBLISHED",
         @Query("direction")
         direction: String,
+        @Query("categoryIds")
+        categoryIds: List<String>? = null,
     ): ExploreContentsResponse
 
     @POST("api/newsletters/contents/{userId}/refresh")

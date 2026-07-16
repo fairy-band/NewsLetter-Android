@@ -1,6 +1,9 @@
 package com.fairyband.soak.presentation.feature.explore
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,9 +19,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -48,6 +53,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
+import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.data.model.request.Direction
@@ -56,6 +62,7 @@ import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.feature.explore.bottomsheet.ReportNewsletterBottomSheet
+import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -99,7 +106,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
 
     val reportSuccessMessage = stringResource(R.string.explore_report_success)
 
-    LaunchedEffect(directionOrder) {
+    LaunchedEffect(directionOrder, state.selectedJobFilters) {
         lazyState.scrollToItem(0)
     }
 
@@ -129,71 +136,81 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     DarkSystemBar()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    text = stringResource(R.string.explore_count_of_articles, totalCount),
-                    style = SoakTheme.typography.body14.copy(
-                        color = soakColors.textStrongInverse,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
+        Column {
+            JobFilterRow(
+                selectedJobFilters = state.selectedJobFilters,
+                isAllSelected = state.isAllJobFiltersSelected,
+                onAllClick = viewModel::selectAllJobFilters,
+                onJobClick = viewModel::toggleJobFilter,
+            )
 
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
                 Row(
-                    modifier = Modifier.clickable { viewModel.toggleOrder() },
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(
-                        ImageVector.vectorResource(R.drawable.ic_order),
-                        contentDescription = null,
-                        tint = Color.White,
-                    )
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = stringResource(
-                            if (directionOrder == Direction.DESC) R.string.explore_newest
-                            else R.string.explore_oldest
-                        ),
-                        style = SoakTheme.typography.body13.copy(
+                        text = stringResource(R.string.explore_count_of_articles, totalCount),
+                        style = SoakTheme.typography.body14.copy(
                             color = soakColors.textStrongInverse,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.Bold
                         )
                     )
-                }
-            }
 
-            LazyVerticalGrid(
-                state = lazyState,
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(
-                    top = 8.dp,
-                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                ),
-            ) {
-                items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
-                    Card(
-                        modifier = Modifier.clickable {
-                            navController.navigate(
-                                MainDestination.ExploreDetail(
-                                    feeds = feeds,
-                                    index = index,
-                                    totalCount = totalCount,
-                                )
+                    Row(
+                        modifier = Modifier.clickable { viewModel.toggleOrder() },
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.ic_order),
+                            contentDescription = null,
+                            tint = Color.White,
+                        )
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = stringResource(
+                                if (directionOrder == Direction.DESC) R.string.explore_newest
+                                else R.string.explore_oldest
+                            ),
+                            style = SoakTheme.typography.body13.copy(
+                                color = soakColors.textStrongInverse,
+                                fontWeight = FontWeight.SemiBold
                             )
-                        },
-                        content = feeds[index],
-                        containerColor = cardColors[index % 6],
-                    )
+                        )
+                    }
+                }
+
+                LazyVerticalGrid(
+                    state = lazyState,
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(
+                        top = 8.dp,
+                        bottom = WindowInsets.navigationBars.asPaddingValues()
+                            .calculateBottomPadding()
+                    ),
+                ) {
+                    items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
+                        Card(
+                            modifier = Modifier.clickable {
+                                navController.navigate(
+                                    MainDestination.ExploreDetail(
+                                        feeds = feeds,
+                                        index = index,
+                                        totalCount = totalCount,
+                                    )
+                                )
+                            },
+                            content = feeds[index],
+                            containerColor = cardColors[index % 6],
+                        )
+                    }
                 }
             }
         }
@@ -234,6 +251,80 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 )
                 viewModel.reportNewsletter()
             },
+        )
+    }
+}
+
+@Composable
+private fun JobFilterRow(
+    selectedJobFilters: List<Preference>,
+    isAllSelected: Boolean,
+    onAllClick: () -> Unit,
+    onJobClick: (Preference) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        item {
+            JobFilterChip(
+                label = stringResource(R.string.explore_filter_all),
+                isSelected = isAllSelected,
+                onClick = onAllClick,
+            )
+        }
+        items(items = Preference.entries, key = { it.name }) { preference ->
+            JobFilterChip(
+                label = preference.label,
+                icon = preference.icon,
+                isSelected = preference in selectedJobFilters,
+                onClick = { onJobClick(preference) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun JobFilterChip(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int? = null,
+) {
+    Row(
+        modifier = modifier
+            .background(
+                color = if (isSelected) SoakTheme.colors.backgroundOnSurface else Color.Transparent,
+                shape = CircleShape,
+            )
+            .border(
+                width = if (isSelected) 1.dp else 0.5.dp,
+                color = if (isSelected) SoakTheme.colors.borderPrimary else SoakTheme.colors.borderActive,
+                shape = CircleShape,
+            )
+            .clip(CircleShape)
+            .noRippleClickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (icon != null) {
+            Image(
+                modifier = Modifier.size(16.dp),
+                painter = painterResource(icon),
+                contentDescription = null,
+            )
+        }
+        Text(
+            text = label,
+            style = SoakTheme.typography.caption12.copy(
+                color = if (isSelected) SoakTheme.colors.textPrimary else SoakTheme.colors.textStrongInverse,
+                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            ),
         )
     }
 }
