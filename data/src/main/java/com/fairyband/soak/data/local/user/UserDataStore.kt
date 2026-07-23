@@ -10,21 +10,10 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 import java.time.LocalDate
 
-data class BottomSheetState(
-    val lastShownTimestamp: Long
-)
-
 @Single
 class UserDataStore(context: Context) {
     private val Context.dataStore by preferencesDataStore(name = "user data Store")
     private val dataStore = context.dataStore
-
-    val bottomSheetFlow: Flow<BottomSheetState> = dataStore.data
-        .map { preferences ->
-            BottomSheetState(
-                lastShownTimestamp = preferences[LAST_SHOWN_TIMESTAMP] ?: 0L
-            )
-        }
 
     val streakFlow: Flow<Int> = dataStore.data
         .map { preferences -> preferences[STREAK] ?: 0 }
@@ -34,18 +23,6 @@ class UserDataStore(context: Context) {
             val epochDate = preferences[NOTIFICATION_SHOWN_DATE] ?: LocalDate.MIN.toEpochDay()
             LocalDate.ofEpochDay(epochDate)
         }
-
-    suspend fun recordBottomSheetShown() {
-        dataStore.edit { preferences ->
-            preferences[LAST_SHOWN_TIMESTAMP] = System.currentTimeMillis()
-        }
-    }
-
-    suspend fun resetState() {
-        dataStore.edit { preferences ->
-            preferences[LAST_SHOWN_TIMESTAMP] = 0L
-        }
-    }
 
     /**
      * 마지막 방문 날짜를 업데이트하고 연속 일수를 기록해요.
@@ -66,7 +43,6 @@ class UserDataStore(context: Context) {
     }
 
     companion object {
-        private val LAST_SHOWN_TIMESTAMP = longPreferencesKey("last_shown_timestamp")
         private val LAST_OPEN_DATE = longPreferencesKey("last_open_date")
         private val NOTIFICATION_SHOWN_DATE = longPreferencesKey("notification_shown_date")
         private val STREAK = intPreferencesKey("streak")
