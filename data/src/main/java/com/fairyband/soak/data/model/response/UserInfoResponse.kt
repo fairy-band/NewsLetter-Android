@@ -7,4 +7,5 @@ data class UserInfoResponse(
     val id: Long,
     val preferences: List<String> = emptyList(),
     val workingExperience: String? = null,
+    val isOnboarded: Boolean = false,
 )
