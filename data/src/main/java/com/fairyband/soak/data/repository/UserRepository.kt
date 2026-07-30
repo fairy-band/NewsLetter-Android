@@ -1,16 +1,12 @@
 package com.fairyband.soak.data.repository
 
-import com.fairyband.soak.data.local.user.BottomSheetState
 import com.fairyband.soak.data.model.request.UserInfoRequest
 import com.fairyband.soak.data.model.response.UserInfoResponse
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    val bottomSheetFlow: Flow<BottomSheetState>
-    suspend fun resetState()
     val streak: Flow<Int>
     val notificationEnabled: Flow<Boolean>
-    suspend fun recordBottomSheetShown()
 
     /**
      * 사용자가 선택한 직군, 경력을 조회해요.

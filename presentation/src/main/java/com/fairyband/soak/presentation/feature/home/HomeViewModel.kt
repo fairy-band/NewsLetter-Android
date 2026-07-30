@@ -91,14 +91,7 @@ class HomeViewModel(
                 .filter { it }
                 .collect {
                     _eventFlow.emit(HomeSideEffect.ShowBottomSheet)
-                    onBottomSheetShown()
                 }
-        }
-    }
-
-    private fun onBottomSheetShown() {
-        viewModelScope.launch {
-            userRepository.recordBottomSheetShown()
         }
     }
 
