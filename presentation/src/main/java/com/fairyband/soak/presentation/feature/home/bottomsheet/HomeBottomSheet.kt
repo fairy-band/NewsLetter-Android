@@ -56,7 +56,12 @@ internal fun HomeBottomSheet(
     var selectedWorkingExperience by remember(initialWorkingExperience) {
         mutableStateOf(initialWorkingExperience)
     }
-    val isButtonEnabled = selectedWorkingExperience != null && selectedPreferences.isNotEmpty()
+    // 직군은 순서가 의미 없으므로 집합으로 비교해요.
+    val hasChanges = selectedPreferences.toSet() != initialPreferences.toSet() ||
+            selectedWorkingExperience != initialWorkingExperience
+    val isButtonEnabled = selectedWorkingExperience != null &&
+            selectedPreferences.isNotEmpty() &&
+            hasChanges
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(Unit) {
