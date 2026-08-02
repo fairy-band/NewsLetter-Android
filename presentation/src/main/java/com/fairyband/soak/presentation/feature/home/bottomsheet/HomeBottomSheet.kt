@@ -84,6 +84,14 @@ internal fun HomeBottomSheet(
                 style = SoakTheme.typography.head22.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.home_bottomsheet_job_change_notice),
+                color = SoakTheme.colors.textTertiary,
+                style = SoakTheme.typography.caption11,
+                textAlign = TextAlign.Center,
+            )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = stringResource(id = R.string.home_bottomsheet_position),

@@ -16,6 +16,7 @@
     <string name="home_popup_language_english">영어</string>
     <string name="home_popup_language_unknown">오류</string>
     <string name="home_bottomsheet_title">정보를 등록하면\n매일 뉴스레터를 추천해 드려요</string>
+    <string name="home_bottomsheet_job_change_notice">* 계정당 한 번의 직군 변경만 허용하고 있어요.</string>
     <string name="home_bottomsheet_position">관심 직군</string>
     <string name="home_bottomsheet_career">경력</string>
     <string name="home_bottomsheet_button">맞춤 뉴스레터 보기</string>
