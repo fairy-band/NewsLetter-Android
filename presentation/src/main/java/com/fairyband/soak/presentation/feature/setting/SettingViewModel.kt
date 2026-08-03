@@ -8,8 +8,10 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
 import com.fairyband.soak.presentation.feature.home.bottomsheet.WorkingExperience
 import com.fairyband.soak.presentation.model.UserInfo
 import com.fairyband.soak.presentation.model.toRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -26,6 +28,9 @@ class SettingViewModel(
 ): ViewModel() {
     private val _state = MutableStateFlow(SettingState())
     val state: StateFlow<SettingState> = _state.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<SettingSideEffect>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     init {
         loadUserInfo()
@@ -65,6 +70,7 @@ class SettingViewModel(
                         workingExperience = WorkingExperience.from(workingExperience),
                     )
                 }
+                _eventFlow.emit(SettingSideEffect.UserInfoChanged)
             }.onFailure {
                 Timber.e(it)
             }

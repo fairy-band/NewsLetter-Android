@@ -54,6 +54,7 @@
     <string name="setting_info_title">내정보</string>
     <string name="setting_info_user">맞춤 설정</string>
     <string name="setting_info_alarm">알림</string>
+    <string name="setting_user_info_change_complete">변경 완료되었어요</string>
     <string name="setting_version_title">버전정보</string>
     <string name="setting_version_current">현재버전</string>
     <string name="setting_support_title">고객지원</string>
