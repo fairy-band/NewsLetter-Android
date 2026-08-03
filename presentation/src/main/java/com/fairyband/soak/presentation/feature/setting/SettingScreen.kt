@@ -77,6 +77,7 @@ internal fun SettingScreen(
             },
             initialPreferences = state.preferences,
             initialWorkingExperience = state.workingExperience,
+            isEditMode = true,
         )
     }
 

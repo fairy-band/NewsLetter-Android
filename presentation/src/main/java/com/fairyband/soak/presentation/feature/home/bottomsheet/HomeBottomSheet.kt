@@ -40,6 +40,7 @@ import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.feature.home.dialog.JobChangeConfirmDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +50,7 @@ internal fun HomeBottomSheet(
     modifier: Modifier = Modifier,
     initialPreferences: List<Preference> = emptyList(),
     initialWorkingExperience: WorkingExperience? = null,
+    isEditMode: Boolean = false,
 ) {
     val selectedPreferences = remember(initialPreferences) {
         mutableStateListOf<Preference>().apply { addAll(initialPreferences) }
@@ -63,9 +65,28 @@ internal fun HomeBottomSheet(
             selectedPreferences.isNotEmpty() &&
             hasChanges
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var confirmDialogVisibility by remember { mutableStateOf(false) }
+    val save = {
+        onDismissRequest()
+        onButtonClick(
+            selectedPreferences.map { it.stringValue },
+            selectedWorkingExperience?.stringValue.orEmpty(),
+        )
+    }
 
     LaunchedEffect(Unit) {
         SoakAnalytics.logBottomSheetCustomPageview()
+    }
+
+    // 변경 플로우에서는 저장 전에 확인 다이얼로그를 거치고, 온보딩에서는 바로 저장해요.
+    if (confirmDialogVisibility) {
+        JobChangeConfirmDialog(
+            onDismissRequest = { confirmDialogVisibility = false },
+            onConfirm = {
+                confirmDialogVisibility = false
+                save()
+            },
+        )
     }
 
     BaseBottomSheet(
@@ -123,11 +144,8 @@ internal fun HomeBottomSheet(
             BaseButton(
                 paddingVertical = 16.dp,
                 onClick = {
-                    onDismissRequest()
-                    onButtonClick(
-                        selectedPreferences.map { it.stringValue },
-                        selectedWorkingExperience?.stringValue.orEmpty(),
-                    )
+                    if (isEditMode) confirmDialogVisibility = true
+                    else save()
                 },
                 containerColor = SoakTheme.colors.fillPrimaryInverse,
                 contentColor = SoakTheme.colors.textStrongInverse,
