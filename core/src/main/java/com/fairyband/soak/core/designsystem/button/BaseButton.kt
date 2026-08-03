@@ -42,6 +42,7 @@ fun BaseButton(
                 shape = shape
             )
             .clip(shape = shape),
+        shape = shape,
         enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -81,6 +82,7 @@ fun BaseButton2(
                 shape = shape,
             )
             .clip(shape = shape),
+        shape = shape,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
