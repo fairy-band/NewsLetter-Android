@@ -2,9 +2,13 @@ package com.fairyband.soak.presentation.feature.setting
 
 import android.content.ClipData
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +41,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.dialog.BaseDialog
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.extension.openAppNotificationSettings
@@ -49,6 +55,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.google.firebase.installations.FirebaseInstallations
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
@@ -59,8 +66,28 @@ internal fun SettingScreen(
 ) {
     val navController = LocalNavController.current
     var bottomSheetVisibility by remember { mutableStateOf(false) }
+    var toastVisibility by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(viewModel.eventFlow, lifecycleOwner) {
+        viewModel.eventFlow.flowWithLifecycle(lifecycle = lifecycleOwner.lifecycle)
+            .collect { event ->
+                when (event) {
+                    is SettingSideEffect.UserInfoChanged -> {
+                        toastVisibility = true
+                    }
+                }
+            }
+    }
+
+    LaunchedEffect(toastVisibility) {
+        if (toastVisibility) {
+            delay(TOAST_DURATION_MILLIS)
+            toastVisibility = false
+        }
+    }
 
     if (bottomSheetVisibility) {
         HomeBottomSheet(
@@ -77,23 +104,42 @@ internal fun SettingScreen(
             },
             initialPreferences = state.preferences,
             initialWorkingExperience = state.workingExperience,
+            isEditMode = true,
         )
     }
 
-    SettingScreen(
-        onInfoUserClick = {
-            bottomSheetVisibility = true
-        },
-        onNotificationClick = (context::openAppNotificationSettings),
-        onBackClick = (navController::pop),
-        onServiceClick = {
-            navController.navigate(MainDestination.SettingService)
-        },
-        onPersonalClick = {
-            navController.navigate(MainDestination.SettingPersonal)
-        },
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        SettingScreen(
+            onInfoUserClick = {
+                bottomSheetVisibility = true
+            },
+            onNotificationClick = (context::openAppNotificationSettings),
+            onBackClick = (navController::pop),
+            onServiceClick = {
+                navController.navigate(MainDestination.SettingService)
+            },
+            onPersonalClick = {
+                navController.navigate(MainDestination.SettingPersonal)
+            },
+        )
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 24.dp),
+            visible = toastVisibility,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            SettingToast(
+                message = stringResource(id = R.string.setting_user_info_change_complete),
+            )
+        }
+    }
 }
+
+private const val TOAST_DURATION_MILLIS = 2000L
 
 @Composable
 private fun SettingScreen(

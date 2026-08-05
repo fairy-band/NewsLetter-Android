@@ -1,5 +1,6 @@
 package com.fairyband.soak.data.repositoryimpl
 
+import com.fairyband.soak.core.extension.suspendRunCatching
 import com.fairyband.soak.data.datasource.AuthDataSource
 import com.fairyband.soak.data.model.response.LoginResponse
 import com.fairyband.soak.data.repository.AuthRepository
@@ -10,7 +11,7 @@ class AuthRepositoryImpl(
     private val authDataSource: AuthDataSource,
 ) : AuthRepository {
     override suspend fun loginUser(): Result<LoginResponse> =
-        runCatching {
+        suspendRunCatching {
             authDataSource.loginUser()
         }
 }
