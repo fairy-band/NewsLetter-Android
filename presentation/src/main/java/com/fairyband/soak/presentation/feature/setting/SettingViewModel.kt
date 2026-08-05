@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.feature.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fairyband.soak.core.extension.suspendRunCatching
 import com.fairyband.soak.data.repository.UserRepository
 import com.fairyband.soak.domain.usecase.PutUserInfoUseCase
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
@@ -56,7 +57,7 @@ class SettingViewModel(
         workingExperience: String
     ) {
         viewModelScope.launch {
-            runCatching {
+            suspendRunCatching {
                 putUserInfoUseCase(
                     UserInfo(
                         preferences = preferences,
