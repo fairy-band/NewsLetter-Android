@@ -19,5 +19,9 @@ interface NewsRepository {
         direction: Direction?,
         categoryIds: List<String> = emptyList(),
     ): ExploreContentsResponse
+    /**
+     * @return 콘텐츠 본문 마크다운. 본문이 없으면 빈 문자열이에요.
+     */
+    suspend fun getMarkdown(exposureContentId: Long): String
     suspend fun requestContentProvider(request: ContentProviderRequest)
 }

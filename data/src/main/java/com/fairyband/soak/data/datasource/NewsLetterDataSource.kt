@@ -4,6 +4,7 @@ import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.request.Direction
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
+import com.fairyband.soak.data.model.response.MarkdownResponse
 import com.fairyband.soak.data.remote.service.NewsLetterService
 import org.koin.core.annotation.Singleton
 
@@ -30,6 +31,10 @@ class NewsLetterDataSource(
             direction = direction.value,
             categoryIds = categoryIds,
         )
+    }
+
+    suspend fun getMarkdown(exposureContentId: Long): MarkdownResponse {
+        return api.getMarkdown(exposureContentId)
     }
 
     suspend fun refreshContents(userId: Long) {
