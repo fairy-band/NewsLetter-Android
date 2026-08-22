@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -102,6 +103,17 @@ fun ExploreDetailScreen(
             soakColors.blueText,
             soakColors.orangeText,
             soakColors.purpleText,
+        )
+    }
+    // 마크다운 상세는 다크 배경이라 [titleColors] 와 같은 순서의 밝은 톤을 포인트 컬러로 써요.
+    val pointColors = remember {
+        listOf(
+            soakColors.greenTextPrimary,
+            soakColors.pinkTextPrimary,
+            soakColors.lemonYellowTextPrimary,
+            soakColors.blueTextPrimary,
+            soakColors.orangeTextPrimary,
+            soakColors.purpleTextPrimary,
         )
     }
 
@@ -226,7 +238,14 @@ fun ExploreDetailScreen(
             BaseButton(
                 paddingVertical = 12.dp,
                 onClick = {
-                    navController.navigate(MainDestination.WebView(url = feed.url))
+                    navController.navigate(
+                        MainDestination.MarkdownDetail(
+                            exposureContentId = feed.id.toLong(),
+                            title = feed.letter,
+                            pointColorArgb = pointColors[index % 6].toArgb(),
+                            fallbackUrl = feed.url,
+                        )
+                    )
                     webClickEvent(feed)
                 },
                 shape = CircleShape,
