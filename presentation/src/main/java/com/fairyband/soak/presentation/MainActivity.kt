@@ -18,6 +18,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.feature.TabScreen
 import com.fairyband.soak.presentation.feature.exploredetail.ExploreDetailScreen
+import com.fairyband.soak.presentation.feature.markdown.MarkdownDetailScreen
 import com.fairyband.soak.presentation.feature.setting.SettingScreen
 import com.fairyband.soak.presentation.feature.setting.personal.SettingPersonalScreen
 import com.fairyband.soak.presentation.feature.setting.service.SettingServiceScreen
@@ -93,6 +94,15 @@ class MainActivity : ComponentActivity() {
                 ExploreDetailScreen(koinViewModel(
                     parameters = { parametersOf(it) }
                 ))
+            }
+
+            entry<MainDestination.MarkdownDetail> { markdownDetail ->
+                MarkdownDetailScreen(
+                    detail = markdownDetail,
+                    viewModel = koinViewModel(
+                        parameters = { parametersOf(markdownDetail) }
+                    ),
+                )
             }
         }
     }
