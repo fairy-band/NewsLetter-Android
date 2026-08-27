@@ -47,13 +47,6 @@ sealed class MainDestination(val name: String) : NavKey {
         val totalCount: Int,
     ) : MainDestination("explore_detail")
 
-    /**
-     * AI 요약 마크다운 상세 화면입니다.
-     *
-     * @param title 상단 바에 표시할 뉴스레터명입니다. 본문 첫 헤딩과 겹치지 않도록 제목이 아닌 뉴스레터명을 씁니다.
-     * @param pointColorArgb 카드 포인트 컬러입니다. `Color`는 `@Serializable`이 아니라 ARGB `Int`로 전달합니다.
-     * @param fallbackUrl 마크다운 조회 실패 시 대신 열 원문 URL입니다.
-     */
     @Serializable
     data class MarkdownDetail(
         val exposureContentId: Long,
