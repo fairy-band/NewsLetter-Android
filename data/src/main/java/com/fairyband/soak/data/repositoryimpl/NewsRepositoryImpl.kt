@@ -91,6 +91,10 @@ class NewsRepositoryImpl(
         return response
     }
 
+    override suspend fun getMarkdown(exposureContentId: Long): String {
+        return newsLetterDataSource.getMarkdown(exposureContentId).markdownContent
+    }
+
     override suspend fun requestContentProvider(request: ContentProviderRequest) {
         newsLetterDataSource.requestContentProvider(request)
     }

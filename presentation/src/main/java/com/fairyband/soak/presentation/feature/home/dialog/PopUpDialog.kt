@@ -38,7 +38,7 @@ internal object PopUpDialogDefaults {
 internal fun PopUpDialog(
     visibility: Boolean,
     onDismissRequest: () -> Unit,
-    onWebClick: (NewsFeed, Int) -> Unit,
+    onDetailClick: (NewsFeed, Int) -> Unit,
     onShareClick: (Long, String, Color) -> Unit,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
@@ -91,7 +91,7 @@ internal fun PopUpDialog(
                         cardType = item.cardType,
                     ),
                     titleColor = titleColor,
-                    onWebClick = { onWebClick(item, cardIndex) },
+                    onDetailClick = { onDetailClick(item, cardIndex) },
                     onShareClick = { onShareClick(item.id, item.title, titleColor) },
                 )
                 Spacer(modifier = Modifier.weight(1f))

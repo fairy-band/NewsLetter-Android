@@ -3,6 +3,7 @@ package com.fairyband.soak.data.remote.service
 import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
+import com.fairyband.soak.data.model.response.MarkdownResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -29,6 +30,11 @@ interface NewsLetterService {
         @Query("categoryIds")
         categoryIds: List<String>? = null,
     ): ExploreContentsResponse
+
+    @GET("api/newsletters/exposure-contents/{exposureContentId}/markdown")
+    suspend fun getMarkdown(
+        @Path("exposureContentId") exposureContentId: Long,
+    ): MarkdownResponse
 
     @POST("api/newsletters/contents/{userId}/refresh")
     suspend fun refreshContents(

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.extension.noRippleClickable
 
 @Composable
@@ -60,6 +61,9 @@ fun AnimatedDialog(
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
+                // 다이얼로그의 어두운 dim 배경 위에서 상태바 글씨가 밝게 보이도록 설정한다.
+                DarkSystemBar()
+
                 val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
 
                 LaunchedEffect(dialogWindow) {

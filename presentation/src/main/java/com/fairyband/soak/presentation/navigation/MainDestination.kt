@@ -46,4 +46,12 @@ sealed class MainDestination(val name: String) : NavKey {
         val feeds: List<ExploreFeed>,
         val totalCount: Int,
     ) : MainDestination("explore_detail")
+
+    @Serializable
+    data class MarkdownDetail(
+        val exposureContentId: Long,
+        val title: String,
+        val pointColorArgb: Int,
+        val fallbackUrl: String,
+    ) : MainDestination("markdown_detail")
 }

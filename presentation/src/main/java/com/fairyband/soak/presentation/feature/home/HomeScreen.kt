@@ -226,8 +226,15 @@ private fun HomeScreen(
             cardIndex = null
             onDismissRequest()
         },
-        onWebClick = { item, pageIndex ->
-            navController.navigate(MainDestination.WebView(url = item.url))
+        onDetailClick = { item, pageIndex ->
+            navController.navigate(
+                MainDestination.MarkdownDetail(
+                    exposureContentId = item.id,
+                    title = item.letter,
+                    pointColorArgb = getCardColors()[pageIndex].imageTextColor.toArgb(),
+                    fallbackUrl = item.url,
+                )
+            )
             webClickEvent(item)
         },
         onShareClick = { id, title, color ->
