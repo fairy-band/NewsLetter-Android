@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.designsystem.bottomsheet.BaseBottomSheet
 import com.fairyband.soak.core.designsystem.button.BaseButton
+import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
@@ -77,6 +78,8 @@ internal fun ReportNewsletterBottomSheet(
             shouldDismissOnBackPress = false
         )
     ) {
+        DarkSystemBar()
+
         val density = LocalDensity.current
         val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
         val scope = rememberCoroutineScope()

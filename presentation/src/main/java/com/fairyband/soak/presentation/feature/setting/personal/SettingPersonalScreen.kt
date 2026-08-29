@@ -17,6 +17,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
@@ -25,6 +26,8 @@ import com.fairyband.soak.presentation.R
 @Composable
 internal fun SettingPersonalScreen() {
     val navController = LocalNavController.current
+
+    LightSystemBar()
 
     Column(
         modifier = Modifier.Companion
