@@ -33,8 +33,8 @@ class NewsLetterDataSource(
         )
     }
 
-    suspend fun getMarkdown(exposureContentId: Long): MarkdownResponse {
-        return api.getMarkdown(exposureContentId)
+    suspend fun getMarkdown(exposureContentId: Long, userId: Long): MarkdownResponse {
+        return api.getMarkdown(exposureContentId = exposureContentId, userId = userId)
     }
 
     suspend fun refreshContents(userId: Long) {

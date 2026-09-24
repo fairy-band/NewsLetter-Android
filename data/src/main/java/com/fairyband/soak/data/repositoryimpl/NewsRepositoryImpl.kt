@@ -92,7 +92,11 @@ class NewsRepositoryImpl(
     }
 
     override suspend fun getMarkdown(exposureContentId: Long): String {
-        return newsLetterDataSource.getMarkdown(exposureContentId).markdownContent
+        val userId = authDataSource.getUserId()
+        return newsLetterDataSource.getMarkdown(
+            exposureContentId = exposureContentId,
+            userId = userId
+        ).markdownContent
     }
 
     override suspend fun requestContentProvider(request: ContentProviderRequest) {

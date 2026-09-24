@@ -34,6 +34,7 @@ interface NewsLetterService {
     @GET("api/newsletters/exposure-contents/{exposureContentId}/markdown")
     suspend fun getMarkdown(
         @Path("exposureContentId") exposureContentId: Long,
+        @Query("userId") userId: Long,
     ): MarkdownResponse
 
     @POST("api/newsletters/contents/{userId}/refresh")
