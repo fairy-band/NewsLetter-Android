@@ -1,12 +1,16 @@
 package com.fairyband.soak.data.remote.service
 
+import com.fairyband.soak.data.model.request.BookmarkRequest
 import com.fairyband.soak.data.model.request.ContentProviderRequest
+import com.fairyband.soak.data.model.response.BookmarkStatusResponse
+import com.fairyband.soak.data.model.response.BookmarksResponse
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.model.response.MarkdownResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -45,4 +49,16 @@ interface NewsLetterService {
     suspend fun requestContentProvider(
         @Body request: ContentProviderRequest,
     )
+
+    @GET("api/newsletters/bookmarks/{userId}")
+    suspend fun getBookmarks(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): BookmarksResponse
+
+    @PUT("api/newsletters/bookmarks")
+    suspend fun updateBookmark(
+        @Body request: BookmarkRequest,
+    ): BookmarkStatusResponse
 }

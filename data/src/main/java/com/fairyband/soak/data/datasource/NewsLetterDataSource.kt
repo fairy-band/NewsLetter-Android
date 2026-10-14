@@ -1,7 +1,9 @@
 package com.fairyband.soak.data.datasource
 
+import com.fairyband.soak.data.model.request.BookmarkRequest
 import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.request.Direction
+import com.fairyband.soak.data.model.response.BookmarksResponse
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.model.response.MarkdownResponse
@@ -43,5 +45,17 @@ class NewsLetterDataSource(
 
     suspend fun requestContentProvider(request: ContentProviderRequest) {
         api.requestContentProvider(request)
+    }
+
+    suspend fun getBookmarks(
+        userId: Long,
+        page: Int,
+        size: Int,
+    ): BookmarksResponse {
+        return api.getBookmarks(userId = userId, page = page, size = size)
+    }
+
+    suspend fun updateBookmark(request: BookmarkRequest) {
+        api.updateBookmark(request)
     }
 }
