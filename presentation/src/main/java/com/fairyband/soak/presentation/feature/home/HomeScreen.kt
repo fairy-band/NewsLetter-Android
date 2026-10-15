@@ -34,7 +34,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
@@ -88,6 +90,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.navigation.MainDestination
+import com.fairyband.soak.presentation.navigation.TabDestination
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -100,6 +103,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.abs
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -111,6 +115,10 @@ fun HomeScreen(
     val news by viewModel.news.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
+    val bookmarkedIds by viewModel.bookmarkedIds.collectAsStateWithLifecycle()
+    val popupSnackbarHostState = remember { SnackbarHostState() }
+    val bookmarkAddedMessage = stringResource(R.string.home_popup_bookmark_added)
+    val bookmarkRemovedMessage = stringResource(R.string.home_popup_bookmark_removed)
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasNotificationPermission by remember { mutableStateOf(false) }
@@ -124,6 +132,13 @@ fun HomeScreen(
                 when (event) {
                     is HomeSideEffect.ShowBottomSheet -> {
                         bottomSheetVisibility = true
+                    }
+
+                    is HomeSideEffect.ShowBookmarkResult -> launch {
+                        popupSnackbarHostState.currentSnackbarData?.dismiss()
+                        popupSnackbarHostState.showSnackbar(
+                            if (event.isBookmarked) bookmarkAddedMessage else bookmarkRemovedMessage
+                        )
                     }
                 }
             }
@@ -169,6 +184,9 @@ fun HomeScreen(
         isRefreshing = isRefreshing,
         hasRefreshedToday = hasRefreshedToday,
         onRefresh = viewModel::refreshNews,
+        bookmarkedIds = bookmarkedIds,
+        onBookmarkClick = viewModel::toggleBookmark,
+        popupSnackbarHostState = popupSnackbarHostState,
     )
 }
 
@@ -179,6 +197,9 @@ private fun HomeScreen(
     isRefreshing: Boolean,
     hasRefreshedToday: Boolean,
     onRefresh: () -> Unit,
+    bookmarkedIds: Set<Long>,
+    onBookmarkClick: (NewsFeed) -> Unit,
+    popupSnackbarHostState: SnackbarHostState,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     val navController = LocalNavController.current
@@ -193,6 +214,9 @@ private fun HomeScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            SettingBar(
+                onClick = { navController.navigate(MainDestination.Setting) },
+            )
             Spacer(modifier = Modifier.height(20.dp))
             Title()
             Cards(
@@ -245,9 +269,40 @@ private fun HomeScreen(
                 context = context
             )
         },
+        bookmarkedIds = bookmarkedIds,
+        onBookmarkClick = { item ->
+            SoakAnalytics.logBookmarkClick(
+                isBookmarked = item.id !in bookmarkedIds,
+                contentId = item.id.toString(),
+                contentTitle = item.title,
+                screen = TabDestination.Main.name,
+            )
+            onBookmarkClick(item)
+        },
+        snackbarHostState = popupSnackbarHostState,
         cardItems = news,
         cardIndex = cardIndex ?: 0,
     )
+}
+
+@Composable
+private fun SettingBar(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(horizontal = 8.dp),
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(40.dp)
+                .clickable(onClick = onClick),
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
+            contentDescription = stringResource(R.string.tab_setting_description),
+            tint = SoakTheme.colors.iconPrimary,
+        )
+    }
 }
 
 @Composable
@@ -707,6 +762,9 @@ private fun HomeScreenPreview() {
             isRefreshing = false,
             hasRefreshedToday = false,
             onRefresh = {},
+            bookmarkedIds = emptySet(),
+            onBookmarkClick = {},
+            popupSnackbarHostState = remember { SnackbarHostState() },
             news = persistentListOf(
                 NewsFeed(
                     id = 1,

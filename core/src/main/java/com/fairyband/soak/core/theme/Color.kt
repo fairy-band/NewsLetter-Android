@@ -161,6 +161,7 @@ data class SoakColors(
     val borderStrong: Color = ColorPalette.gray950,
     val borderDisabled: Color = ColorPalette.gray100,
     val borderActive: Color = ColorPalette.gray300,
+    val borderPrimaryInverse: Color = Color(0xFF2A2D31),
 
     // Divider
     val divider1px: Color = ColorPalette.gray50,
@@ -182,6 +183,7 @@ data class SoakColors(
     val iconTertiary: Color = ColorPalette.gray400,
     val iconDisabled: Color = ColorPalette.gray300,
     val iconStrongInverse: Color = ColorPalette.white,
+    val iconTabInactive: Color = Color(0xFF6B7580),
 
     // State
     val statePositivePrimary: Color = ColorPalette.green500,

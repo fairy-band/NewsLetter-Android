@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -136,7 +134,11 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     DarkSystemBar()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(top = 20.dp)
+        ) {
             JobFilterRow(
                 selectedJobFilters = state.selectedJobFilters,
                 isAllSelected = state.isAllJobFiltersSelected,
@@ -192,8 +194,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(
                         top = 8.dp,
-                        bottom = WindowInsets.navigationBars.asPaddingValues()
-                            .calculateBottomPadding()
+                        bottom = 16.dp,
                     ),
                 ) {
                     items(count = feeds.size, key = { index -> feeds[index].id }) { index ->
@@ -220,8 +221,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                 .align(Alignment.BottomStart)
                 .padding(
                     start = 16.dp,
-                    bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues()
-                        .calculateBottomPadding(),
+                    bottom = 16.dp,
                 ),
             onClick = { showBottomSheet = true },
         )

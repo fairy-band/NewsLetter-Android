@@ -23,6 +23,8 @@ object SoakAnalytics {
     private const val PARAM_PLATFORM = "platform"
     private const val PARAM_PREVIOUS_SCREEN = "previous_screen"
     private const val PARAM_ARGUMENTS = "arguments"
+    private const val PARAM_TAB_NAME = "tab_name"
+    private const val PARAM_SCREEN = "screen"
 
     fun logMainContentsDetailPageview(
         cardIndex: Int,
@@ -96,6 +98,48 @@ object SoakAnalytics {
 
     fun logExploreReportPageview() {
         logPageView(screenName = "explore_report")
+    }
+
+    fun logBottomTabClick(tabName: String) {
+        Firebase.analytics.logEvent("bottom_tab_click") {
+            param(PARAM_TAB_NAME, tabName)
+        }
+    }
+
+    /**
+     * @param isBookmarked 클릭 결과 상태예요. true 면 추가, false 면 해제예요.
+     * @param screen 북마크 버튼을 누른 화면 이름이에요. (main, bookmark)
+     */
+    fun logBookmarkClick(
+        isBookmarked: Boolean,
+        contentId: String,
+        contentTitle: String,
+        screen: String,
+    ) {
+        Firebase.analytics.logEvent("bookmark_click") {
+            param(PARAM_ACTION_TYPE, if (isBookmarked) "add" else "remove")
+            param(PARAM_CONTENT_ID, contentId)
+            param(PARAM_CONTENT_TITLE, contentTitle)
+            param(PARAM_SCREEN, screen)
+        }
+    }
+
+    fun logBookmarkTabClick(tabName: String) {
+        Firebase.analytics.logEvent("bookmark_tab_click") {
+            param(PARAM_TAB_NAME, tabName)
+        }
+    }
+
+    fun logBookmarkContentsDetailClick(
+        cardIndex: Int,
+        contentTitle: String,
+        contentId: String,
+    ) {
+        Firebase.analytics.logEvent("bookmark_contents_detail_click") {
+            param(PARAM_CARD_INDEX, cardIndex.toLong())
+            param(PARAM_CONTENT_TITLE, contentTitle)
+            param(PARAM_CONTENT_ID, contentId)
+        }
     }
 
     fun logExploreReportSubmitClick(

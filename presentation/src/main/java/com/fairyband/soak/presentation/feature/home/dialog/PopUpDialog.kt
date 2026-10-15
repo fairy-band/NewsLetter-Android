@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -21,6 +24,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.SoakSnackbar
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.analytics.toContentType
 import com.fairyband.soak.presentation.feature.home.getCardColors
@@ -40,6 +44,9 @@ internal fun PopUpDialog(
     onDismissRequest: () -> Unit,
     onDetailClick: (NewsFeed, Int) -> Unit,
     onShareClick: (Long, String, Color) -> Unit,
+    bookmarkedIds: Set<Long>,
+    onBookmarkClick: (NewsFeed) -> Unit,
+    snackbarHostState: SnackbarHostState,
     cardItems: ImmutableList<NewsFeed>,
     cardIndex: Int,
 ) {
@@ -92,7 +99,9 @@ internal fun PopUpDialog(
                     ),
                     titleColor = titleColor,
                     onDetailClick = { onDetailClick(item, cardIndex) },
+                    isBookmarked = item.id in bookmarkedIds,
                     onShareClick = { onShareClick(item.id, item.title, titleColor) },
+                    onBookmarkClick = { onBookmarkClick(item) },
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
@@ -103,6 +112,17 @@ internal fun PopUpDialog(
                     .noRippleClickable(onClick = handleDismiss)
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 124.dp),
+            )
+            // 다이얼로그는 별도 윈도우라 TabScreen의 스낵바가 dim 아래에 가려져요. 그래서 다이얼로그 안에 따로 띄워요.
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(top = 56.dp),
+                snackbar = { snackbarData ->
+                    SoakSnackbar(message = snackbarData.visuals.message)
+                },
             )
         }
     }
