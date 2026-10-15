@@ -48,12 +48,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.feature.bookmark.BookmarkScreen
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
 import com.fairyband.soak.presentation.feature.home.HomeScreen
 import com.fairyband.soak.presentation.navigation.TabDestination
@@ -147,11 +147,7 @@ private fun TabContent(tab: TabDestination) {
     when (tab) {
         TabDestination.Main -> HomeScreen()
         TabDestination.Explore -> ExploreScreen()
-        TabDestination.Bookmark -> {
-            // TODO: 보관함 화면으로 교체
-            DarkSystemBar()
-            Box(modifier = Modifier.fillMaxSize())
-        }
+        TabDestination.Bookmark -> BookmarkScreen()
     }
 }
 

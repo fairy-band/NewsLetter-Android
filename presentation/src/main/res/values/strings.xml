@@ -11,6 +11,14 @@
     <string name="tab_bookmark">보관함</string>
     <string name="tab_setting_description">설정 화면으로 이동하기</string>
 
+    <!--bookmark-->
+    <string name="bookmark_tab_saved">내가 저장한</string>
+    <string name="bookmark_tab_shared">공유받은</string>
+    <string name="bookmark_total">전체</string>
+    <string name="bookmark_empty_saved">아직 저장한 아티클이 없어요</string>
+    <string name="bookmark_empty_shared">아직 공유받은 아티클이 없어요</string>
+    <string name="bookmark_remove_description">보관함에서 삭제하기</string>
+
     <!--main-->
     <string name="home_title">%s.%s.%s</string>
     <string name="home_popup_button_text">자세히 보기</string>
