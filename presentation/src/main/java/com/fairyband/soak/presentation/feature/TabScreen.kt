@@ -100,6 +100,7 @@ fun TabScreen() {
                     selectedTab = selectedTab,
                     isLight = isMain,
                     onTabClick = { tab ->
+                        SoakAnalytics.logBottomTabClick(tabName = tab.name)
                         selectedIndex = tabs.indexOf(tab)
                     },
                 )

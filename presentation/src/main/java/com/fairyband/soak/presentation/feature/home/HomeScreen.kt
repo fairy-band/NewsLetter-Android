@@ -90,6 +90,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.navigation.MainDestination
+import com.fairyband.soak.presentation.navigation.TabDestination
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -269,7 +270,15 @@ private fun HomeScreen(
             )
         },
         bookmarkedIds = bookmarkedIds,
-        onBookmarkClick = onBookmarkClick,
+        onBookmarkClick = { item ->
+            SoakAnalytics.logBookmarkClick(
+                isBookmarked = item.id !in bookmarkedIds,
+                contentId = item.id.toString(),
+                contentTitle = item.title,
+                screen = TabDestination.Main.name,
+            )
+            onBookmarkClick(item)
+        },
         snackbarHostState = popupSnackbarHostState,
         cardItems = news,
         cardIndex = cardIndex ?: 0,

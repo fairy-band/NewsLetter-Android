@@ -44,8 +44,10 @@ import com.fairyband.soak.core.designsystem.systembar.DarkSystemBar
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.model.BookmarkFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
+import com.fairyband.soak.presentation.navigation.TabDestination
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
@@ -66,9 +68,17 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
     BookmarkScreen(
         state = state,
         cardColors = cardColors,
-        onTabClick = viewModel::selectTab,
+        onTabClick = { tab ->
+            SoakAnalytics.logBookmarkTabClick(tabName = tab.name.lowercase())
+            viewModel.selectTab(tab)
+        },
         onLoadMore = viewModel::loadMore,
         onFeedClick = { index, feed ->
+            SoakAnalytics.logBookmarkContentsDetailClick(
+                cardIndex = index,
+                contentTitle = feed.title,
+                contentId = feed.exposureContentId.toString(),
+            )
             navController.navigate(
                 MainDestination.MarkdownDetail(
                     exposureContentId = feed.exposureContentId,
@@ -78,7 +88,15 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
                 )
             )
         },
-        onBookmarkClick = viewModel::removeBookmark,
+        onBookmarkClick = { feed ->
+            SoakAnalytics.logBookmarkClick(
+                isBookmarked = false,
+                contentId = feed.exposureContentId.toString(),
+                contentTitle = feed.title,
+                screen = TabDestination.Bookmark.name,
+            )
+            viewModel.removeBookmark(feed)
+        },
     )
 }
 
