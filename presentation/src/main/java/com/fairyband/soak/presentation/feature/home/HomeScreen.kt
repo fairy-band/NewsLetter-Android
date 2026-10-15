@@ -36,6 +36,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
@@ -101,6 +102,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.abs
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -112,6 +114,10 @@ fun HomeScreen(
     val news by viewModel.news.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
+    val bookmarkedIds by viewModel.bookmarkedIds.collectAsStateWithLifecycle()
+    val popupSnackbarHostState = remember { SnackbarHostState() }
+    val bookmarkAddedMessage = stringResource(R.string.home_popup_bookmark_added)
+    val bookmarkRemovedMessage = stringResource(R.string.home_popup_bookmark_removed)
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasNotificationPermission by remember { mutableStateOf(false) }
@@ -125,6 +131,13 @@ fun HomeScreen(
                 when (event) {
                     is HomeSideEffect.ShowBottomSheet -> {
                         bottomSheetVisibility = true
+                    }
+
+                    is HomeSideEffect.ShowBookmarkResult -> launch {
+                        popupSnackbarHostState.currentSnackbarData?.dismiss()
+                        popupSnackbarHostState.showSnackbar(
+                            if (event.isBookmarked) bookmarkAddedMessage else bookmarkRemovedMessage
+                        )
                     }
                 }
             }
@@ -170,6 +183,9 @@ fun HomeScreen(
         isRefreshing = isRefreshing,
         hasRefreshedToday = hasRefreshedToday,
         onRefresh = viewModel::refreshNews,
+        bookmarkedIds = bookmarkedIds,
+        onBookmarkClick = viewModel::toggleBookmark,
+        popupSnackbarHostState = popupSnackbarHostState,
     )
 }
 
@@ -180,6 +196,9 @@ private fun HomeScreen(
     isRefreshing: Boolean,
     hasRefreshedToday: Boolean,
     onRefresh: () -> Unit,
+    bookmarkedIds: Set<Long>,
+    onBookmarkClick: (NewsFeed) -> Unit,
+    popupSnackbarHostState: SnackbarHostState,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     val navController = LocalNavController.current
@@ -249,6 +268,9 @@ private fun HomeScreen(
                 context = context
             )
         },
+        bookmarkedIds = bookmarkedIds,
+        onBookmarkClick = onBookmarkClick,
+        snackbarHostState = popupSnackbarHostState,
         cardItems = news,
         cardIndex = cardIndex ?: 0,
     )
@@ -731,6 +753,9 @@ private fun HomeScreenPreview() {
             isRefreshing = false,
             hasRefreshedToday = false,
             onRefresh = {},
+            bookmarkedIds = emptySet(),
+            onBookmarkClick = {},
+            popupSnackbarHostState = remember { SnackbarHostState() },
             news = persistentListOf(
                 NewsFeed(
                     id = 1,

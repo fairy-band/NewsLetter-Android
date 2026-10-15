@@ -22,6 +22,9 @@
     <!--main-->
     <string name="home_title">%s.%s.%s</string>
     <string name="home_popup_button_text">자세히 보기</string>
+    <string name="home_popup_bookmark_added">보관함에 저장했어요</string>
+    <string name="home_popup_bookmark_removed">보관함에서 삭제했어요</string>
+    <string name="home_popup_bookmark_add_description">보관함에 저장하기</string>
     <string name="home_popup_language_korean">한국어</string>
     <string name="home_popup_language_english">영어</string>
     <string name="home_popup_language_unknown">오류</string>

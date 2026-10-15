@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -39,10 +38,8 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +49,7 @@ import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
+import com.fairyband.soak.presentation.SoakSnackbar
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.feature.bookmark.BookmarkScreen
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
@@ -114,28 +112,7 @@ fun TabScreen() {
                     .statusBarsPadding()
                     .padding(top = 56.dp),
                 snackbar = { snackbarData ->
-                    Row(
-                        modifier = Modifier
-                            .shadow(elevation = 4.dp, shape = CircleShape)
-                            .background(color = SoakTheme.colors.fillWhite, shape = CircleShape)
-                            .padding(vertical = 12.dp)
-                            .padding(start = 12.dp, end = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(20.dp),
-                            painter = painterResource(R.drawable.ic_check),
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                        )
-                        Text(
-                            text = snackbarData.visuals.message,
-                            style = SoakTheme.typography.body15.copy(
-                                color = SoakTheme.colors.textPrimary,
-                            ),
-                        )
-                    }
+                    SoakSnackbar(message = snackbarData.visuals.message)
                 },
             )
         }

@@ -2,6 +2,7 @@ package com.fairyband.soak.presentation.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fairyband.soak.data.repository.BookmarkRepository
 import com.fairyband.soak.data.repository.NewsRepository
 import com.fairyband.soak.data.repository.RemoteConfigRepository
 import com.fairyband.soak.data.repository.UserRepository
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import timber.log.Timber
 
 @KoinViewModel
 class HomeViewModel(
@@ -39,6 +41,7 @@ class HomeViewModel(
     private val userRepository: UserRepository,
     private val bottomSheetUseCase: BottomSheetUseCase,
     private val putUserInfoUseCase: PutUserInfoUseCase,
+    private val bookmarkRepository: BookmarkRepository,
     getNewsUseCase: GetNewsUseCase,
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<HomeSideEffect>()
@@ -80,9 +83,31 @@ class HomeViewModel(
             persistentListOf()
         )
 
+    val bookmarkedIds: StateFlow<Set<Long>> = bookmarkRepository.bookmarkedIds
+
     init {
         visitApp()
         observeBottomSheetTrigger()
+        syncBookmarks()
+    }
+
+    private fun syncBookmarks() = viewModelScope.launch {
+        runCatching { bookmarkRepository.syncBookmarkedIds() }
+            .onFailure { Timber.e(it, "북마크 목록 동기화 실패") }
+    }
+
+    /**
+     * 저장소가 북마크 상태를 먼저 바꾸고 실패하면 되돌려 주므로, 여기서는 결과만 알려요.
+     */
+    fun toggleBookmark(feed: NewsFeed) = viewModelScope.launch {
+        val isBookmarked = feed.id !in bookmarkedIds.value
+        runCatching {
+            bookmarkRepository.updateBookmark(exposureContentId = feed.id, isBookmarked = isBookmarked)
+        }.onSuccess {
+            _eventFlow.emit(HomeSideEffect.ShowBookmarkResult(isBookmarked = isBookmarked))
+        }.onFailure {
+            Timber.e(it, "북마크 변경 실패")
+        }
     }
 
     private fun observeBottomSheetTrigger() {
