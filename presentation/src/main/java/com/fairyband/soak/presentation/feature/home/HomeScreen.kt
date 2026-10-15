@@ -34,6 +34,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -193,6 +194,9 @@ private fun HomeScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            SettingBar(
+                onClick = { navController.navigate(MainDestination.Setting) },
+            )
             Spacer(modifier = Modifier.height(20.dp))
             Title()
             Cards(
@@ -248,6 +252,26 @@ private fun HomeScreen(
         cardItems = news,
         cardIndex = cardIndex ?: 0,
     )
+}
+
+@Composable
+private fun SettingBar(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(horizontal = 8.dp),
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(40.dp)
+                .clickable(onClick = onClick),
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
+            contentDescription = stringResource(R.string.tab_setting_description),
+            tint = SoakTheme.colors.iconPrimary,
+        )
+    }
 }
 
 @Composable
