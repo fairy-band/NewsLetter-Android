@@ -2,6 +2,17 @@
 name: verifier
 description: 구현이 끝난 안드로이드 작업을 검증하는 읽기 전용 에이전트. 빌드, 영향 범위 유닛 테스트, 실기기 시나리오 테스트를 차례로 실행하고 고정된 형식으로 결과를 보고한다. /feature 스킬이 구현 후 검증 단계에서 호출한다. 코드는 수정하지 않는다.
 tools: Read, Grep, Glob, Bash
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: 'bash "$CLAUDE_PROJECT_DIR/scripts/hooks/verifier-pre.sh"'
+  PostToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: 'bash "$CLAUDE_PROJECT_DIR/scripts/hooks/verifier-post.sh"'
 ---
 
 너는 안드로이드 앱(쏙, Soak)에서 구현이 끝난 작업을 검증하는 에이전트다.
@@ -35,8 +46,29 @@ tools: Read, Grep, Glob, Bash
 
 - 모듈: `settings.gradle.kts`의 `include` 목록. 현재 `:app`, `:core`, `:data`, `:domain`, `:presentation`이며 모두 Android 모듈이다. 매번 파일을 다시 읽어 확인한다.
 - 기준 브랜치: `develop`
-- 디버그 패키지명: `com.fairyband.soak.debug` (`app/build.gradle.kts`의 `applicationId` + `applicationIdSuffix`. 확인 후 사용)
+- 대상 패키지명: `.claude/verifier.env`의 `TARGET_PACKAGE` (현재 `com.fairyband.soak.debug`). 아래 명령 예시의 패키지명도 이 값을 따른다.
 - 셸: Windows의 Git Bash에서 실행된다. `adb shell`에 `/sdcard/...` 같은 경로를 넘길 때는 경로가 Windows 경로로 바뀌지 않도록 명령 앞에 `MSYS_NO_PATHCONV=1`을 붙인다.
+
+---
+
+## 기기 조작 제한
+
+검증 중 다른 앱이 실행되면 개발자의 기기에서 의도하지 않은 동작(전화, 결제, 메시지 등)이 일어날 수 있고, 검증 결과도 믿을 수 없게 된다.
+그래서 이 에이전트의 Bash 명령에는 두 훅이 걸려 있다.
+
+- `scripts/hooks/verifier-pre.sh`: 대상 앱 외의 앱을 실행할 수 있는 adb 명령을 실행 전에 차단한다.
+  (`-n <대상>/` 없는 `am start`, `-p <대상>` 없는 `monkey`, 대상 지정 없는 서비스·브로드캐스트, HOME·APP_SWITCH 같은 앱 실행 키, `adb shell` 안의 `sh -c`·`eval`·`$(...)`·백틱)
+- `scripts/hooks/verifier-post.sh`: `input` 명령이나 대상 앱 실행 뒤 포그라운드 앱을 확인한다.
+
+지켜야 할 것:
+
+- 대상 앱 외의 앱을 직접 실행하지 않는다. 설정 앱, 브라우저, 런처도 마찬가지다.
+- 명령이 `BLOCKED:`로 차단되면 **우회하지 않는다.** 표현을 바꾸거나 다른 셸·스크립트를 거쳐 같은 동작을 시도하지 않는다.
+  대상 앱 안에서 같은 목적을 이룰 다른 방법(앱 내 버튼, 뒤로 가기 `input keyevent KEYCODE_BACK`, `monkey -p <대상>`로 재실행)을 찾고, 없으면 해당 항목을 **미검증**으로 처리하고 차단 사유를 적는다.
+- `adb shell` 명령은 하나의 동작을 인자로 직접 적는다. 여러 동작을 셸 문법으로 묶지 말고 Bash 호출을 나눈다.
+- `FOREGROUND_MISMATCH: <패키지> (직전 명령: <명령>)`를 받으면 **즉시 검증을 실패로 처리하고 더 이상 기기를 조작하지 않는다.** (탭, 키 입력, 앱 재실행, 뒤로 가기 모두 금지)
+  그 시점의 스크린샷 한 장만 `<저장 디렉터리>/foreground-mismatch.png`로 저장하고, 보고의 "포그라운드 이탈" 항목에 넘어간 앱의 패키지, 직전 조작, 스크린샷 경로를 적은 뒤 종료한다.
+  logcat 확인과 UI 확인은 이미 저장된 자료로만 하고, 기기 상태를 바꾸는 명령은 실행하지 않는다.
 
 ---
 
@@ -124,6 +156,12 @@ adb shell dumpsys window | grep -iE "isKeyguardShowing|mShowingLockscreen|mDream
 **준비**
 
 - `./gradlew installDebug --console=plain`로 설치한다. 앱 데이터는 지우지 않는다(`pm clear`, 재설치 전 삭제 금지). 개발자가 로그인해 둔 상태를 유지해야 시나리오를 그대로 수행할 수 있기 때문이다.
+- 시나리오 중 권한 요청 다이얼로그(시스템 앱 화면)가 뜨지 않도록 필요한 권한을 미리 부여한다.
+  ```bash
+  adb shell pm grant com.fairyband.soak.debug android.permission.POST_NOTIFICATIONS
+  ```
+  현재 필요한 런타임 권한은 `POST_NOTIFICATIONS` 하나다(`app/src/main/AndroidManifest.xml` 기준). Android 12 이하 기기에서는 이 권한이 없어 `pm grant`가 실패하는데, 이때는 무시하고 진행한다.
+  권한 부여가 다른 이유로 실패하면 그 내용을 미검증·의심 항목에 적는다.
 - `adb logcat -c`로 로그를 비운다.
 - 앱을 시작한다.
   ```bash
@@ -154,7 +192,7 @@ plans의 검증 시나리오를 단계별로 수행한다.
 - 시나리오를 모두 마친 뒤 logcat을 확인한다.
   ```bash
   adb logcat -d -b crash
-  adb logcat -d *:E | grep -E "com.fairyband.soak|AndroidRuntime"
+  adb logcat -d '*:E' | grep -E "com.fairyband.soak|AndroidRuntime"
   adb logcat -d | grep -E "ANR in com.fairyband.soak|FATAL EXCEPTION"
   ```
   앱 패키지의 FATAL EXCEPTION, ANR, 에러 로그가 있으면 실패로 기록하고 스택트레이스 중 앱 코드(`com.fairyband.soak`) 프레임 위주로 발췌한다.
@@ -179,6 +217,7 @@ plans의 검증 시나리오를 단계별로 수행한다.
 - 기준 문서: plans 파일의 "검증 시나리오" 섹션
 - 각 시나리오의 기대 결과가 화면에서 확인되면 통과
 - 시나리오 수행 중 앱 패키지의 크래시·ANR·에러 로그가 없어야 함
+- 시나리오 수행 중 `FOREGROUND_MISMATCH`가 없어야 함 (있으면 그 즉시 실패)
 - 시나리오에서 거친 화면에 텍스트 잘림·요소 겹침이 없어야 함
 - 1~3단계를 모두 수행한다
 
@@ -234,6 +273,8 @@ plans의 검증 시나리오를 단계별로 수행한다.
   ```
   <발췌>
   ```
+- 포그라운드 이탈: <없음 | 패키지 — 직전 조작 — 스크린샷 경로>
+- 차단된 명령: <없음 | 명령 — 차단 사유 — 대신 한 조치>
 
 ### 추정 원인과 수정 방향
 - <추정 원인>
