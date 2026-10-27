@@ -240,7 +240,7 @@ private fun SavedBookmarkList(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = lazyState,
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "header") {
@@ -303,7 +303,7 @@ private fun BookmarkCard(
                 .padding(16.dp),
         ) {
             Text(
-                modifier = Modifier.padding(end = 40.dp),
+                modifier = Modifier.padding(end = 38.dp),
                 text = feed.title,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -343,7 +343,8 @@ private fun BookmarkCard(
                     indication = null,
                     onClick = onBookmarkClick,
                 )
-                .padding(start = 12.dp, top = 16.dp, end = 20.dp, bottom = 12.dp),
+                // 북마크 리본이 카드 상단 가장자리에 붙도록 위쪽 여백은 두지 않아요.
+                .padding(start = 12.dp, end = 24.dp, bottom = 12.dp),
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_bookmark_on),
