@@ -3,6 +3,12 @@ name: Test CI
 on:
   pull_request:
     types: [ opened, reopened, synchronize ]
+    paths-ignore:
+      - '**.md'
+      - '.claude/**'
+      - 'scripts/**'
+      - '.github/**'
+      - '.gitignore'
 
 permissions:
   contents: read
