@@ -45,16 +45,22 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fairyband.soak.core.theme.LocalSoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalSnackbarController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.SoakSnackbar
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.deeplink.SharedLinkNavigator
 import com.fairyband.soak.presentation.feature.bookmark.BookmarkScreen
+import com.fairyband.soak.presentation.feature.bookmark.BookmarkTab
+import com.fairyband.soak.presentation.feature.bookmark.BookmarkViewModel
 import com.fairyband.soak.presentation.feature.explore.ExploreScreen
 import com.fairyband.soak.presentation.feature.home.HomeScreen
 import com.fairyband.soak.presentation.navigation.TabDestination
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 private val tabs = listOf(TabDestination.Main, TabDestination.Explore, TabDestination.Bookmark)
 
@@ -73,6 +79,18 @@ fun TabScreen() {
     // 바텀 내비게이션 관례: 뒤로가기 → 추천 탭 → 앱 종료
     BackHandler(enabled = !isMain) {
         selectedIndex = tabs.indexOf(TabDestination.Main)
+    }
+
+    // 탭 화면의 ViewModelStore 에서 가져오므로 보관함 탭에서 쓰는 것과 같은 인스턴스예요.
+    val bookmarkViewModel: BookmarkViewModel = koinViewModel()
+    val sharedLinkNavigator: SharedLinkNavigator = koinInject()
+    val openSharedTabRequested by sharedLinkNavigator.openSharedTabRequested.collectAsStateWithLifecycle()
+
+    LaunchedEffect(openSharedTabRequested) {
+        if (!openSharedTabRequested) return@LaunchedEffect
+        selectedIndex = tabs.indexOf(TabDestination.Bookmark)
+        bookmarkViewModel.selectTab(BookmarkTab.SHARED)
+        sharedLinkNavigator.consume()
     }
 
     LogTabPageView(selectedTab = selectedTab)

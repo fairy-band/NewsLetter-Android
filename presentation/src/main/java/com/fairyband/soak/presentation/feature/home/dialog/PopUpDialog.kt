@@ -43,7 +43,7 @@ internal fun PopUpDialog(
     visibility: Boolean,
     onDismissRequest: () -> Unit,
     onDetailClick: (NewsFeed, Int) -> Unit,
-    onShareClick: (Long, String, Color) -> Unit,
+    onShareClick: (NewsFeed, Color) -> Unit,
     bookmarkedIds: Set<Long>,
     onBookmarkClick: (NewsFeed) -> Unit,
     snackbarHostState: SnackbarHostState,
@@ -100,7 +100,7 @@ internal fun PopUpDialog(
                     titleColor = titleColor,
                     onDetailClick = { onDetailClick(item, cardIndex) },
                     isBookmarked = item.id in bookmarkedIds,
-                    onShareClick = { onShareClick(item.id, item.title, titleColor) },
+                    onShareClick = { onShareClick(item, titleColor) },
                     onBookmarkClick = { onBookmarkClick(item) },
                 )
                 Spacer(modifier = Modifier.weight(1f))

@@ -97,6 +97,15 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
             )
             viewModel.removeBookmark(feed)
         },
+        onSharedBookmarkClick = { feed ->
+            SoakAnalytics.logBookmarkClick(
+                isBookmarked = feed.exposureContentId !in state.bookmarkedIds,
+                contentId = feed.exposureContentId.toString(),
+                contentTitle = feed.title,
+                screen = TabDestination.Bookmark.name,
+            )
+            viewModel.toggleSharedBookmark(feed)
+        },
     )
 }
 
@@ -108,6 +117,7 @@ private fun BookmarkScreen(
     onLoadMore: () -> Unit,
     onFeedClick: (index: Int, feed: BookmarkFeed) -> Unit,
     onBookmarkClick: (BookmarkFeed) -> Unit,
+    onSharedBookmarkClick: (BookmarkFeed) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -122,9 +132,10 @@ private fun BookmarkScreen(
         when (state.selectedTab) {
             BookmarkTab.SAVED -> when {
                 state.isEmpty -> EmptyBookmark(text = stringResource(R.string.bookmark_empty_saved))
-                else -> SavedBookmarkList(
+                else -> BookmarkList(
                     feeds = state.feeds,
-                    totalCount = state.totalCount,
+                    totalCount = state.totalCount.toInt(),
+                    isBookmarked = { true },
                     cardColors = cardColors,
                     onLoadMore = onLoadMore,
                     onFeedClick = onFeedClick,
@@ -132,7 +143,19 @@ private fun BookmarkScreen(
                 )
             }
 
-            BookmarkTab.SHARED -> EmptyBookmark(text = stringResource(R.string.bookmark_empty_shared))
+            BookmarkTab.SHARED -> when {
+                state.sharedFeeds.isEmpty() -> EmptyBookmark(text = stringResource(R.string.bookmark_empty_shared))
+                else -> BookmarkList(
+                    feeds = state.sharedFeeds,
+                    totalCount = state.sharedFeeds.size,
+                    isBookmarked = { it.exposureContentId in state.bookmarkedIds },
+                    cardColors = cardColors,
+                    // 로컬에 저장된 목록을 한 번에 보여주므로 더 불러올 게 없어요.
+                    onLoadMore = {},
+                    onFeedClick = onFeedClick,
+                    onBookmarkClick = onSharedBookmarkClick,
+                )
+            }
         }
     }
 }
@@ -211,9 +234,10 @@ private fun BookmarkTopTabItem(
 }
 
 @Composable
-private fun SavedBookmarkList(
+private fun BookmarkList(
     feeds: List<BookmarkFeed>,
-    totalCount: Long,
+    totalCount: Int,
+    isBookmarked: (BookmarkFeed) -> Boolean,
     cardColors: List<BookmarkCardColor>,
     onLoadMore: () -> Unit,
     onFeedClick: (index: Int, feed: BookmarkFeed) -> Unit,
@@ -253,6 +277,7 @@ private fun SavedBookmarkList(
             BookmarkCard(
                 modifier = Modifier.animateItem(),
                 feed = feed,
+                isBookmarked = isBookmarked(feed),
                 containerColor = cardColors[index % cardColors.size].containerColor,
                 onClick = { onFeedClick(index, feed) },
                 onBookmarkClick = { onBookmarkClick(feed) },
@@ -263,7 +288,7 @@ private fun SavedBookmarkList(
 
 @Composable
 private fun ListHeader(
-    totalCount: Long,
+    totalCount: Int,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -285,6 +310,7 @@ private fun ListHeader(
 @Composable
 private fun BookmarkCard(
     feed: BookmarkFeed,
+    isBookmarked: Boolean,
     containerColor: Color,
     onClick: () -> Unit,
     onBookmarkClick: () -> Unit,
@@ -347,8 +373,12 @@ private fun BookmarkCard(
                 .padding(start = 12.dp, end = 24.dp, bottom = 12.dp),
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_bookmark_on),
-                contentDescription = stringResource(R.string.bookmark_remove_description),
+                imageVector = ImageVector.vectorResource(
+                    if (isBookmarked) R.drawable.ic_bookmark_on else R.drawable.ic_bookmark_off
+                ),
+                contentDescription = stringResource(
+                    if (isBookmarked) R.string.bookmark_remove_description else R.string.home_popup_bookmark_add_description
+                ),
                 tint = Color.Unspecified,
             )
         }
@@ -412,6 +442,7 @@ private fun BookmarkScreenPreview() {
             onLoadMore = {},
             onFeedClick = { _, _ -> },
             onBookmarkClick = {},
+            onSharedBookmarkClick = {},
         )
     }
 }
@@ -427,6 +458,7 @@ private fun BookmarkScreenEmptyPreview() {
             onLoadMore = {},
             onFeedClick = { _, _ -> },
             onBookmarkClick = {},
+            onSharedBookmarkClick = {},
         )
     }
 }

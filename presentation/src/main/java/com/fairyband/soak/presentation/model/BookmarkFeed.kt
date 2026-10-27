@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation.model
 
+import com.fairyband.soak.data.model.local.SharedContent
 import com.fairyband.soak.data.model.response.BookmarkResponse
 
 data class BookmarkFeed(
@@ -15,6 +16,16 @@ fun BookmarkResponse.toBookmarkFeed(): BookmarkFeed {
         exposureContentId = exposureContentId,
         title = provocativeHeadline,
         keyword = provocativeKeyword,
+        letter = newsletterName,
+        url = contentUrl,
+    )
+}
+
+fun SharedContent.toBookmarkFeed(): BookmarkFeed {
+    return BookmarkFeed(
+        exposureContentId = exposureContentId,
+        title = title,
+        keyword = keyword,
         letter = newsletterName,
         url = contentUrl,
     )

@@ -3,11 +3,14 @@ package com.fairyband.soak.presentation.feature.bookmark
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fairyband.soak.data.repository.BookmarkRepository
+import com.fairyband.soak.data.repository.SharedContentRepository
 import com.fairyband.soak.presentation.model.BookmarkFeed
 import com.fairyband.soak.presentation.model.toBookmarkFeed
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
@@ -16,6 +19,7 @@ import timber.log.Timber
 @KoinViewModel
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
+    sharedContentRepository: SharedContentRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookmarkState())
     val state = _state.asStateFlow()
@@ -23,6 +27,18 @@ class BookmarkViewModel(
     private var nextPage = 0
     private var hasMore = true
     private var loadingJob: Job? = null
+
+    init {
+        sharedContentRepository.sharedContents
+            .onEach { contents ->
+                _state.update { it.copy(sharedFeeds = contents.map { content -> content.toBookmarkFeed() }) }
+            }
+            .launchIn(viewModelScope)
+
+        bookmarkRepository.bookmarkedIds
+            .onEach { ids -> _state.update { it.copy(bookmarkedIds = ids) } }
+            .launchIn(viewModelScope)
+    }
 
     fun selectTab(tab: BookmarkTab) {
         _state.update { it.copy(selectedTab = tab) }
@@ -94,6 +110,23 @@ class BookmarkViewModel(
             }.onFailure { throwable ->
                 Timber.e(throwable, "북마크 해제 실패")
                 _state.update { it.copy(feeds = previous.feeds, totalCount = previous.totalCount) }
+            }
+        }
+    }
+
+    /**
+     * 공유받은 목록은 북마크 여부와 상관없이 유지되고, 아이콘 상태만 바뀌어요.
+     */
+    fun toggleSharedBookmark(feed: BookmarkFeed) {
+        val isBookmarked = feed.exposureContentId !in _state.value.bookmarkedIds
+        viewModelScope.launch {
+            runCatching {
+                bookmarkRepository.updateBookmark(
+                    exposureContentId = feed.exposureContentId,
+                    isBookmarked = isBookmarked,
+                )
+            }.onFailure { throwable ->
+                Timber.e(throwable, "공유받은 콘텐츠 북마크 변경 실패")
             }
         }
     }

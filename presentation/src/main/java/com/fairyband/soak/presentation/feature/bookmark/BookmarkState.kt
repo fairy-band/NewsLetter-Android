@@ -7,6 +7,8 @@ data class BookmarkState(
     val isLoading: Boolean = true,
     val feeds: List<BookmarkFeed> = emptyList(),
     val totalCount: Long = 0,
+    val sharedFeeds: List<BookmarkFeed> = emptyList(),
+    val bookmarkedIds: Set<Long> = emptySet(),
 ) {
     val isEmpty: Boolean
         get() = !isLoading && feeds.isEmpty()
@@ -15,6 +17,6 @@ data class BookmarkState(
 enum class BookmarkTab {
     SAVED,
 
-    // TODO: 딥링크로 받은 공유 콘텐츠를 로컬에 저장해 보여줄 예정이에요. 지금은 항상 빈 상태예요.
+    /** 카카오톡 공유 링크로 받은 콘텐츠예요. 서버 API가 없어서 로컬에 저장한 목록을 보여줘요. */
     SHARED,
 }

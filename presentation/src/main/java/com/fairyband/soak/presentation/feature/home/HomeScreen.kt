@@ -82,6 +82,7 @@ import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.domain.model.NewsFeed
 import com.fairyband.soak.presentation.BuildConfig
+import com.fairyband.soak.presentation.deeplink.SharedContentDeepLink
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
@@ -261,10 +262,9 @@ private fun HomeScreen(
             )
             webClickEvent(item)
         },
-        onShareClick = { id, title, color ->
+        onShareClick = { item, color ->
             kakaoShare(
-                id = id,
-                title = title,
+                item = item,
                 color = color,
                 context = context
             )
@@ -716,16 +716,20 @@ private fun webClickEvent(item: NewsFeed) {
 }
 
 private fun kakaoShare(
-    id: Long,
-    title: String,
+    item: NewsFeed,
     color: Color,
     context: Context
 ) {
     val templateId = 124946L
     val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
+    // 받는 쪽은 앱 실행 링크의 파라미터로 공유받은 목록을 만들어요. (SharedContentDeepLink 참고)
     val templateArgs = mapOf(
-        "TITLE" to title,
-        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=$id&textColor=%23$textColor"
+        SharedContentDeepLink.ARG_TITLE to item.title,
+        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=${item.id}&textColor=%23$textColor",
+        SharedContentDeepLink.ARG_EXPOSURE_CONTENT_ID to item.id.toString(),
+        SharedContentDeepLink.ARG_KEYWORD to item.keyword,
+        SharedContentDeepLink.ARG_NEWSLETTER to item.letter,
+        SharedContentDeepLink.ARG_URL to item.url,
     )
 
     if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
