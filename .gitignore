@@ -30,5 +30,11 @@ firebase-account.json
 # Claude
 .claude/settings.local.json
 .claude/plans/
+.claude/processes/
+.claude/verifications/
 .claude/*.local.md
 .hotswan/
+
+# Codex
+AGENTS.md
+.agents/

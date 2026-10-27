@@ -94,3 +94,7 @@ These are provided via base64-encoded GitHub Secrets in CI and must be created m
 - Repository implementations: `[Entity]RepositoryImpl` (in `repositoryimpl/`)
 - Use cases: `[Action]UseCase`
 - API services: `[Entity]Service`
+
+## Commit Guidelines
+
+- Keep each commit under 100 changed lines, except for UI or test code. Split larger changes into multiple commits.
