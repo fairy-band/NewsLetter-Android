@@ -722,14 +722,11 @@ private fun kakaoShare(
 ) {
     val templateId = 124946L
     val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
-    // 받는 쪽은 앱 실행 링크의 파라미터로 공유받은 목록을 만들어요. (SharedContentDeepLink 참고)
+    // 받는 쪽은 앱 실행 링크의 exposureContentId 로 공유받은 목록에 등록해요. (SharedContentDeepLink 참고)
     val templateArgs = mapOf(
         SharedContentDeepLink.ARG_TITLE to item.title,
         "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=${item.id}&textColor=%23$textColor",
         SharedContentDeepLink.ARG_EXPOSURE_CONTENT_ID to item.id.toString(),
-        SharedContentDeepLink.ARG_KEYWORD to item.keyword,
-        SharedContentDeepLink.ARG_NEWSLETTER to item.letter,
-        SharedContentDeepLink.ARG_URL to item.url,
     )
 
     if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {

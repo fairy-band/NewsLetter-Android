@@ -13,14 +13,19 @@ import org.koin.core.annotation.Single
  */
 @Single
 class SharedLinkNavigator {
-    private val _openSharedTabRequested = MutableStateFlow(false)
-    val openSharedTabRequested: StateFlow<Boolean> = _openSharedTabRequested.asStateFlow()
+    private val _openSharedTabRequest = MutableStateFlow<OpenSharedTabRequest?>(null)
+    val openSharedTabRequest: StateFlow<OpenSharedTabRequest?> = _openSharedTabRequest.asStateFlow()
 
-    fun requestOpenSharedTab() {
-        _openSharedTabRequested.value = true
+    /**
+     * @param exposureContentId 공유받은 목록에 등록할 콘텐츠예요. 링크에서 읽지 못했으면 null 이고, 탭만 열어요.
+     */
+    fun requestOpenSharedTab(exposureContentId: Long?) {
+        _openSharedTabRequest.value = OpenSharedTabRequest(exposureContentId)
     }
 
     fun consume() {
-        _openSharedTabRequested.value = false
+        _openSharedTabRequest.value = null
     }
 }
+
+data class OpenSharedTabRequest(val exposureContentId: Long?)

@@ -84,12 +84,13 @@ fun TabScreen() {
     // 탭 화면의 ViewModelStore 에서 가져오므로 보관함 탭에서 쓰는 것과 같은 인스턴스예요.
     val bookmarkViewModel: BookmarkViewModel = koinViewModel()
     val sharedLinkNavigator: SharedLinkNavigator = koinInject()
-    val openSharedTabRequested by sharedLinkNavigator.openSharedTabRequested.collectAsStateWithLifecycle()
+    val openSharedTabRequest by sharedLinkNavigator.openSharedTabRequest.collectAsStateWithLifecycle()
 
-    LaunchedEffect(openSharedTabRequested) {
-        if (!openSharedTabRequested) return@LaunchedEffect
+    LaunchedEffect(openSharedTabRequest) {
+        val request = openSharedTabRequest ?: return@LaunchedEffect
         selectedIndex = tabs.indexOf(TabDestination.Bookmark)
         bookmarkViewModel.selectTab(BookmarkTab.SHARED)
+        request.exposureContentId?.let(bookmarkViewModel::receiveSharedContent)
         sharedLinkNavigator.consume()
     }
 
