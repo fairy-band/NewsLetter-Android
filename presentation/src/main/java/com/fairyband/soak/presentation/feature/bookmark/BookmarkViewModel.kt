@@ -19,7 +19,7 @@ import timber.log.Timber
 @KoinViewModel
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
-    sharedContentRepository: SharedContentRepository,
+    private val sharedContentRepository: SharedContentRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookmarkState())
     val state = _state.asStateFlow()
@@ -28,13 +28,11 @@ class BookmarkViewModel(
     private var hasMore = true
     private var loadingJob: Job? = null
 
-    init {
-        sharedContentRepository.sharedContents
-            .onEach { contents ->
-                _state.update { it.copy(sharedFeeds = contents.map { content -> content.toBookmarkFeed() }) }
-            }
-            .launchIn(viewModelScope)
+    private var sharedNextPage = 0
+    private var sharedHasMore = true
+    private var sharedLoadingJob: Job? = null
 
+    init {
         bookmarkRepository.bookmarkedIds
             .onEach { ids -> _state.update { it.copy(bookmarkedIds = ids) } }
             .launchIn(viewModelScope)
@@ -53,10 +51,64 @@ class BookmarkViewModel(
         nextPage = 0
         hasMore = true
         loadBookmarks(isRefresh = true)
+        refreshShared()
     }
 
     fun loadMore() {
         loadBookmarks(isRefresh = false)
+    }
+
+    fun loadMoreShared() {
+        loadSharedContents(isRefresh = false)
+    }
+
+    /**
+     * 카카오톡 공유 링크로 받은 콘텐츠를 등록하고, 등록이 끝난 뒤 목록을 다시 조회해야 새 항목이 보여요.
+     */
+    fun receiveSharedContent(exposureContentId: Long) {
+        viewModelScope.launch {
+            runCatching { sharedContentRepository.addSharedContent(exposureContentId) }
+                .onFailure { throwable -> Timber.e(throwable, "공유받은 콘텐츠 등록 실패") }
+            refreshShared()
+        }
+    }
+
+    private fun refreshShared() {
+        sharedLoadingJob?.cancel()
+        sharedLoadingJob = null
+        sharedNextPage = 0
+        sharedHasMore = true
+        loadSharedContents(isRefresh = true)
+    }
+
+    private fun loadSharedContents(isRefresh: Boolean) {
+        if (sharedLoadingJob != null || !sharedHasMore) return
+
+        val job = viewModelScope.launch {
+            runCatching { sharedContentRepository.getSharedContents(page = sharedNextPage) }
+                .onSuccess { response ->
+                    sharedNextPage = response.page + 1
+                    sharedHasMore = response.hasMore
+                    val newFeeds = response.sharedContents.map { it.toBookmarkFeed() }
+                    _state.update {
+                        it.copy(
+                            isSharedLoading = false,
+                            sharedTotalCount = response.totalCount,
+                            sharedFeeds = if (isRefresh) newFeeds else it.sharedFeeds + newFeeds,
+                        )
+                    }
+                }
+                .onFailure { throwable ->
+                    Timber.e(throwable, "공유받은 목록 조회 실패")
+                    _state.update { it.copy(isSharedLoading = false) }
+                }
+        }
+        sharedLoadingJob = job
+
+        // 취소된 이전 job 의 완료 콜백이 새 job 의 참조를 지우지 않도록 확인해요.
+        job.invokeOnCompletion {
+            if (sharedLoadingJob === job) sharedLoadingJob = null
+        }
     }
 
     private fun loadBookmarks(isRefresh: Boolean) {

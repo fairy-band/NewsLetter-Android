@@ -3,10 +3,12 @@ package com.fairyband.soak.data.datasource
 import com.fairyband.soak.data.model.request.BookmarkRequest
 import com.fairyband.soak.data.model.request.ContentProviderRequest
 import com.fairyband.soak.data.model.request.Direction
+import com.fairyband.soak.data.model.request.SharedContentRequest
 import com.fairyband.soak.data.model.response.BookmarksResponse
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.model.response.MarkdownResponse
+import com.fairyband.soak.data.model.response.SharedContentsResponse
 import com.fairyband.soak.data.remote.service.NewsLetterService
 import org.koin.core.annotation.Singleton
 
@@ -57,5 +59,17 @@ class NewsLetterDataSource(
 
     suspend fun updateBookmark(request: BookmarkRequest) {
         api.updateBookmark(request)
+    }
+
+    suspend fun getSharedContents(
+        userId: Long,
+        page: Int,
+        size: Int,
+    ): SharedContentsResponse {
+        return api.getSharedContents(userId = userId, page = page, size = size)
+    }
+
+    suspend fun updateSharedContent(request: SharedContentRequest) {
+        api.updateSharedContent(request)
     }
 }

@@ -73,6 +73,7 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
             viewModel.selectTab(tab)
         },
         onLoadMore = viewModel::loadMore,
+        onLoadMoreShared = viewModel::loadMoreShared,
         onFeedClick = { index, feed ->
             SoakAnalytics.logBookmarkContentsDetailClick(
                 cardIndex = index,
@@ -115,6 +116,7 @@ private fun BookmarkScreen(
     cardColors: List<BookmarkCardColor>,
     onTabClick: (BookmarkTab) -> Unit,
     onLoadMore: () -> Unit,
+    onLoadMoreShared: () -> Unit,
     onFeedClick: (index: Int, feed: BookmarkFeed) -> Unit,
     onBookmarkClick: (BookmarkFeed) -> Unit,
     onSharedBookmarkClick: (BookmarkFeed) -> Unit,
@@ -144,14 +146,13 @@ private fun BookmarkScreen(
             }
 
             BookmarkTab.SHARED -> when {
-                state.sharedFeeds.isEmpty() -> EmptyBookmark(text = stringResource(R.string.bookmark_empty_shared))
+                state.isSharedEmpty -> EmptyBookmark(text = stringResource(R.string.bookmark_empty_shared))
                 else -> BookmarkList(
                     feeds = state.sharedFeeds,
-                    totalCount = state.sharedFeeds.size,
+                    totalCount = state.sharedTotalCount.toInt(),
                     isBookmarked = { it.exposureContentId in state.bookmarkedIds },
                     cardColors = cardColors,
-                    // 로컬에 저장된 목록을 한 번에 보여주므로 더 불러올 게 없어요.
-                    onLoadMore = {},
+                    onLoadMore = onLoadMoreShared,
                     onFeedClick = onFeedClick,
                     onBookmarkClick = onSharedBookmarkClick,
                 )
@@ -440,6 +441,7 @@ private fun BookmarkScreenPreview() {
             cardColors = rememberBookmarkCardColors(),
             onTabClick = {},
             onLoadMore = {},
+            onLoadMoreShared = {},
             onFeedClick = { _, _ -> },
             onBookmarkClick = {},
             onSharedBookmarkClick = {},
@@ -456,6 +458,7 @@ private fun BookmarkScreenEmptyPreview() {
             cardColors = rememberBookmarkCardColors(),
             onTabClick = {},
             onLoadMore = {},
+            onLoadMoreShared = {},
             onFeedClick = { _, _ -> },
             onBookmarkClick = {},
             onSharedBookmarkClick = {},
