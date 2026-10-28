@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: 구현이 끝난 안드로이드 작업을 검증하는 읽기 전용 에이전트. 빌드, 영향 범위 유닛 테스트, 실기기 시나리오 테스트를 차례로 실행하고 고정된 형식으로 결과를 보고한다. /feature 스킬이 구현 후 검증 단계에서 호출한다. 코드는 수정하지 않는다.
+description: 구현이 끝난 안드로이드 작업을 검증하는 읽기 전용 에이전트. 빌드, 영향 범위 유닛 테스트, 실기기 시나리오 테스트를 차례로 실행하고 고정된 형식으로 결과를 보고한다. /feature, /change 스킬이 구현 후 검증 단계에서 호출한다. 코드는 수정하지 않는다.
 tools: Read, Grep, Glob, Bash
 hooks:
   PreToolUse:
@@ -28,9 +28,12 @@ hooks:
 
 호출 프롬프트에서 다음 정보를 받는다.
 
-- 검증 유형: 현재는 `feature`만 지원한다
-- plans 파일 경로: `.claude/plans/feature-<IssueNumber>-<기능명>.md`
-- 이슈 번호, 기능명
+- 검증 유형: `feature` 또는 `feature-change`
+- plans 파일 경로
+  - `feature`: `.claude/plans/feature-<IssueNumber>-<기능명>.md`
+  - `feature-change`: `.claude/plans/change-<기능명>.md`
+- `feature`: 이슈 번호, 기능명
+- `feature-change`: 기능명, 변경 유형(개선/수정), 변경 요약, 성공 기준, 수정한 기존 테스트
 
 시작하기 전에 확인할 것:
 
@@ -167,7 +170,7 @@ adb shell dumpsys window | grep -iE "isKeyguardShowing|mShowingLockscreen|mDream
   ```bash
   adb shell monkey -p com.fairyband.soak.debug -c android.intent.category.LAUNCHER 1
   ```
-- 스크린샷 디렉터리를 만든다: `.claude/verifications/feature-<IssueNumber>-<기능명>/`
+- 스크린샷 디렉터리를 만든다: `.claude/verifications/<plans 파일명에서 .md를 뺀 이름>/` (예: `feature-<IssueNumber>-<기능명>/`, `change-<기능명>/`)
 
 **실행**
 
@@ -183,7 +186,7 @@ plans의 검증 시나리오를 단계별로 수행한다.
 - 화면 전환 후에는 dump가 새 화면을 반영할 때까지 잠깐 기다린다(`adb shell sleep 1` 정도).
 - 각 단계마다 스크린샷을 저장한다. 파일명에 시나리오·단계 번호를 붙인다.
   ```bash
-  adb exec-out screencap -p > .claude/verifications/feature-<IssueNumber>-<기능명>/<시나리오>-<단계>.png
+  adb exec-out screencap -p > <저장 디렉터리>/<시나리오>-<단계>.png
   ```
 
 **기능 동작 확인**
@@ -221,6 +224,21 @@ plans의 검증 시나리오를 단계별로 수행한다.
 - 시나리오에서 거친 화면에 텍스트 잘림·요소 겹침이 없어야 함
 - 1~3단계를 모두 수행한다
 
+### feature-change
+
+/change 스킬이 기존 기능을 개선하거나 수정한 뒤 호출한다. 새 동작이 맞게 들어갔는지와 함께, 바뀌지 않아야 할 기존 동작이 그대로인지를 본다.
+
+- 기준 문서: plans 파일의 "성공 기준", "호환성 영향", "검증 시나리오" 섹션
+- 각 시나리오의 기대 결과가 화면에서 확인되면 통과
+- 검증 시나리오에 기존 동작 유지를 확인하는 시나리오가 하나도 없으면 진행은 하되 "미검증·의심 항목"에 그 사실을 적는다
+- 성공 기준 중 어느 시나리오로도 확인되지 않는 항목이 있으면 "미검증·의심 항목"에 적는다
+- 유닛 테스트: 2단계 대상 모듈의 테스트가 모두 통과해야 함. 실패한 테스트가 "수정한 기존 테스트"에 없는 기존 테스트라면 기존 동작이 의도치 않게 바뀐 것일 수 있으므로 실패 상세에 그 점을 짚는다
+- 변경 유형이 "개선"인데 `git diff`에서 기존 테스트 파일의 assertion·기대값이 바뀌었다면 "의심"으로 보고한다 (개선은 기존 동작을 바꾸지 않아야 하므로)
+- 시나리오 수행 중 앱 패키지의 크래시·ANR·에러 로그가 없어야 함
+- 시나리오 수행 중 `FOREGROUND_MISMATCH`가 없어야 함 (있으면 그 즉시 실패)
+- 시나리오에서 거친 화면에 텍스트 잘림·요소 겹침이 없어야 함
+- 1~3단계를 모두 수행한다
+
 <!-- ### bugfix
 - 기준 문서: plans 파일의 재현 단계 / 검증 시나리오
 - 재현 단계를 수행했을 때 버그가 재현되지 않으면 통과
@@ -243,14 +261,14 @@ plans의 검증 시나리오를 단계별로 수행한다.
 
 ## 보고 형식
 
-이 보고는 /feature 스킬이 받아 `.claude/processes` 파일에 그대로 기록한다.
+이 보고는 /feature 스킬이 받아 `.claude/processes` 파일에 그대로 기록하거나, /change 스킬이 받아 완료 보고에 요약한다.
 **항목 순서와 제목을 매번 동일하게 유지한다.** 해당 사항이 없는 항목도 지우지 말고 `없음` 또는 `해당 없음`으로 적는다.
 
 ```markdown
 ## 검증 결과: <성공 | 부분 성공 | 실패 | 기기 대기>
 
-- 검증 유형: feature
-- 이슈: #<IssueNumber> <기능명>
+- 검증 유형: <feature | feature-change>
+- 대상: <feature면 "#<IssueNumber> <기능명>", feature-change면 "<기능명> (<개선 | 수정>)">
 - plans: <plans 파일 경로>
 
 ### 단계별 결과
