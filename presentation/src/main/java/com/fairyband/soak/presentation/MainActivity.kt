@@ -1,5 +1,6 @@
 package com.fairyband.soak.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -16,6 +18,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.fairyband.soak.core.theme.SoakTheme
+import com.fairyband.soak.data.repository.SharedContentRepository
+import com.fairyband.soak.presentation.deeplink.SharedContentDeepLink
+import com.fairyband.soak.presentation.deeplink.SharedLinkNavigator
 import com.fairyband.soak.presentation.feature.TabScreen
 import com.fairyband.soak.presentation.feature.exploredetail.ExploreDetailScreen
 import com.fairyband.soak.presentation.feature.markdown.MarkdownDetailScreen
@@ -27,17 +32,27 @@ import com.fairyband.soak.presentation.feature.webview.WebViewScreen
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.navigation.NavController
 import com.fairyband.soak.presentation.navigation.rememberNavController
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController가 주입되지 않았습니다.")
 }
 
 class MainActivity : ComponentActivity() {
+    private val sharedContentRepository: SharedContentRepository by inject()
+    private val sharedLinkNavigator: SharedLinkNavigator by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // 화면 회전 등으로 다시 생성될 때 같은 링크를 또 처리하지 않도록 처음 생성될 때만 확인해요.
+        if (savedInstanceState == null) {
+            handleSharedLink(intent)
+        }
         setContent {
             SoakTheme {
                 val navController = rememberNavController(MainDestination.Splash)
@@ -61,6 +76,30 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleSharedLink(intent)
+    }
+
+    /**
+     * 카카오톡 공유 링크로 들어오면 공유받은 목록에 저장하고 보관함 '공유받은' 탭을 열어요.
+     */
+    private fun handleSharedLink(intent: Intent) {
+        val uri = intent.data ?: return
+        if (uri.host != SharedContentDeepLink.KAKAO_LINK_HOST) return
+
+        val content = SharedContentDeepLink.parse(
+            queryParameter = uri::getQueryParameter,
+            receivedAt = System.currentTimeMillis(),
+        )
+        if (content == null) {
+            Timber.w("공유 링크에 콘텐츠 정보가 없어요: $uri")
+        } else {
+            lifecycleScope.launch { sharedContentRepository.saveSharedContent(content) }
+        }
+        sharedLinkNavigator.requestOpenSharedTab()
     }
 
     private fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {

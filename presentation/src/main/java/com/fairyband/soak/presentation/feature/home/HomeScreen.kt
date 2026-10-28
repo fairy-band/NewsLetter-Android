@@ -34,7 +34,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
@@ -80,6 +82,7 @@ import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.domain.model.NewsFeed
 import com.fairyband.soak.presentation.BuildConfig
+import com.fairyband.soak.presentation.deeplink.SharedContentDeepLink
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
@@ -88,6 +91,7 @@ import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.navigation.MainDestination
+import com.fairyband.soak.presentation.navigation.TabDestination
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
@@ -100,6 +104,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.abs
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -111,6 +116,10 @@ fun HomeScreen(
     val news by viewModel.news.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val hasRefreshedToday by viewModel.hasRefreshedToday.collectAsStateWithLifecycle()
+    val bookmarkedIds by viewModel.bookmarkedIds.collectAsStateWithLifecycle()
+    val popupSnackbarHostState = remember { SnackbarHostState() }
+    val bookmarkAddedMessage = stringResource(R.string.home_popup_bookmark_added)
+    val bookmarkRemovedMessage = stringResource(R.string.home_popup_bookmark_removed)
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasNotificationPermission by remember { mutableStateOf(false) }
@@ -124,6 +133,13 @@ fun HomeScreen(
                 when (event) {
                     is HomeSideEffect.ShowBottomSheet -> {
                         bottomSheetVisibility = true
+                    }
+
+                    is HomeSideEffect.ShowBookmarkResult -> launch {
+                        popupSnackbarHostState.currentSnackbarData?.dismiss()
+                        popupSnackbarHostState.showSnackbar(
+                            if (event.isBookmarked) bookmarkAddedMessage else bookmarkRemovedMessage
+                        )
                     }
                 }
             }
@@ -169,6 +185,9 @@ fun HomeScreen(
         isRefreshing = isRefreshing,
         hasRefreshedToday = hasRefreshedToday,
         onRefresh = viewModel::refreshNews,
+        bookmarkedIds = bookmarkedIds,
+        onBookmarkClick = viewModel::toggleBookmark,
+        popupSnackbarHostState = popupSnackbarHostState,
     )
 }
 
@@ -179,6 +198,9 @@ private fun HomeScreen(
     isRefreshing: Boolean,
     hasRefreshedToday: Boolean,
     onRefresh: () -> Unit,
+    bookmarkedIds: Set<Long>,
+    onBookmarkClick: (NewsFeed) -> Unit,
+    popupSnackbarHostState: SnackbarHostState,
 ) {
     var cardIndex: Int? by rememberSaveable { mutableStateOf(null) }
     val navController = LocalNavController.current
@@ -193,6 +215,9 @@ private fun HomeScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            SettingBar(
+                onClick = { navController.navigate(MainDestination.Setting) },
+            )
             Spacer(modifier = Modifier.height(20.dp))
             Title()
             Cards(
@@ -237,17 +262,47 @@ private fun HomeScreen(
             )
             webClickEvent(item)
         },
-        onShareClick = { id, title, color ->
+        onShareClick = { item, color ->
             kakaoShare(
-                id = id,
-                title = title,
+                item = item,
                 color = color,
                 context = context
             )
         },
+        bookmarkedIds = bookmarkedIds,
+        onBookmarkClick = { item ->
+            SoakAnalytics.logBookmarkClick(
+                isBookmarked = item.id !in bookmarkedIds,
+                contentId = item.id.toString(),
+                contentTitle = item.title,
+                screen = TabDestination.Main.name,
+            )
+            onBookmarkClick(item)
+        },
+        snackbarHostState = popupSnackbarHostState,
         cardItems = news,
         cardIndex = cardIndex ?: 0,
     )
+}
+
+@Composable
+private fun SettingBar(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(horizontal = 8.dp),
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(40.dp)
+                .clickable(onClick = onClick),
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_home_setting),
+            contentDescription = stringResource(R.string.tab_setting_description),
+            tint = SoakTheme.colors.iconPrimary,
+        )
+    }
 }
 
 @Composable
@@ -661,16 +716,20 @@ private fun webClickEvent(item: NewsFeed) {
 }
 
 private fun kakaoShare(
-    id: Long,
-    title: String,
+    item: NewsFeed,
     color: Color,
     context: Context
 ) {
     val templateId = 124946L
     val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
+    // 받는 쪽은 앱 실행 링크의 파라미터로 공유받은 목록을 만들어요. (SharedContentDeepLink 참고)
     val templateArgs = mapOf(
-        "TITLE" to title,
-        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=$id&textColor=%23$textColor"
+        SharedContentDeepLink.ARG_TITLE to item.title,
+        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=${item.id}&textColor=%23$textColor",
+        SharedContentDeepLink.ARG_EXPOSURE_CONTENT_ID to item.id.toString(),
+        SharedContentDeepLink.ARG_KEYWORD to item.keyword,
+        SharedContentDeepLink.ARG_NEWSLETTER to item.letter,
+        SharedContentDeepLink.ARG_URL to item.url,
     )
 
     if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
@@ -707,6 +766,9 @@ private fun HomeScreenPreview() {
             isRefreshing = false,
             hasRefreshedToday = false,
             onRefresh = {},
+            bookmarkedIds = emptySet(),
+            onBookmarkClick = {},
+            popupSnackbarHostState = remember { SnackbarHostState() },
             news = persistentListOf(
                 NewsFeed(
                     id = 1,

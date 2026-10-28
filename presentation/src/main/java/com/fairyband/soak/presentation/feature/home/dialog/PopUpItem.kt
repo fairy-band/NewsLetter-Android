@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +51,9 @@ internal fun PopUpItem(
     newsFeed: NewsFeed,
     titleColor: Color,
     onDetailClick: () -> Unit,
+    isBookmarked: Boolean,
     onShareClick: () -> Unit,
+    onBookmarkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -122,6 +125,21 @@ internal fun PopUpItem(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             BaseButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
+                paddingVertical = 12.dp,
+                onClick = onDetailClick,
+                shape = CircleShape,
+                borderWidth = 1.dp,
+                borderColor = SoakTheme.colors.borderSecondary
+            ) {
+                Text(
+                    text = stringResource(id = R.string.home_popup_button_text),
+                    style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+                )
+            }
+            BaseButton(
                 modifier = Modifier.size(44.dp),
                 paddingVertical = 12.dp,
                 onClick = onShareClick,
@@ -135,16 +153,22 @@ internal fun PopUpItem(
                 )
             }
             BaseButton(
-                modifier = Modifier.height(44.dp),
+                modifier = Modifier.size(44.dp),
                 paddingVertical = 12.dp,
-                onClick = onDetailClick,
+                onClick = onBookmarkClick,
                 shape = CircleShape,
                 borderWidth = 1.dp,
                 borderColor = SoakTheme.colors.borderSecondary
             ) {
-                Text(
-                    text = stringResource(id = R.string.home_popup_button_text),
-                    style = SoakTheme.typography.body14.copy(fontWeight = FontWeight.SemiBold),
+                Image(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(
+                        id = if (isBookmarked) R.drawable.ic_popup_bookmark_on else R.drawable.ic_popup_bookmark_off
+                    ),
+                    contentDescription = stringResource(
+                        id = if (isBookmarked) R.string.bookmark_remove_description
+                        else R.string.home_popup_bookmark_add_description
+                    ),
                 )
             }
         }
@@ -191,7 +215,9 @@ private fun PopUpItemPreview() {
             ),
             titleColor = SoakTheme.colors.statePositivePrimary,
             onDetailClick = {},
-            onShareClick = {}
+            isBookmarked = true,
+            onShareClick = {},
+            onBookmarkClick = {},
         )
     }
 }
