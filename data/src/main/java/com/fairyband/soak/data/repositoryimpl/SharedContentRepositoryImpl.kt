@@ -1,18 +1,36 @@
 package com.fairyband.soak.data.repositoryimpl
 
-import com.fairyband.soak.data.local.shared.SharedContentDataStore
-import com.fairyband.soak.data.model.local.SharedContent
+import com.fairyband.soak.data.datasource.AuthDataSource
+import com.fairyband.soak.data.datasource.NewsLetterDataSource
+import com.fairyband.soak.data.model.request.SharedContentRequest
+import com.fairyband.soak.data.model.response.SharedContentsResponse
 import com.fairyband.soak.data.repository.SharedContentRepository
-import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
 
 @Single
 class SharedContentRepositoryImpl(
-    private val sharedContentDataStore: SharedContentDataStore,
+    private val newsLetterDataSource: NewsLetterDataSource,
+    private val authDataSource: AuthDataSource,
 ) : SharedContentRepository {
-    override val sharedContents: Flow<List<SharedContent>> = sharedContentDataStore.sharedContents
+    override suspend fun getSharedContents(page: Int): SharedContentsResponse {
+        return newsLetterDataSource.getSharedContents(
+            userId = authDataSource.getUserId(),
+            page = page,
+            size = PAGE_SIZE,
+        )
+    }
 
-    override suspend fun saveSharedContent(content: SharedContent) {
-        sharedContentDataStore.save(content)
+    override suspend fun addSharedContent(exposureContentId: Long) {
+        newsLetterDataSource.updateSharedContent(
+            SharedContentRequest(
+                userId = authDataSource.getUserId(),
+                exposureContentId = exposureContentId,
+                isShared = true,
+            )
+        )
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 20
     }
 }
