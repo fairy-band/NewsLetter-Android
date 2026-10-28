@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fairyband.soak.core.designsystem.dialog.BaseDialog
+import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
 import com.fairyband.soak.core.extension.noRippleClickable
 import com.fairyband.soak.core.extension.openAppNotificationSettings
 import com.fairyband.soak.core.theme.SoakTheme
@@ -88,6 +89,8 @@ internal fun SettingScreen(
             toastVisibility = false
         }
     }
+
+    LightSystemBar()
 
     if (bottomSheetVisibility) {
         HomeBottomSheet(
