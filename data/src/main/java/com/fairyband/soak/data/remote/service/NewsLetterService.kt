@@ -2,11 +2,14 @@ package com.fairyband.soak.data.remote.service
 
 import com.fairyband.soak.data.model.request.BookmarkRequest
 import com.fairyband.soak.data.model.request.ContentProviderRequest
+import com.fairyband.soak.data.model.request.SharedContentRequest
 import com.fairyband.soak.data.model.response.BookmarkStatusResponse
 import com.fairyband.soak.data.model.response.BookmarksResponse
 import com.fairyband.soak.data.model.response.ExploreContentsResponse
 import com.fairyband.soak.data.model.response.LetterResponse
 import com.fairyband.soak.data.model.response.MarkdownResponse
+import com.fairyband.soak.data.model.response.SharedContentStatusResponse
+import com.fairyband.soak.data.model.response.SharedContentsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -61,4 +64,16 @@ interface NewsLetterService {
     suspend fun updateBookmark(
         @Body request: BookmarkRequest,
     ): BookmarkStatusResponse
+
+    @GET("api/newsletters/shared-contents/{userId}")
+    suspend fun getSharedContents(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): SharedContentsResponse
+
+    @PUT("api/newsletters/shared-contents")
+    suspend fun updateSharedContent(
+        @Body request: SharedContentRequest,
+    ): SharedContentStatusResponse
 }
