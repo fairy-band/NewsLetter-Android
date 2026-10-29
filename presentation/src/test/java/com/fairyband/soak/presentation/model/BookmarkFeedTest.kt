@@ -28,6 +28,9 @@ class BookmarkFeedTest : StringSpec({
             keyword = "#AI #MCP",
             letter = "GeekNews",
             url = "https://example.com",
+            summary = "요약",
+            language = "KOREAN",
+            category = "BE",
         )
     }
 })

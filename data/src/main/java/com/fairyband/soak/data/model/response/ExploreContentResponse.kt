@@ -11,6 +11,7 @@ data class ExploreContentResponse(
     val summaryContent: String,
     val contentUrl: String,
     val newsletterName: String,
+    val categoryName: String = "",
     val createdAt: String,
     val updatedAt: String,
 )
