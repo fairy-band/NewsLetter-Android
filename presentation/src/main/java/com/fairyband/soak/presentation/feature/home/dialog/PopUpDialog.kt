@@ -27,7 +27,7 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.SoakSnackbar
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.analytics.toContentType
-import com.fairyband.soak.presentation.feature.home.getCardColors
+import com.fairyband.soak.presentation.feature.home.cardColorOf
 import com.fairyband.soak.domain.model.NewsFeed
 import kotlinx.collections.immutable.ImmutableList
 
@@ -58,9 +58,8 @@ internal fun PopUpDialog(
         contentEnter = fadeIn(tween(delayMillis = 300, durationMillis = 200)),
         contentExit = fadeOut(tween(durationMillis = 0)),
     ) { handleDismiss ->
-        val titleColors = getCardColors().map { it.titleColor }
         val item = cardItems[cardIndex]
-        val titleColor = titleColors[cardIndex]
+        val titleColor = cardColorOf(item.category).titleColor
 
         BackHandler(visibility) {
             handleDismiss()
@@ -86,17 +85,7 @@ internal fun PopUpDialog(
                 Spacer(modifier = Modifier.weight(1f))
                 PopUpItem(
                     modifier = Modifier.width(PopUpDialogDefaults.CARD_WIDTH),
-                    newsFeed = NewsFeed(
-                        id = item.id,
-                        title = item.title,
-                        keyword = item.keyword,
-                        letter = item.letter,
-                        summary = item.summary,
-                        url = item.url,
-                        imageUrl = item.imageUrl,
-                        language = item.language,
-                        cardType = item.cardType,
-                    ),
+                    newsFeed = item,
                     titleColor = titleColor,
                     onDetailClick = { onDetailClick(item, cardIndex) },
                     isBookmarked = item.id in bookmarkedIds,
