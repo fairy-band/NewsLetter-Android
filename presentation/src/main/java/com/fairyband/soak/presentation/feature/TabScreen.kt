@@ -189,7 +189,7 @@ private fun SoakBottomNavigation(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .height(52.dp),
         ) {
             tabs.forEach { tab ->
                 val isSelected = tab == selectedTab
@@ -222,16 +222,16 @@ private fun BottomNavigationItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick,
-            )
-            .padding(top = 7.dp),
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(iconRes),
             contentDescription = null,
             tint = color,
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = stringResource(labelRes),
             style = SoakTheme.typography.caption11.copy(
