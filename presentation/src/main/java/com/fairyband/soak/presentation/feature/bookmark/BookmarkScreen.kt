@@ -19,13 +19,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +36,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,18 +49,29 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
+import com.fairyband.soak.presentation.deeplink.kakaoShare
+import com.fairyband.soak.presentation.feature.home.cardColorOf
+import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.BookmarkFeed
+import com.fairyband.soak.presentation.model.toNewsFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.navigation.TabDestination
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
     val navController = LocalNavController.current
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val cardColors = rememberBookmarkCardColors()
+    var selectedFeed by remember { mutableStateOf<BookmarkFeed?>(null) }
+    val popupSnackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val bookmarkAddedMessage = stringResource(R.string.home_popup_bookmark_added)
+    val bookmarkRemovedMessage = stringResource(R.string.home_popup_bookmark_removed)
 
     // 탭을 벗어나면 컴포지션에서 빠지므로, 다시 들어올 때마다 최신 목록을 조회해요.
     LaunchedEffect(Unit) {
@@ -67,7 +82,6 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
 
     BookmarkScreen(
         state = state,
-        cardColors = cardColors,
         onTabClick = { tab ->
             SoakAnalytics.logBookmarkTabClick(tabName = tab.name.lowercase())
             viewModel.selectTab(tab)
@@ -80,14 +94,7 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
                 contentTitle = feed.title,
                 contentId = feed.exposureContentId.toString(),
             )
-            navController.navigate(
-                MainDestination.MarkdownDetail(
-                    exposureContentId = feed.exposureContentId,
-                    title = feed.letter,
-                    pointColorArgb = cardColors[index % cardColors.size].pointColor.toArgb(),
-                    fallbackUrl = feed.url,
-                )
-            )
+            selectedFeed = feed
         },
         onBookmarkClick = { feed ->
             SoakAnalytics.logBookmarkClick(
@@ -108,12 +115,54 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
             viewModel.toggleSharedBookmark(feed)
         },
     )
+
+    // 추천 화면과 같은 팝업을 거쳐 본문으로 이동해요.
+    val popupFeed = selectedFeed ?: return
+    PopUpDialog(
+        visibility = true,
+        onDismissRequest = { selectedFeed = null },
+        onDetailClick = { item, _ ->
+            navController.navigate(
+                MainDestination.MarkdownDetail(
+                    exposureContentId = item.id,
+                    title = item.letter,
+                    pointColorArgb = cardColorOf(item.category).imageTextColor.toArgb(),
+                    fallbackUrl = item.url,
+                )
+            )
+        },
+        onShareClick = { item, color -> kakaoShare(item = item, color = color, context = context) },
+        bookmarkedIds = state.bookmarkedIds,
+        onBookmarkClick = { item ->
+            val isBookmarked = item.id !in state.bookmarkedIds
+            SoakAnalytics.logBookmarkClick(
+                isBookmarked = isBookmarked,
+                contentId = item.id.toString(),
+                contentTitle = item.title,
+                screen = TabDestination.Bookmark.name,
+            )
+            // 저장됨 목록에 있는 콘텐츠를 해제하면 목록에서도 바로 빼요.
+            if (!isBookmarked && popupFeed in state.feeds) {
+                viewModel.removeBookmark(popupFeed)
+            } else {
+                viewModel.toggleSharedBookmark(popupFeed)
+            }
+            coroutineScope.launch {
+                popupSnackbarHostState.currentSnackbarData?.dismiss()
+                popupSnackbarHostState.showSnackbar(
+                    if (isBookmarked) bookmarkAddedMessage else bookmarkRemovedMessage
+                )
+            }
+        },
+        snackbarHostState = popupSnackbarHostState,
+        cardItems = persistentListOf(popupFeed.toNewsFeed()),
+        cardIndex = 0,
+    )
 }
 
 @Composable
 private fun BookmarkScreen(
     state: BookmarkState,
-    cardColors: List<BookmarkCardColor>,
     onTabClick: (BookmarkTab) -> Unit,
     onLoadMore: () -> Unit,
     onLoadMoreShared: () -> Unit,
@@ -138,7 +187,6 @@ private fun BookmarkScreen(
                     feeds = state.feeds,
                     totalCount = state.totalCount.toInt(),
                     isBookmarked = { true },
-                    cardColors = cardColors,
                     onLoadMore = onLoadMore,
                     onFeedClick = onFeedClick,
                     onBookmarkClick = onBookmarkClick,
@@ -151,7 +199,6 @@ private fun BookmarkScreen(
                     feeds = state.sharedFeeds,
                     totalCount = state.sharedTotalCount.toInt(),
                     isBookmarked = { it.exposureContentId in state.bookmarkedIds },
-                    cardColors = cardColors,
                     onLoadMore = onLoadMoreShared,
                     onFeedClick = onFeedClick,
                     onBookmarkClick = onSharedBookmarkClick,
@@ -239,7 +286,6 @@ private fun BookmarkList(
     feeds: List<BookmarkFeed>,
     totalCount: Int,
     isBookmarked: (BookmarkFeed) -> Boolean,
-    cardColors: List<BookmarkCardColor>,
     onLoadMore: () -> Unit,
     onFeedClick: (index: Int, feed: BookmarkFeed) -> Unit,
     onBookmarkClick: (BookmarkFeed) -> Unit,
@@ -279,7 +325,7 @@ private fun BookmarkList(
                 modifier = Modifier.animateItem(),
                 feed = feed,
                 isBookmarked = isBookmarked(feed),
-                containerColor = cardColors[index % cardColors.size].containerColor,
+                containerColor = cardColorOf(feed.category).cardColor,
                 onClick = { onFeedClick(index, feed) },
                 onBookmarkClick = { onBookmarkClick(feed) },
             )
@@ -340,48 +386,35 @@ private fun BookmarkCard(
                 ),
             )
             Spacer(modifier = Modifier.weight(1f))
-            Row(
+            Text(
                 modifier = Modifier
                     .height(16.dp)
                     .alpha(0.7f),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val metaStyle = SoakTheme.typography.body13.copy(color = Color(0x80121212))
-                Text(text = feed.keyword, style = metaStyle, maxLines = 1)
-                VerticalDivider(
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
-                    thickness = 1.dp,
-                    color = Color(0xFF121212).copy(alpha = 0.1f),
-                )
-                Text(
-                    text = feed.letter,
-                    style = metaStyle,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+                text = feed.keyword,
+                style = SoakTheme.typography.body13.copy(color = Color(0x80121212)),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onBookmarkClick,
+        // 북마크하지 않은 콘텐츠(공유받은 탭)는 아이콘을 보여주지 않고, 누를 수도 없어요.
+        if (isBookmarked) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onBookmarkClick,
+                    )
+                    .padding(start = 12.dp, top = 16.dp, end = 24.dp, bottom = 12.dp),
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_bookmark_on),
+                    contentDescription = stringResource(R.string.bookmark_remove_description),
+                    tint = Color.Unspecified,
                 )
-                // 북마크 리본이 카드 상단 가장자리에 붙도록 위쪽 여백은 두지 않아요.
-                .padding(start = 12.dp, end = 24.dp, bottom = 12.dp),
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(
-                    if (isBookmarked) R.drawable.ic_bookmark_on else R.drawable.ic_bookmark_off
-                ),
-                contentDescription = stringResource(
-                    if (isBookmarked) R.string.bookmark_remove_description else R.string.home_popup_bookmark_add_description
-                ),
-                tint = Color.Unspecified,
-            )
+            }
         }
     }
 }
@@ -395,26 +428,6 @@ private fun EmptyBookmark(text: String) {
         Text(
             text = text,
             style = SoakTheme.typography.body15.copy(color = SoakTheme.colors.iconTabInactive),
-        )
-    }
-}
-
-private data class BookmarkCardColor(
-    val containerColor: Color,
-    val pointColor: Color,
-)
-
-@Composable
-private fun rememberBookmarkCardColors(): List<BookmarkCardColor> {
-    val soakColors = SoakTheme.colors
-    return remember(soakColors) {
-        listOf(
-            BookmarkCardColor(soakColors.blueBackgroundPrimary, soakColors.blueTextPrimary),
-            BookmarkCardColor(soakColors.lemonYellowBackgroundPrimary, soakColors.lemonYellowTextPrimary),
-            BookmarkCardColor(soakColors.purpleBackgroundPrimary, soakColors.purpleTextPrimary),
-            BookmarkCardColor(soakColors.mintBackgroundPrimary, soakColors.mintTextPrimary),
-            BookmarkCardColor(soakColors.pinkBackgroundPrimary, soakColors.pinkTextPrimary),
-            BookmarkCardColor(soakColors.greenBackgroundPrimary, soakColors.greenTextPrimary),
         )
     }
 }
@@ -438,7 +451,6 @@ private fun BookmarkScreenPreview() {
                     BookmarkFeed(3, "SwiftUI에서 달라진 NavigationStack 활용법", "Swift", "iOS 위클리", ""),
                 ),
             ),
-            cardColors = rememberBookmarkCardColors(),
             onTabClick = {},
             onLoadMore = {},
             onLoadMoreShared = {},
@@ -455,7 +467,6 @@ private fun BookmarkScreenEmptyPreview() {
     SoakTheme {
         BookmarkScreen(
             state = BookmarkState(isLoading = false),
-            cardColors = rememberBookmarkCardColors(),
             onTabClick = {},
             onLoadMore = {},
             onLoadMoreShared = {},

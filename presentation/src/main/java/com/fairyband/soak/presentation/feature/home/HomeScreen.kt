@@ -1,8 +1,5 @@
 package com.fairyband.soak.presentation.feature.home
 
-import android.content.Context
-import android.content.Intent
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -78,28 +75,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImage
 import com.fairyband.soak.core.designsystem.systembar.LightSystemBar
-import com.fairyband.soak.core.theme.SoakColors
 import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.domain.model.NewsFeed
-import com.fairyband.soak.presentation.BuildConfig
-import com.fairyband.soak.presentation.deeplink.SharedContentDeepLink
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.analytics.toContentType
+import com.fairyband.soak.presentation.deeplink.kakaoShare
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.navigation.MainDestination
 import com.fairyband.soak.presentation.navigation.TabDestination
-import com.kakao.sdk.share.ShareClient
-import com.kakao.sdk.share.WebSharerClient
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.koin.compose.viewmodel.koinViewModel
-import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -256,7 +248,7 @@ private fun HomeScreen(
                 MainDestination.MarkdownDetail(
                     exposureContentId = item.id,
                     title = item.letter,
-                    pointColorArgb = getCardColors()[pageIndex].imageTextColor.toArgb(),
+                    pointColorArgb = cardColorOf(item.category).imageTextColor.toArgb(),
                     fallbackUrl = item.url,
                 )
             )
@@ -444,7 +436,7 @@ private fun ColumnScope.Cards(
                         scaleY = scale
                     },
                 feed = news[page],
-                cardColor = cardColors[page],
+                cardColor = cardColorOf(news[page].category),
                 onClick = {
                     onClick(page)
                 },
@@ -563,31 +555,14 @@ private fun Card(
                 ),
                 maxLines = 2,
             )
-            Row(
+            Text(
                 modifier = Modifier.padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = feed.keyword,
-                    style = SoakTheme.typography.body14.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = SoakTheme.colors.textStrong.copy(alpha = 0.4f),
-                    )
+                text = feed.keyword,
+                style = SoakTheme.typography.body14.copy(
+                    fontWeight = FontWeight.Medium,
+                    color = SoakTheme.colors.textStrong.copy(alpha = 0.4f),
                 )
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .size(width = 1.dp, height = 14.dp)
-                        .background(color = Color.Black.copy(alpha = 0.1f))
-                )
-                Text(
-                    text = feed.letter,
-                    style = SoakTheme.typography.body13.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = SoakTheme.colors.textStrong.copy(alpha = 0.5f),
-                    )
-                )
-            }
+            )
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 Modifier
@@ -713,45 +688,6 @@ private fun webClickEvent(item: NewsFeed) {
         contentTitle = item.title,
         contentId = item.id.toString(),
     )
-}
-
-private fun kakaoShare(
-    item: NewsFeed,
-    color: Color,
-    context: Context
-) {
-    val templateId = 124946L
-    val textColor = String.format("%06X", color.toArgb() and 0xFFFFFF)
-    // 받는 쪽은 앱 실행 링크의 exposureContentId 로 공유받은 목록에 등록해요. (SharedContentDeepLink 참고)
-    val templateArgs = mapOf(
-        SharedContentDeepLink.ARG_TITLE to item.title,
-        "IMG" to "${BuildConfig.BASE_URL}/share/og?exposureContentId=${item.id}&textColor=%23$textColor",
-        SharedContentDeepLink.ARG_EXPOSURE_CONTENT_ID to item.id.toString(),
-    )
-
-    if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
-        ShareClient.instance.shareCustom(
-            context,
-            templateId,
-            templateArgs
-        ) { sharingResult, error ->
-            if (error != null) {
-                Timber.e("카카오톡 공유 실패: ${error.message}")
-            } else if (sharingResult != null) {
-                context.startActivity(sharingResult.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }
-        }
-    } else {
-        val sharerUrl = WebSharerClient.instance.makeCustomUrl(templateId, templateArgs)
-        try {
-            val intent = CustomTabsIntent.Builder().build().intent
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.data = sharerUrl
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Timber.e("웹 공유 실패: ${e.message}")
-        }
-    }
 }
 
 @Preview(showBackground = true)

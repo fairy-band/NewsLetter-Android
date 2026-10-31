@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -61,6 +60,7 @@ import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.feature.explore.bottomsheet.ReportNewsletterBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.Preference
+import com.fairyband.soak.presentation.feature.home.cardColorOf
 import com.fairyband.soak.presentation.model.ExploreFeed
 import com.fairyband.soak.presentation.navigation.MainDestination
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -73,16 +73,6 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
     val soakColors = LocalSoakColors.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val snackbarController = LocalSnackbarController.current
-    val cardColors = remember {
-        listOf(
-            soakColors.greenBackgroundPrimary,
-            soakColors.pinkBackgroundPrimary,
-            soakColors.lemonYellowBackgroundPrimary,
-            soakColors.blueBackgroundPrimary,
-            soakColors.orangeBackgroundPrimary,
-            soakColors.purpleBackgroundPrimary,
-        )
-    }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val lazyState = rememberLazyGridState()
@@ -209,7 +199,7 @@ fun ExploreScreen(viewModel: ExploreViewModel = koinViewModel()) {
                                 )
                             },
                             content = feeds[index],
-                            containerColor = cardColors[index % 6],
+                            containerColor = cardColorOf(feeds[index].category).cardColor,
                         )
                     }
                 }
@@ -384,29 +374,14 @@ private fun Card(
             )
         )
         Spacer(modifier = Modifier.weight(1f))
-        Row(
-            modifier = Modifier.height(18.dp)
-        ) {
-            Text(
-                content.keyword, style = SoakTheme.typography.body13.copy(
-                    color = Color(0x80121212),
-                    fontWeight = FontWeight.Medium,
-                )
-            )
-            VerticalDivider(
-                modifier = Modifier.padding(
-                    vertical = 2.dp,
-                    horizontal = 3.dp
-                ),
-                thickness = 1.dp,
-                color = Color(0xFF121212).copy(alpha = 0.1f)
-            )
-            Text(
-                content.letter, style = SoakTheme.typography.body13.copy(
-                    color = Color(0x80121212),
-                    fontWeight = FontWeight.Medium,
-                )
-            )
-        }
+        Text(
+            modifier = Modifier.height(18.dp),
+            text = content.keyword,
+            style = SoakTheme.typography.body13.copy(
+                color = Color(0x80121212),
+                fontWeight = FontWeight.Medium,
+            ),
+            maxLines = 1,
+        )
     }
 }

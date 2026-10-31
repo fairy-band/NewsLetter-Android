@@ -12,6 +12,7 @@ data class NewsFeed(
     val imageUrl: String?,
     val language: String,
     val cardType: String,
+    val category: String = "",
     val isTrending: Boolean = false,
 )
 
@@ -26,6 +27,7 @@ fun NewsResponse.toNewsFeed(isTrending: Boolean = false): NewsFeed {
         imageUrl = imageUrl,
         language = language,
         cardType = cardType.getCardType(),
+        category = categoryName,
         isTrending = isTrending,
     )
 }

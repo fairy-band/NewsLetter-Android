@@ -11,6 +11,7 @@ data class ExploreFeed(
     val letter: String,
     val url: String,
     val summary: String,
+    val category: String = "",
 )
 
 fun ExploreContentResponse.toExploreFeed(): ExploreFeed {
@@ -21,5 +22,6 @@ fun ExploreContentResponse.toExploreFeed(): ExploreFeed {
         letter = newsletterName,
         summary = summaryContent,
         url = contentUrl,
+        category = categoryName,
     )
 }

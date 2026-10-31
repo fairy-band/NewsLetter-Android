@@ -13,6 +13,7 @@ data class BookmarkResponse(
     val contentUrl: String,
     val imageUrl: String? = null,
     val newsletterName: String,
+    val categoryName: String = "",
     val language: String,
     val bookmarkedAt: String,
     val publishedAt: String? = null,

@@ -99,22 +99,9 @@ class ExploreViewModel(
         reloadWith { it.copy(direction = newDirection) }
     }
 
-    /**
-     * 직군 필터를 토글해요.
-     *
-     * - 전체(선택 없음) 상태에서 하나를 고르면 해당 직군만 선택돼요.
-     * - 모든 직군이 선택되면 자동으로 전체 선택으로 바뀌어요.
-     */
     fun toggleJobFilter(preference: Preference) {
-        val current = _state.value.selectedJobFilters
-        val updated = when {
-            current.isEmpty() -> listOf(preference)
-            preference in current -> current - preference
-            else -> Preference.entries.filter { it in current || it == preference }
-        }
-        val isAllSelected = updated.size == Preference.entries.size
-
-        reloadWith { it.copy(selectedJobFilters = if (isAllSelected) emptyList() else updated) }
+        val updated = selectJobFilter(current = _state.value.selectedJobFilters, preference = preference)
+        reloadWith { it.copy(selectedJobFilters = updated) }
     }
 
     /**
@@ -136,3 +123,9 @@ class ExploreViewModel(
         loadFeeds()
     }
 }
+
+/**
+ * 직군 필터는 하나만 선택돼요. 이미 선택된 직군을 다시 누르면 선택이 풀리고 전체로 돌아가요.
+ */
+internal fun selectJobFilter(current: List<Preference>, preference: Preference): List<Preference> =
+    if (preference in current) emptyList() else listOf(preference)
