@@ -43,8 +43,10 @@ argument-hint: [기능명 또는 #이슈번호]
 
 ### 4. 계획서 생성
 
-파일명: `.claude/plans/[기능명-kebab-case].md`  
-예: `.claude/plans/home-refresh.md`, `.claude/plans/fix-crash-on-launch.md`
+파일명: `.claude/plans/<번호>-[기능명-kebab-case].md`  
+예: `.claude/plans/03-home-refresh.md`, `.claude/plans/04-fix-crash-on-launch.md`
+
+`<번호>`는 `.claude/plans/`에서 이름이 숫자와 `-`로 시작하는 파일들(`/feature`·`/change`·`/plan`이 순번을 함께 쓴다)의 가장 큰 숫자에 1을 더한 값이다. 그런 파일이 없으면 1부터 시작한다. 두 자리로 0을 채워 쓴다 (`01`, `02`, … `99`, 100부터는 그대로).
 
 체크리스트는 **커밋 단위**로 묶는다. 각 `Commit N` 블록은 독립적으로 빌드 가능한 범위여야 한다.
 내용은 빈 템플릿이 아니라 프로젝트 구조와 요청 내용 기반으로 채워서 작성하고, 사용자 입력이 필요한 부분만 빈칸으로 남긴다.
@@ -178,7 +180,7 @@ argument-hint: [기능명 또는 #이슈번호]
 
 ### 5. 계획서 생성 완료 후 안내
 
-> `.claude/plans/[파일명].md` 계획서를 작성했어요.
+> `.claude/plans/<번호>-[파일명].md` 계획서를 작성했어요.
 > **📝 컨텍스트** 및 **🎨 UI / 리소스** (feature 유형) 섹션을 채워주세요. 모르는 항목은 비워둬도 괜찮아요.
 > 입력이 끝나면 **"계획서 작성 완료"** 또는 **"구현 시작해줘"** 라고 알려주세요.
 

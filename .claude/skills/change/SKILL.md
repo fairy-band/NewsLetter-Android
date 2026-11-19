@@ -90,7 +90,9 @@ disable-model-invocation: true
 
 ### 검증 문서 작성
 
-verifier는 대화 기록을 모르고 파일에 적힌 시나리오만 보고 기기에서 검증한다. 그래서 검증에 필요한 내용을 `.claude/plans/change-<기능명>.md`에 정리한다. 기능명은 요청에서 만든 영문 kebab-case 2~4단어다 (예: `notification-default-on`).
+verifier는 대화 기록을 모르고 파일에 적힌 시나리오만 보고 기기에서 검증한다. 그래서 검증에 필요한 내용을 `.claude/plans/<번호>-change-<기능명>.md`에 정리한다. 기능명은 요청에서 만든 영문 kebab-case 2~4단어다 (예: `notification-default-on`).
+
+`<번호>`는 `.claude/plans/`에서 이름이 숫자와 `-`로 시작하는 파일들(`/feature`·`/change`·`/plan`이 순번을 함께 쓴다)의 가장 큰 숫자에 1을 더한 값이다. 그런 파일이 없으면 1부터 시작한다. 두 자리로 0을 채워 쓴다 (`01`, `02`, … `99`, 100부터는 그대로). (예: `02-change-notification-default-on.md`) 같은 기능명의 plans 파일이 이미 있으면 그 번호를 그대로 쓴다.
 
 ```markdown
 # change-<기능명>
@@ -133,7 +135,7 @@ Agent 도구로 `verifier` 서브에이전트를 호출한다. 프롬프트에 �
 
 ```
 검증 유형: feature-change
-plans 파일 경로: .claude/plans/change-<기능명>.md
+plans 파일 경로: .claude/plans/<번호>-change-<기능명>.md
 기능명: <기능명>
 변경 유형: <개선 | 수정>
 변경 요약: <한두 줄>

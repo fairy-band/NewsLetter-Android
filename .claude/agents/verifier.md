@@ -31,7 +31,7 @@ hooks:
 - 검증 유형: `feature` 또는 `feature-change`
 - plans 파일 경로
   - `feature`: `.claude/plans/<번호>-feature-<IssueNumber>-<기능명>.md`
-  - `feature-change`: `.claude/plans/change-<기능명>.md`
+  - `feature-change`: `.claude/plans/<번호>-change-<기능명>.md`
 - `feature`: 이슈 번호, 기능명
 - `feature-change`: 기능명, 변경 유형(개선/수정), 변경 요약, 성공 기준, 수정한 기존 테스트
 
@@ -170,7 +170,7 @@ adb shell dumpsys window | grep -iE "isKeyguardShowing|mShowingLockscreen|mDream
   ```bash
   adb shell monkey -p com.fairyband.soak.debug -c android.intent.category.LAUNCHER 1
   ```
-- 스크린샷 디렉터리를 만든다: `.claude/verifications/<plans 파일명에서 .md를 뺀 이름>/` (예: `feature-<IssueNumber>-<기능명>/`, `change-<기능명>/`)
+- 스크린샷 디렉터리를 만든다: `.claude/verifications/<plans 파일명에서 .md를 뺀 이름>/` (예: `01-feature-<IssueNumber>-<기능명>/`, `02-change-<기능명>/`)
 
 **실행**
 
