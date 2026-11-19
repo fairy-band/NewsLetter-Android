@@ -49,7 +49,7 @@ import com.fairyband.soak.core.theme.SoakTheme
 import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
-import com.fairyband.soak.presentation.deeplink.kakaoShare
+import com.fairyband.soak.presentation.deeplink.shareContentLink
 import com.fairyband.soak.presentation.feature.home.cardColorOf
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
 import com.fairyband.soak.presentation.model.BookmarkFeed
@@ -131,7 +131,7 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
                 )
             )
         },
-        onShareClick = { item, color -> kakaoShare(item = item, color = color, context = context) },
+        onShareClick = { item -> shareContentLink(context = context, exposureContentId = item.id) },
         bookmarkedIds = state.bookmarkedIds,
         onBookmarkClick = { item ->
             val isBookmarked = item.id !in state.bookmarkedIds

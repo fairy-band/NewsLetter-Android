@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -43,7 +42,7 @@ internal fun PopUpDialog(
     visibility: Boolean,
     onDismissRequest: () -> Unit,
     onDetailClick: (NewsFeed, Int) -> Unit,
-    onShareClick: (NewsFeed, Color) -> Unit,
+    onShareClick: (NewsFeed) -> Unit,
     bookmarkedIds: Set<Long>,
     onBookmarkClick: (NewsFeed) -> Unit,
     snackbarHostState: SnackbarHostState,
@@ -89,7 +88,7 @@ internal fun PopUpDialog(
                     titleColor = titleColor,
                     onDetailClick = { onDetailClick(item, cardIndex) },
                     isBookmarked = item.id in bookmarkedIds,
-                    onShareClick = { onShareClick(item, titleColor) },
+                    onShareClick = { onShareClick(item) },
                     onBookmarkClick = { onBookmarkClick(item) },
                 )
                 Spacer(modifier = Modifier.weight(1f))

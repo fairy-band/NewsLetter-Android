@@ -81,7 +81,7 @@ import com.fairyband.soak.presentation.LocalNavController
 import com.fairyband.soak.presentation.R
 import com.fairyband.soak.presentation.analytics.SoakAnalytics
 import com.fairyband.soak.presentation.analytics.toContentType
-import com.fairyband.soak.presentation.deeplink.kakaoShare
+import com.fairyband.soak.presentation.deeplink.shareContentLink
 import com.fairyband.soak.presentation.feature.home.bottomsheet.HomeBottomSheet
 import com.fairyband.soak.presentation.feature.home.bottomsheet.NotificationBottomSheet
 import com.fairyband.soak.presentation.feature.home.dialog.PopUpDialog
@@ -254,12 +254,8 @@ private fun HomeScreen(
             )
             webClickEvent(item)
         },
-        onShareClick = { item, color ->
-            kakaoShare(
-                item = item,
-                color = color,
-                context = context
-            )
+        onShareClick = { item ->
+            shareContentLink(context = context, exposureContentId = item.id)
         },
         bookmarkedIds = bookmarkedIds,
         onBookmarkClick = { item ->
