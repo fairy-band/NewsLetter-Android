@@ -37,6 +37,12 @@ enum class Preference(
         icon = R.drawable.ic_home_devops,
         stringValue = "DEVOPS",
         categoryId = "5",
+    ),
+    AI(
+        label = "AI",
+        icon = R.drawable.ic_ai_sparkle,
+        stringValue = "AI",
+        categoryId = "6",
     );
 
     companion object {
