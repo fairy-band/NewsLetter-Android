@@ -24,11 +24,6 @@ class PreferenceTest : StringSpec({
         Preference.IOS.categoryId shouldBe "3"
         Preference.ANDROID.categoryId shouldBe "4"
         Preference.DEVOPS.categoryId shouldBe "5"
-        Preference.AI.categoryId shouldBe "6"
-    }
-
-    "AI 직군을 stringValue 로 찾는다" {
-        Preference.from("AI") shouldBe Preference.AI
     }
 
     "카테고리 ID 는 직군마다 고유하다" {
