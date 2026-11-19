@@ -80,18 +80,22 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * 카카오톡 공유 링크로 들어오면 보관함 '공유받은' 탭을 열어요.
+     * 공유 링크(카카오톡, soak 스킴, https 앱 링크)로 들어오면 보관함 '공유받은' 탭을 열어요.
      * 공유받은 목록 등록은 로그인이 끝난 뒤 탭 화면에서 처리해요.
      */
     private fun handleSharedLink(intent: Intent) {
         val uri = intent.data ?: return
-        if (uri.host != SharedContentDeepLink.KAKAO_LINK_HOST) return
+        val request = SharedContentDeepLink.parse(
+            scheme = uri.scheme,
+            host = uri.host,
+            pathSegments = uri.pathSegments,
+            queryParameter = uri::getQueryParameter,
+        ) ?: return
 
-        val exposureContentId = SharedContentDeepLink.parse(queryParameter = uri::getQueryParameter)
-        if (exposureContentId == null) {
+        if (request.exposureContentId == null) {
             Timber.w("공유 링크에 콘텐츠 정보가 없어요: $uri")
         }
-        sharedLinkNavigator.requestOpenSharedTab(exposureContentId)
+        sharedLinkNavigator.requestOpenSharedTab(request.exposureContentId)
     }
 
     private fun createEntryProvider(): (NavKey) -> NavEntry<NavKey> {
