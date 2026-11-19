@@ -83,6 +83,8 @@ All versions are managed in `gradle/libs.versions.toml`.
 
 These are provided via base64-encoded GitHub Secrets in CI and must be created manually for local builds:
 - `local.properties` — `NATIVE_APP_KEY` (Kakao), `BASE_URL`
+  - `api_docs_url`: 서버 API 문서(OpenAPI JSON) 주소. API 요청·응답 스펙을 확인할 때 참고한다.
+  - `design_reference`: 디자인 시안 링크. UI 작업 시 참고한다.
 - `keystore.properties` — signing config for release builds
 - `google-services.json` — Firebase configuration (place in `app/`)
 
