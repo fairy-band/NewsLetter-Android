@@ -16,10 +16,6 @@ object SharedContentDeepLink {
 
     const val PARAM_EXPOSURE_CONTENT_ID = "exposureContentId"
 
-    /** 공유하는 쪽에서 [com.kakao.sdk.share.ShareClient]에 넘기는 템플릿 인자 이름이에요. */
-    const val ARG_TITLE = "TITLE"
-    const val ARG_EXPOSURE_CONTENT_ID = "EXPOSURE_CONTENT_ID"
-
     /** 공유 링크의 호스트예요. AndroidManifest 의 앱 링크 필터, 서버의 assetlinks 와 같아야 해요. */
     const val SHARE_HOST = "soak-app.duckdns.org"
 
