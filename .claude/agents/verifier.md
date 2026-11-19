@@ -30,7 +30,7 @@ hooks:
 
 - 검증 유형: `feature` 또는 `feature-change`
 - plans 파일 경로
-  - `feature`: `.claude/plans/feature-<IssueNumber>-<기능명>.md`
+  - `feature`: `.claude/plans/<번호>-feature-<IssueNumber>-<기능명>.md`
   - `feature-change`: `.claude/plans/change-<기능명>.md`
 - `feature`: 이슈 번호, 기능명
 - `feature-change`: 기능명, 변경 유형(개선/수정), 변경 요약, 성공 기준, 수정한 기존 테스트
